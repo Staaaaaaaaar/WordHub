@@ -68,13 +68,35 @@
 - 前端：使用pyQT开发GUI---负责：郑星浩
 - 后端：使用cpp开发---负责：刘继轩，郑嘉祺
 
-### 2. 关键技术点
+### 2. CPP模块编译方法
+
+使用CMake来进行编译：首先来到项目文件夹，先删除之前编译产生的build文件。
+使用x64 Native Tools Command Prompt for VS 2022
+
+```bash
+mkdir build && cd build
+cmake .. -G "Visual Studio 17 2022" -A x64
+cd ..
+cmake --build build --config Release
+```
+
+生成的vocabulary_learning.pyd文件在./python/Release下，复制粘贴到./python替换掉原来的即可正常调用。
+
+在python文件中的调用方法
+
+```python
+import sys
+sys.path.append("./python/")
+import vocabulary_learning
+```
+
+### 3. 关键技术点
 
 - **词根拆分算法**：基于预设词根库的正则表达式匹配与语义分析
 - **TTS发音**：集成System.Speech或AzureCognitiveServices语音合成
 - **游戏引擎**：小游戏模块使用SkiaSharp或AvaloniaUI实现轻量级动画
 
-### 3. 第三方服务（可选）
+### 4. 第三方服务（可选）
 
 - **词根数据源**：Morphology词典API或开源词根数据库（如Etymonline）
 - **用户认证**：MicrosoftAccount快速登录(或者iaaa.pku？)
