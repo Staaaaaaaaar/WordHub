@@ -12,3 +12,20 @@ LearnWidget::~LearnWidget()
 {
     delete ui;
 }
+
+void LearnWidget::addButton(DictButton* dictButtton)
+{
+    // ui->gridLayout_2->addItem(dictButtton, );
+}
+
+
+DictButton::DictButton() //传入字典指针
+{
+
+}
+
+DictButton::~DictButton()
+{
+
+}
+

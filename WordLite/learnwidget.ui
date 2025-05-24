@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>614</width>
+    <height>486</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,31 +26,83 @@
     <string>learn</string>
    </property>
   </widget>
-  <widget class="QToolButton" name="toolButton">
+  <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>50</y>
-     <width>51</width>
-     <height>71</height>
+     <x>30</x>
+     <y>30</y>
+     <width>441</width>
+     <height>201</height>
     </rect>
    </property>
-   <property name="text">
-    <string>词库1</string>
+   <property name="title">
+    <string>默认词库</string>
    </property>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>30</y>
+      <width>131</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QToolButton" name="toolButton">
+       <property name="text">
+        <string>词库1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QToolButton" name="toolButton_2">
+       <property name="text">
+        <string>词库2</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
-  <widget class="QToolButton" name="toolButton_2">
+  <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
-     <x>240</x>
-     <y>50</y>
-     <width>51</width>
-     <height>71</height>
+     <x>30</x>
+     <y>240</y>
+     <width>441</width>
+     <height>201</height>
     </rect>
    </property>
-   <property name="text">
-    <string>词库2</string>
+   <property name="title">
+    <string>自定义词库</string>
    </property>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>30</y>
+      <width>141</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QToolButton" name="toolButton_3">
+       <property name="text">
+        <string>词库1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QToolButton" name="toolButton_4">
+       <property name="text">
+        <string>词库2</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
  </widget>
  <resources/>

@@ -6,6 +6,7 @@ release/mainwindow.o
 release/querywidget.o
 release/reviewwidget.o
 release/userwidget.o
+release/wordwidget.o
 release/moc_achievementwidget.o
 release/moc_gamewidget.o
 release/moc_learnwidget.o
@@ -13,3 +14,4 @@ release/moc_mainwindow.o
 release/moc_querywidget.o
 release/moc_reviewwidget.o
 release/moc_userwidget.o
+release/moc_wordwidget.o

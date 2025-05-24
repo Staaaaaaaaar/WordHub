@@ -67,9 +67,3 @@ void MainWindow::connectSignals(){
 }
 
 
-
-void MainWindow::on_userButton_clicked()
-{
-
-}
-

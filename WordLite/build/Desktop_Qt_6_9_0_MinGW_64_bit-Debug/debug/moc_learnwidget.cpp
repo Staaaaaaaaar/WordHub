@@ -87,4 +87,61 @@ int LearnWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     _id = QWidget::qt_metacall(_c, _id, _a);
     return _id;
 }
+namespace {
+struct qt_meta_tag_ZN10DictButtonE_t {};
+} // unnamed namespace
+
+template <> constexpr inline auto DictButton::qt_create_metaobjectdata<qt_meta_tag_ZN10DictButtonE_t>()
+{
+    namespace QMC = QtMocConstants;
+    QtMocHelpers::StringRefStorage qt_stringData {
+        "DictButton"
+    };
+
+    QtMocHelpers::UintData qt_methods {
+    };
+    QtMocHelpers::UintData qt_properties {
+    };
+    QtMocHelpers::UintData qt_enums {
+    };
+    return QtMocHelpers::metaObjectData<DictButton, qt_meta_tag_ZN10DictButtonE_t>(QMC::MetaObjectFlag{}, qt_stringData,
+            qt_methods, qt_properties, qt_enums);
+}
+Q_CONSTINIT const QMetaObject DictButton::staticMetaObject = { {
+    QMetaObject::SuperData::link<QToolButton::staticMetaObject>(),
+    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN10DictButtonE_t>.stringdata,
+    qt_staticMetaObjectStaticContent<qt_meta_tag_ZN10DictButtonE_t>.data,
+    qt_static_metacall,
+    nullptr,
+    qt_staticMetaObjectRelocatingContent<qt_meta_tag_ZN10DictButtonE_t>.metaTypes,
+    nullptr
+} };
+
+void DictButton::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+{
+    auto *_t = static_cast<DictButton *>(_o);
+    (void)_t;
+    (void)_c;
+    (void)_id;
+    (void)_a;
+}
+
+const QMetaObject *DictButton::metaObject() const
+{
+    return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
+}
+
+void *DictButton::qt_metacast(const char *_clname)
+{
+    if (!_clname) return nullptr;
+    if (!strcmp(_clname, qt_staticMetaObjectStaticContent<qt_meta_tag_ZN10DictButtonE_t>.strings))
+        return static_cast<void*>(this);
+    return QToolButton::qt_metacast(_clname);
+}
+
+int DictButton::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QToolButton::qt_metacall(_c, _id, _a);
+    return _id;
+}
 QT_WARNING_POP

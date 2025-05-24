@@ -35,7 +35,6 @@ public:
     void connectSignals();
 
 private slots:
-    void on_userButton_clicked();
 
 private:
     Ui::MainWindow *ui;

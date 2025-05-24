@@ -16,7 +16,8 @@ SOURCES += \
     mainwindow.cpp \
     querywidget.cpp \
     reviewwidget.cpp \
-    userwidget.cpp
+    userwidget.cpp \
+    wordwidget.cpp
 
 HEADERS += \
     achievementwidget.h \
@@ -25,7 +26,8 @@ HEADERS += \
     mainwindow.h \
     querywidget.h \
     reviewwidget.h \
-    userwidget.h
+    userwidget.h \
+    wordwidget.h
 
 FORMS += \
     achievementwidget.ui \
@@ -34,7 +36,8 @@ FORMS += \
     mainwindow.ui \
     querywidget.ui \
     reviewwidget.ui \
-    userwidget.ui
+    userwidget.ui \
+    wordwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

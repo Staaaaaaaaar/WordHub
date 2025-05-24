@@ -22,33 +22,40 @@ class Ui_QueryWidget
 {
 public:
     QLabel *label;
-    QLineEdit *lineEdit;
+    QLineEdit *searchEdit;
     QTabWidget *tabWidget;
     QWidget *tab;
-    QWidget *tab_2;
 
     void setupUi(QWidget *QueryWidget)
     {
         if (QueryWidget->objectName().isEmpty())
             QueryWidget->setObjectName("QueryWidget");
-        QueryWidget->resize(514, 410);
+        QueryWidget->resize(600, 500);
         label = new QLabel(QueryWidget);
         label->setObjectName("label");
-        label->setGeometry(QRect(0, 0, 40, 12));
-        lineEdit = new QLineEdit(QueryWidget);
-        lineEdit->setObjectName("lineEdit");
-        lineEdit->setGeometry(QRect(10, 20, 113, 20));
+        label->setGeometry(QRect(10, 10, 40, 12));
+        searchEdit = new QLineEdit(QueryWidget);
+        searchEdit->setObjectName("searchEdit");
+        searchEdit->setGeometry(QRect(30, 40, 113, 20));
         tabWidget = new QTabWidget(QueryWidget);
         tabWidget->setObjectName("tabWidget");
-        tabWidget->setGeometry(QRect(10, 50, 481, 341));
+        tabWidget->setGeometry(QRect(30, 70, 531, 400));
+        tabWidget->setTabShape(QTabWidget::TabShape::Rounded);
+        tabWidget->setIconSize(QSize(16, 16));
+        tabWidget->setUsesScrollButtons(false);
+        tabWidget->setDocumentMode(false);
+        tabWidget->setTabsClosable(true);
+        tabWidget->setMovable(true);
+        tabWidget->setTabBarAutoHide(false);
         tab = new QWidget();
         tab->setObjectName("tab");
+        tab->setEnabled(true);
         tabWidget->addTab(tab, QString());
-        tab_2 = new QWidget();
-        tab_2->setObjectName("tab_2");
-        tabWidget->addTab(tab_2, QString());
 
         retranslateUi(QueryWidget);
+
+        tabWidget->setCurrentIndex(0);
+
 
         QMetaObject::connectSlotsByName(QueryWidget);
     } // setupUi
@@ -57,8 +64,7 @@ public:
     {
         QueryWidget->setWindowTitle(QCoreApplication::translate("QueryWidget", "Form", nullptr));
         label->setText(QCoreApplication::translate("QueryWidget", "query", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("QueryWidget", "Tab 1", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QCoreApplication::translate("QueryWidget", "Tab 2", nullptr));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("QueryWidget", "welcome", nullptr));
     } // retranslateUi
 
 };
