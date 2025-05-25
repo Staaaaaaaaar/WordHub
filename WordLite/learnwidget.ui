@@ -6,102 +6,160 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>614</width>
-    <height>486</height>
+    <width>617</width>
+    <height>507</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label">
+  <widget class="QStackedWidget" name="stackedWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>40</width>
-     <height>12</height>
+     <width>601</width>
+     <height>491</height>
     </rect>
    </property>
-   <property name="text">
-    <string>learn</string>
+   <property name="currentIndex">
+    <number>1</number>
    </property>
-  </widget>
-  <widget class="QGroupBox" name="groupBox">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>30</y>
-     <width>441</width>
-     <height>201</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>默认词库</string>
-   </property>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>30</y>
-      <width>131</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QToolButton" name="toolButton">
-       <property name="text">
-        <string>词库1</string>
+   <widget class="QWidget" name="dictTable">
+    <widget class="QGroupBox" name="customizeBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>240</y>
+       <width>551</width>
+       <height>221</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>自定义词库</string>
+     </property>
+     <widget class="QWidget" name="gridLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>40</y>
+        <width>471</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="customizeLayout" rowminimumheight="0" columnminimumwidth="0">
+       <property name="verticalSpacing">
+        <number>4</number>
        </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QToolButton" name="toolButton_2">
-       <property name="text">
-        <string>词库2</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="defaultBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>551</width>
+       <height>201</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>默认词库</string>
+     </property>
+     <widget class="QWidget" name="gridLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>40</y>
+        <width>471</width>
+        <height>141</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="defaultLayout"/>
+     </widget>
+    </widget>
    </widget>
-  </widget>
-  <widget class="QGroupBox" name="groupBox_2">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>240</y>
-     <width>441</width>
-     <height>201</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>自定义词库</string>
-   </property>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>30</y>
-      <width>141</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QToolButton" name="toolButton_3">
-       <property name="text">
-        <string>词库1</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QToolButton" name="toolButton_4">
-       <property name="text">
-        <string>词库2</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+   <widget class="QWidget" name="dictWidget">
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>80</y>
+       <width>31</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>词库名</string>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="backButton">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>20</y>
+       <width>41</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>返回</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>159</x>
+       <y>140</y>
+       <width>111</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>学习进度……</string>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="testButton">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>380</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>开始测试</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="testWidget">
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>50</y>
+       <width>40</width>
+       <height>12</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>测试界面</string>
+     </property>
+    </widget>
+    <widget class="QToolButton" name="backButton_2">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>20</y>
+       <width>41</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>返回</string>
+     </property>
+    </widget>
    </widget>
   </widget>
  </widget>
