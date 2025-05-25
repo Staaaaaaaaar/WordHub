@@ -17,10 +17,10 @@ public:
     QString word;
     QString pronunciation;
     QString meaning;
-    QString example;
+    QString example;// 例句
     QDateTime lastReviewed=QDateTime::currentDateTime(); // 初始化为添加时的时间
-    int reviewCount=0;
-    int difficulty=0; // 1-5，1表示最简单，5表示最难
+    int reviewCount=0; // 复习次数
+    int difficulty=0; // 1-5，1表示最简单，5表示最难（或者是用户的掌握程度）
 
     Word(QString word,QString meaning="none"):word(word),meaning(meaning){}
     Word(){}
@@ -88,9 +88,9 @@ public:
     bool removeWordFromCategory(int wordId, int categoryId); // 从某个分类中移除单词 已实现
     
     // 用户管理
-    bool addUser(const QString &username, const QString &password);
-    bool authenticateUser(const QString &username, const QString &password);
-    int getUserId(const QString &username);
+    bool addUser(const QString &username, const QString &password); // 添加用户
+    bool authenticateUser(const QString &username, const QString &password);  // 用户认证
+    int getUserId(const QString &username); // 获取用户id
     
     // 学习记录管理
     bool addLearningRecord(const LearningRecord &record); // 添加一个学习记录对象 已实现
