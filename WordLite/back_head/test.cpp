@@ -1,6 +1,7 @@
 #include <QCoreApplication>
 #include<QString>
 #include<QDir>
+#include<QDebug>
 #include "database.h"
 
 int main(int argc, char *argv[])
@@ -37,35 +38,59 @@ int main(int argc, char *argv[])
 
     for(auto p:db1.getAllWords())
     {
-        qInfo()<<p.word;
-        qInfo()<<p.meaning;
-        qInfo()<<p.pronunciation;
+        qInfo()<<p;
     }
 
-
-    qInfo()<<"____________________________________________________";
-
-    WordDatabase db2("bad");
-    QString dbPath2 = QCoreApplication::applicationDirPath()  +"/datas/"+"bad" +".db";
-    if (!db2.initDatabase(dbPath2)) {
-        qFatal("数据库初始化失败!");
-        return 1;
-    }
-    Word word2;
-    word2.word = "abcd";
-    word2.meaning = "调试";
-    if (db2.addWord(word2)) {
-        qInfo() << "单词添加成功";
-    } else {
-        qWarning() << "单词添加失败";
-    }
-
-    for(auto p:db2.getAllWords())
+    qInfo()<<"________________________1__________________________";
+    qInfo()<<db1.getCategoryById(1).name<<"\n";
+    for(auto p:db1.getWordsByCategory(1))
     {
-        qInfo()<<p.word;
-        qInfo()<<p.meaning;
-        qInfo()<<p.pronunciation;
+        qInfo()<<p;
     }
+
+    qInfo()<<"_______________________2___________________________";
+    qInfo()<<db1.getCategoryById(2).name<<"\n";
+    for(auto p:db1.getWordsByCategory(2))
+    {
+        qInfo()<<p;
+    }
+
+    qInfo()<<"_______________________3___________________________";
+    qInfo()<<db1.getCategoryById(3).name<<"\n";
+    for(auto p:db1.getWordsByCategory(3))
+    {
+        qInfo()<<p;
+    }
+
+    db1.deleteWord(6);
+    qInfo()<<"word id=2 is deleted\n";
+
+    qInfo()<<db1.getWordById(4);
+
+    db1.removeWordFromCategory(1,1);
+    qInfo()<<"________________________1__________________________";
+    qInfo()<<db1.getCategoryById(1).name<<"\n";
+    for(auto p:db1.getWordsByCategory(1))
+    {
+        qInfo()<<p;
+    }
+
+    qInfo()<<"_______________________2___________________________";
+    qInfo()<<db1.getCategoryById(2).name<<"\n";
+    for(auto p:db1.getWordsByCategory(2))
+    {
+        qInfo()<<p;
+    }
+
+    qInfo()<<"_______________________3___________________________";
+    qInfo()<<db1.getCategoryById(3).name<<"\n";
+    for(auto p:db1.getWordsByCategory(3))
+    {
+        qInfo()<<p;
+    }
+
+
+
 
     return 0;
 }

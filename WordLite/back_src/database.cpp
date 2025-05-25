@@ -13,7 +13,7 @@ WordDatabase::~WordDatabase()
 }
 
 bool WordDatabase::isOpen() const {
-    return m_db.isOpen(); // 假设m_db是QSqlDatabase类型的成员
+    return m_db.isOpen();
 }
 void WordDatabase::close() {
     if (m_db.isOpen()) {
@@ -44,6 +44,8 @@ bool WordDatabase::initDatabase(const QString &dbPath) // 创建链接，打开�
         qDebug() << "创建表失败:" << m_db.lastError().text();
         return false;
     }
+
+    insertSampleData();
 
     return true;
 }
@@ -275,6 +277,34 @@ QVector<Category> WordDatabase::getAllCategories()
     return categories;
 }
 
+Category WordDatabase::getCategoryById(int id)
+{
+    Category category;
+    QSqlQuery query(m_db);
+
+    // 准备SQL查询
+    query.prepare("SELECT id, name, description FROM Categories WHERE id = :id");
+    query.bindValue(":id", id);
+
+    // 执行查询
+    if (!query.exec()) {
+        qWarning() << "查询分类失败:" << query.lastError().text();
+        return category; // 返回空对象
+    }
+
+    // 检查是否有结果
+    if (query.next()) {
+        // 从查询结果中提取数据
+        category.id = query.value("id").toInt();
+        category.name = query.value("name").toString();
+        category.description = query.value("description").toString();
+    } else {
+        qWarning() << "未找到ID为" << id << "的分类";
+    }
+
+    return category;
+}
+
 bool WordDatabase::assignWordToCategory(int wordId, int categoryId)
 {
     QSqlQuery query(m_db);
@@ -405,28 +435,202 @@ double WordDatabase::getLearningAccuracy(int userId, int days)
     return 0.0;
 }
 
-bool WordDatabase::insertSampleData()
+// 根据ID删除单词
+bool WordDatabase::deleteWord(int id)
+{
+    QSqlQuery query(m_db);
+
+    // 首先检查单词是否存在
+    query.prepare("SELECT id FROM Words WHERE id = :id");
+    query.bindValue(":id", id);
+
+    if (!query.exec() || !query.next()) {
+        qWarning() << "删除单词失败: 未找到ID为" << id << "的单词";
+        return false;
+    }
+
+    // 开始事务
+    m_db.transaction();
+
+    // 1. 删除单词-分类关联
+    query.prepare("DELETE FROM WordCategories WHERE word_id = :id");
+    query.bindValue(":id", id);
+
+    if (!query.exec()) {
+        m_db.rollback();
+        qWarning() << "删除单词分类关联失败:" << query.lastError().text();
+        return false;
+    }
+
+    // 2. 删除学习记录
+    query.prepare("DELETE FROM LearningRecords WHERE word_id = :id");
+    query.bindValue(":id", id);
+
+    if (!query.exec()) {
+        m_db.rollback();
+        qWarning() << "删除学习记录失败:" << query.lastError().text();
+        return false;
+    }
+
+    // 3. 删除单词本身
+    query.prepare("DELETE FROM Words WHERE id = :id");
+    query.bindValue(":id", id);
+
+    if (!query.exec()) {
+        m_db.rollback();
+        qWarning() << "删除单词失败:" << query.lastError().text();
+        return false;
+    }
+
+    // 提交事务
+    if (!m_db.commit()) {
+        qWarning() << "提交事务失败:" << m_db.lastError().text();
+        return false;
+    }
+
+    qInfo() << "成功删除单词，ID:" << id;
+    return true;
+}
+
+// 根据ID获取单词
+Word WordDatabase::getWordById(int id)
+{
+    Word word;
+    QSqlQuery query(m_db);
+
+    query.prepare(
+        "SELECT id, word, pronunciation, meaning, example, last_reviewed, review_count, difficulty "
+        "FROM Words WHERE id = :id"
+        );
+    query.bindValue(":id", id);
+
+    if (!query.exec()) {
+        qWarning() << "查询单词失败:" << query.lastError().text();
+        return word;
+    }
+
+    if (query.next()) {
+        word.id = query.value("id").toInt();
+        word.word = query.value("word").toString();
+        word.pronunciation = query.value("pronunciation").toString();
+        word.meaning = query.value("meaning").toString();
+        word.example = query.value("example").toString();
+        word.lastReviewed = query.value("last_reviewed").toDateTime();
+        word.reviewCount = query.value("review_count").toInt();
+        word.difficulty = query.value("difficulty").toInt();
+    } else {
+        qWarning() << "未找到ID为" << id << "的单词";
+    }
+
+    return word;
+}
+
+// 删除分类
+bool WordDatabase::deleteCategory(int id)
+{
+    QSqlQuery query(m_db);
+
+    // 检查分类是否存在
+    query.prepare("SELECT id FROM Categories WHERE id = :id");
+    query.bindValue(":id", id);
+
+    if (!query.exec() || !query.next()) {
+        qWarning() << "删除分类失败: 未找到ID为" << id << "的分类";
+        return false;
+    }
+
+    // 开始事务
+    m_db.transaction();
+
+    // 1. 删除单词-分类关联
+    query.prepare("DELETE FROM WordCategories WHERE category_id = :id");
+    query.bindValue(":id", id);
+
+    if (!query.exec()) {
+        m_db.rollback();
+        qWarning() << "删除单词分类关联失败:" << query.lastError().text();
+        return false;
+    }
+
+    // 2. 删除分类
+    query.prepare("DELETE FROM Categories WHERE id = :id");
+    query.bindValue(":id", id);
+
+    if (!query.exec()) {
+        m_db.rollback();
+        qWarning() << "删除分类失败:" << query.lastError().text();
+        return false;
+    }
+
+    // 提交事务
+    if (!m_db.commit()) {
+        qWarning() << "提交事务失败:" << m_db.lastError().text();
+        return false;
+    }
+
+    qInfo() << "成功删除分类，ID:" << id;
+    return true;
+}
+
+// 从分类中移除单词
+bool WordDatabase::removeWordFromCategory(int wordId, int categoryId)
+{
+    QSqlQuery query(m_db);
+
+    // 检查关联是否存在
+    query.prepare(
+        "SELECT word_id FROM WordCategories "
+        "WHERE word_id = :wordId AND category_id = :categoryId"
+        );
+    query.bindValue(":wordId", wordId);
+    query.bindValue(":categoryId", categoryId);
+
+    if (!query.exec() || !query.next()) {
+        qWarning() << "移除单词分类关联失败: 未找到关联 (wordId=" << wordId
+                   << ", categoryId=" << categoryId << ")";
+        return false;
+    }
+
+    // 删除关联
+    query.prepare(
+        "DELETE FROM WordCategories "
+        "WHERE word_id = :wordId AND category_id = :categoryId"
+        );
+    query.bindValue(":wordId", wordId);
+    query.bindValue(":categoryId", categoryId);
+
+    if (!query.exec()) {
+        qWarning() << "移除单词分类关联失败:" << query.lastError().text();
+        return false;
+    }
+
+    qInfo() << "成功从分类中移除单词 (wordId=" << wordId
+            << ", categoryId=" << categoryId << ")";
+    return true;
+}
+
+bool WordDatabase::insertSampleData() // 测试用
 {
     // 添加示例分类并获取分类ID
-    int category1Id = -1, category2Id = -1, category3Id = -1;
+    int category1Id = 1, category2Id = 2, category3Id = 3;
 
     {
         Category category;
         category.name = "基础词汇";
         category.description = "日常生活中常用的基础单词";
 
-        // if (addCategory(category)) {
-        //     category1Id = query.lastInsertId().toInt();
-        // }
+        if (addCategory(category)) {
+
+         }
     }
 
     {
         Category category;
         category.name = "学术词汇";
         category.description = "学术领域中使用的专业词汇";
-        // if (addCategory(category)) {
-        //     category2Id = query.lastInsertId().toInt();
-        // }
+        if (addCategory(category)) {
+
+        }
     }
 
     {
@@ -434,13 +638,13 @@ bool WordDatabase::insertSampleData()
         category.name = "商务词汇";
         category.description = "商务场景中使用的专业词汇";
 
-        // if (addCategory(category)) {
-        //     category3Id = query.lastInsertId().toInt();
-        // }
+        if (addCategory(category)) {
+
+        }
     }
 
     // 添加示例单词并获取单词ID
-    int word1Id = -1, word2Id = -1, word3Id = -1;
+    int word1Id = 1, word2Id = 2, word3Id = 3;
 
     {
         Word word;
@@ -450,9 +654,9 @@ bool WordDatabase::insertSampleData()
         word.example = "I like to eat apples in the morning.";
         word.difficulty = 1;
 
-        // if (addWord(word)) {
-        //     word1Id = query.lastInsertId().toInt();
-        // }
+        if (addWord(word)) {
+
+        }
     }
 
     {
@@ -462,10 +666,10 @@ bool WordDatabase::insertSampleData()
         word.meaning = "抽象；抽象概念";
         word.example = "In computer science, abstraction is a key concept.";
         word.difficulty = 4;
-        // QSqlQuery query;
-        // if (addWord(word,query)) {
-        //     word2Id = query.lastInsertId().toInt();
-        // }
+        QSqlQuery query;
+        if (addWord(word)) {
+
+        }
     }
 
     {
@@ -476,9 +680,9 @@ bool WordDatabase::insertSampleData()
         word.example = "We had a successful negotiation with the client.";
         word.difficulty = 3;
         QSqlQuery query;
-        // if (addWord(word,query)) {
-        //     word3Id = query.lastInsertId().toInt();
-        // }
+        if (addWord(word)) {
+
+        }
     }
 
     // 分配单词到分类
@@ -490,4 +694,19 @@ bool WordDatabase::insertSampleData()
     addUser("user1", "password1");
 
     return true;
+}
+
+QDebug operator<<(QDebug o,const Word& w)
+{
+    o<<"__________________\n";
+    o<<w.word<<"\n";
+    o<<"id:"<<w.id<<"\n";
+    o<<"meaning:"<<w.meaning<<"\n";
+    o<<"pronunciation:"<<w.pronunciation<<"\n";
+    o<<"example:"<<w.example<<"\n";
+    o<<"difficulty:"<<w.difficulty<<"\n";
+    o<<"reviewCount:"<<w.reviewCount<<"\n";
+    o<<"lastReviewed:"<<w.lastReviewed<<"\n";
+    o<<"__________________"<<"\n";
+    return o;
 }
