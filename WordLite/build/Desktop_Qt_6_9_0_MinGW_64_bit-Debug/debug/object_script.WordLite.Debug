@@ -1,0 +1,17 @@
+debug/achievementwidget.o
+debug/gamewidget.o
+debug/learnwidget.o
+debug/main.o
+debug/mainwindow.o
+debug/querywidget.o
+debug/reviewwidget.o
+debug/userwidget.o
+debug/wordwidget.o
+debug/moc_achievementwidget.o
+debug/moc_gamewidget.o
+debug/moc_learnwidget.o
+debug/moc_mainwindow.o
+debug/moc_querywidget.o
+debug/moc_reviewwidget.o
+debug/moc_userwidget.o
+debug/moc_wordwidget.o
