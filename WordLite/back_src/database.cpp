@@ -45,18 +45,30 @@ bool WordDatabase::initDatabase(const QString &dbPath) // 创建链接，打开�
         return false;
     }
 
+    // 测试用，测试完成后注释掉
     insertSampleData();
+    // 测试用，测试完成后注释掉
 
     return true;
 }
 
 bool WordDatabase::createTables()
 {
-    return createWordTable() && 
-           createCategoryTable() && 
-           createUserTable() && 
-           createLearningRecordTable() && 
-           createWordCategoryTable();
+    if (!createWordTable() || 
+        !createCategoryTable() || 
+        !createUserTable() || 
+        !createLearningRecordTable() || 
+        !createWordCategoryTable()) {
+        return false;
+    }
+
+    // 创建索引
+    QSqlQuery query(m_db);
+    query.exec("CREATE INDEX IF NOT EXISTS idx_words_word ON Words (word)");
+    query.exec("CREATE INDEX IF NOT EXISTS idx_categories_name ON Categories (name)");
+    query.exec("CREATE INDEX IF NOT EXISTS idx_users_username ON Users (username)");
+
+    return true;
 }
 
 bool WordDatabase::createWordTable()
@@ -160,6 +172,50 @@ bool WordDatabase::addCategory(const Category &category)
     query.bindValue(":description", category.description);
     
     return query.exec();
+}
+
+QVector<Word> WordDatabase::getWordsByName(const QString &wordName)
+{
+    QVector<Word> words;
+    QSqlQuery query(m_db);
+    query.prepare("SELECT * FROM Words WHERE word = :word");
+    query.bindValue(":word", wordName);
+
+    if (query.exec()) {
+        while (query.next()) {
+            Word word;
+            word.id = query.value("id").toInt();
+            word.word = query.value("word").toString();
+            word.pronunciation = query.value("pronunciation").toString();
+            word.meaning = query.value("meaning").toString();
+            word.example = query.value("example").toString();
+            word.lastReviewed = query.value("last_reviewed").toDateTime();
+            word.reviewCount = query.value("review_count").toInt();
+            word.difficulty = query.value("difficulty").toInt();
+            words.append(word);
+        }
+    }
+    return words;
+}
+
+QVector<Category> WordDatabase::getCategoriesByName(const QString &categoryName)
+{
+    QVector<Category> categories;
+    QSqlQuery query(m_db);
+    query.prepare("SELECT * FROM Categories WHERE name = :name");
+    query.bindValue(":name", categoryName);
+
+    if (query.exec()) {
+        while (query.next()) {
+            Category category;
+            category.id = query.value("id").toInt();
+            category.name = query.value("name").toString();
+            category.description = query.value("description").toString();
+            categories.append(category);
+        }
+    }
+
+    return categories;
 }
 
 // ??? 是否应该在这里实现存疑
