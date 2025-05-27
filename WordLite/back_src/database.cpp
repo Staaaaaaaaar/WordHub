@@ -1,31 +1,62 @@
 #include "../back_head/database.h"
 
-WordDatabase::WordDatabase()
-{
+
+WordDatabase::WordDatabase() {
     QString dataDir = QCoreApplication::applicationDirPath() + "/datas/";
     QDir dir(dataDir);
-    if (!dir.exists()) {
-        if (!dir.mkpath(".")) {
-            qFatal("无法创建数据目录2!");
-        }
-    }
+    if (!dir.exists()) dir.mkpath(".");
+
 }
 
-WordDatabase::~WordDatabase()
-{
-    if (m_db.isOpen()) {
-        m_db.close();
-    }
+WordDatabase::~WordDatabase() {
+    if (m_db.isOpen()) m_db.close();
 }
 
 bool WordDatabase::isOpen() const {
     return m_db.isOpen();
 }
+
 void WordDatabase::close() {
-    if (m_db.isOpen()) {
-        m_db.close();
-    }
+    m_db.close();
 }
+
+// bool WordDatabase::initDatabase(const QString &name) {
+//     m_connectionName = name;
+//     QString dbPath = QCoreApplication::applicationDirPath() + "/datas/" + name + ".db";
+//     if (!QFile::exists(dbPath)) {
+//         qInfo() << "数据库文件不存在:" << dbPath;
+//         return false;
+//     }
+//     Path = dbPath;
+//     return openDatabase(Path, false);
+// }
+
+// bool WordDatabase::NewDatabase(const QString &name) {
+//     m_connectionName = name;
+//     QString dbPath = QCoreApplication::applicationDirPath() + "/datas/" + name + ".db";
+//     Path = dbPath;
+//     insertSampleData();
+//     return openDatabase(Path, true);
+// }
+
+// bool WordDatabase::openDatabase(const QString &dbPath, bool isNew) {
+//     if (QSqlDatabase::contains(m_connectionName))
+//         QSqlDatabase::removeDatabase(m_connectionName);
+
+//     m_db = QSqlDatabase::addDatabase("QSQLITE", m_connectionName);
+//     m_db.setDatabaseName(dbPath);
+
+//     if (!m_db.open()) {
+//         qDebug() << "打开数据库失败:" << m_db.lastError().text();
+//         return false;
+//     }
+
+//     if (isNew && !createTables()) {
+//         m_db.close();
+//         return false;
+//     }
+//     return true;
+// }
 
 bool WordDatabase::initDatabase(const QString &name) // 创建链接，打开已有数据库
 {
@@ -55,6 +86,7 @@ bool WordDatabase::initDatabase(const QString &name) // 创建链接，打开已
 bool WordDatabase::NewDatabase(const QString &name) // 创建链接，创建新的数据库
 {
     m_connectionName=name;
+
     QString dataDir = QCoreApplication::applicationDirPath() + "/datas/";
     QString dbPath = dataDir + name + ".db";
     QFileInfo fileInfo(dbPath);
@@ -94,279 +126,516 @@ bool WordDatabase::openDatabase(const QString &dbPath, bool isNew) {
             return false;
         }
     }
+
     return true;
 }
 
-bool WordDatabase::createTables()
-{
-    if (!createWordTable() || 
-        !createCategoryTable() || 
-        !createUserTable() || 
-        !createLearningRecordTable() || 
-        !createWordCategoryTable()) {
+bool WordDatabase::execSql(const QString &sql) {
+    QSqlQuery query(m_db);
+    if (!query.exec(sql)) {
+        qWarning() << "SQL执行失败:" << query.lastError().text() << "\nSQL:" << sql;
+        return false;
+    }
+
+    return true;
+}
+
+bool WordDatabase::createTables() {
+    if (!createWordTable() || !createCategoryTable() || !createUserTable() ||
+        !createLearningRecordTable() || !createWordCategoryTable() ||
+        !createPhoneticsTable() || !createPartsOfSpeechTable() ||
+        !createDefinitionsTable() || !createSynonymsTable() ||
+        !createAntonymsTable()) {
         return false;
     }
 
     // 创建索引
     QSqlQuery query(m_db);
-    query.exec("CREATE INDEX IF NOT EXISTS idx_words_word ON Words (word)");
-    query.exec("CREATE INDEX IF NOT EXISTS idx_categories_name ON Categories (name)");
-    query.exec("CREATE INDEX IF NOT EXISTS idx_users_username ON Users (username)");
+    query.exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_words_word ON Words(word)");
+    query.exec("CREATE INDEX IF NOT EXISTS idx_phonetics_word_id ON Phonetics(word_id)");
+    query.exec("CREATE INDEX IF NOT EXISTS idx_definitions_word_id ON Definitions(word_id)");
+    query.exec("CREATE INDEX IF NOT EXISTS idx_definitions_pos_id ON Definitions(pos_id)");
+    query.exec("CREATE INDEX IF NOT EXISTS idx_categories_name ON Categories(name)");
+    return true;
+}
+
+bool WordDatabase::createWordTable() {
+    return execSql("CREATE TABLE IF NOT EXISTS Words ("
+                   "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                   "word TEXT NOT NULL UNIQUE, "
+                   "last_reviewed DATETIME, "
+                   "review_count INTEGER DEFAULT 0, "
+                   "difficulty INTEGER DEFAULT 3"
+                   ")");
+}
+
+bool WordDatabase::createCategoryTable() {
+    return execSql("CREATE TABLE IF NOT EXISTS Categories ("
+                   "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                   "name TEXT NOT NULL, "
+                   "description TEXT"
+                   ")");
+}
+
+bool WordDatabase::createUserTable() {
+    return execSql("CREATE TABLE IF NOT EXISTS Users ("
+                   "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                   "username TEXT NOT NULL UNIQUE, "
+                   "password TEXT NOT NULL"
+                   ")");
+}
+
+bool WordDatabase::createLearningRecordTable() {
+    return execSql("CREATE TABLE IF NOT EXISTS LearningRecords ("
+                   "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                   "word_id INTEGER NOT NULL, "
+                   "user_id INTEGER NOT NULL, "
+                   "timestamp DATETIME NOT NULL, "
+                   "correct BOOLEAN NOT NULL, "
+                   "difficulty INTEGER, "
+                   "FOREIGN KEY(word_id) REFERENCES Words(id) ON DELETE CASCADE, "
+                   "FOREIGN KEY(user_id) REFERENCES Users(id) ON DELETE CASCADE"
+                   ")");
+}
+
+bool WordDatabase::createWordCategoryTable() {
+    return execSql("CREATE TABLE IF NOT EXISTS WordCategories ("
+                   "word_id INTEGER NOT NULL, "
+                   "category_id INTEGER NOT NULL, "
+                   "PRIMARY KEY(word_id, category_id), "
+                   "FOREIGN KEY(word_id) REFERENCES Words(id) ON DELETE CASCADE, "
+                   "FOREIGN KEY(category_id) REFERENCES Categories(id) ON DELETE CASCADE"
+                   ")");
+}
+
+bool WordDatabase::createPhoneticsTable() {
+    return execSql("CREATE TABLE IF NOT EXISTS Phonetics ("
+                   "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                   "word_id INTEGER NOT NULL, "
+                   "text TEXT, "
+                   "audio TEXT, "
+                   "FOREIGN KEY(word_id) REFERENCES Words(id) ON DELETE CASCADE"
+                   ")");
+}
+
+bool WordDatabase::createPartsOfSpeechTable() {
+    return execSql("CREATE TABLE IF NOT EXISTS PartsOfSpeech ("
+                   "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                   "name TEXT NOT NULL UNIQUE"
+                   ")");
+}
+
+bool WordDatabase::createDefinitionsTable() {
+    return execSql("CREATE TABLE IF NOT EXISTS Definitions ("
+                   "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                   "word_id INTEGER NOT NULL, "
+                   "pos_id INTEGER NOT NULL, "
+                   "definition TEXT NOT NULL, "
+                   "example TEXT, "
+                   "FOREIGN KEY(word_id) REFERENCES Words(id) ON DELETE CASCADE, "
+                   "FOREIGN KEY(pos_id) REFERENCES PartsOfSpeech(id)"
+                   ")");
+}
+
+bool WordDatabase::createSynonymsTable() {
+    return execSql("CREATE TABLE IF NOT EXISTS Synonyms ("
+                   "definition_id INTEGER NOT NULL, "
+                   "term TEXT NOT NULL, "
+                   "FOREIGN KEY(definition_id) REFERENCES Definitions(id) ON DELETE CASCADE, "
+                   "PRIMARY KEY(definition_id, term)"
+                   ")");
+}
+
+bool WordDatabase::createAntonymsTable() {
+    return execSql("CREATE TABLE IF NOT EXISTS Antonyms ("
+                   "definition_id INTEGER NOT NULL, "
+                   "term TEXT NOT NULL, "
+                   "FOREIGN KEY(definition_id) REFERENCES Definitions(id) ON DELETE CASCADE, "
+                   "PRIMARY KEY(definition_id, term)"
+                   ")");
+}
+
+// -------------------- 单词管理方法 --------------------
+bool WordDatabase::addWord(const Word &word) {
+    if (word.word.isEmpty()) return false;
+
+    // 1. 插入主表
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO Words (word, last_reviewed, review_count, difficulty) "
+                  "VALUES (:word, :last_reviewed, :review_count, :difficulty)");
+    query.bindValue(":word", word.word);
+    query.bindValue(":last_reviewed", word.lastReviewed);
+    query.bindValue(":review_count", word.reviewCount);
+    query.bindValue(":difficulty", word.difficulty);
+    if (!query.exec()) return false;
+    int wordId = query.lastInsertId().toInt();
+
+    // 2. 插入音标（事务保证一致性）
+    m_db.transaction();
+    if (!savePhonetics(wordId, word.phonetics)) {
+        m_db.rollback();
+        return false;
+    }
+
+    // 3. 插入释义及关联数据
+    if (!saveDefinitions(wordId, word.meanings)) {
+        m_db.rollback();
+        return false;
+    }
+
+    return m_db.commit();
+}
+
+bool WordDatabase::savePhonetics(int wordId, const QVector<Phonetic> &phonetics) {
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO Phonetics (word_id, text, audio) VALUES (:word_id, :text, :audio)");
+    for (const Phonetic &ph : phonetics) {
+        query.bindValue(":word_id", wordId);
+        query.bindValue(":text", ph.text);
+        query.bindValue(":audio", ph.audio);
+        if (!query.exec()) return false;
+    }
+    return true;
+}
+
+bool WordDatabase::saveDefinitions(int wordId, const QMap<QString, QVector<Definition>> &meanings) {
+    QSqlQuery query(m_db);
+    for (const QString &pos : meanings.keys()) {
+        int posId = getOrCreatePartOfSpeech(pos);
+        if (posId == -1) return false;
+
+        for (const Definition &def : meanings.value(pos)) {
+            // 插入释义
+            query.prepare("INSERT INTO Definitions (word_id, pos_id, definition, example) "
+                          "VALUES (:word_id, :pos_id, :definition, :example)");
+            query.bindValue(":word_id", wordId);
+            query.bindValue(":pos_id", posId);
+            query.bindValue(":definition", def.definition);
+            query.bindValue(":example", def.example);
+            if (!query.exec()) return false;
+            int defId = query.lastInsertId().toInt();
+
+            // 插入同义词
+            for (const QString &syn : def.synonyms) {
+                query.prepare("INSERT OR IGNORE INTO Synonyms (definition_id, term) VALUES (:def_id, :term)");
+                query.bindValue(":def_id", defId);
+                query.bindValue(":term", syn);
+                if (!query.exec()) return false;
+            }
+
+            // 插入反义词
+            for (const QString &ant : def.antonyms) {
+                query.prepare("INSERT OR IGNORE INTO Antonyms (definition_id, term) VALUES (:def_id, :term)");
+                query.bindValue(":def_id", defId);
+                query.bindValue(":term", ant);
+                if (!query.exec()) return false;
+            }
+        }
+    }
+    return true;
+}
+
+int WordDatabase::getOrCreatePartOfSpeech(const QString &posName) {
+    QSqlQuery query(m_db);
+    query.prepare("SELECT id FROM PartsOfSpeech WHERE name = :name");
+    query.bindValue(":name", posName);
+    if (query.exec() && query.next()) return query.value(0).toInt();
+
+    query.prepare("INSERT INTO PartsOfSpeech (name) VALUES (:name)");
+    query.bindValue(":name", posName);
+    if (query.exec()) return query.lastInsertId().toInt();
+
+    // 尝试再次查询（可能是并发插入导致）
+    query.prepare("SELECT id FROM PartsOfSpeech WHERE name = :name");
+    query.bindValue(":name", posName);
+    if (query.exec() && query.next()) return query.value(0).toInt();
+
+    return -1;
+}
+
+Word WordDatabase::getWordById(int id) {
+    Word word;
+    // 1. 查询主表
+    QSqlQuery query(m_db);
+    query.prepare("SELECT id, word, last_reviewed, review_count, difficulty "
+                  "FROM Words WHERE id = :id");
+    query.bindValue(":id", id);
+    if (!query.exec() || !query.next()) return word;
+    word.id = id;
+    word.word = query.value("word").toString();
+    word.lastReviewed = query.value("last_reviewed").toDateTime();
+    word.reviewCount = query.value("review_count").toInt();
+    word.difficulty = query.value("difficulty").toInt();
+
+    // 2. 加载音标
+    loadPhonetics(id, word.phonetics);
+
+    // 3. 加载释义及关联数据
+    loadDefinitions(id, word.meanings);
+
+    return word;
+}
+
+bool WordDatabase::loadPhonetics(int wordId, QVector<Phonetic> &phonetics) {
+    QSqlQuery query(m_db);
+    query.prepare("SELECT text, audio FROM Phonetics WHERE word_id = :word_id");
+    query.bindValue(":word_id", wordId);
+    if (!query.exec()) return false;
+
+    phonetics.clear();
+    while (query.next()) {
+        Phonetic ph;
+        ph.text = query.value("text").toString();
+        ph.audio = query.value("audio").toString();
+        phonetics.append(ph);
+    }
+    return true;
+}
+
+bool WordDatabase::loadDefinitions(int wordId, QMap<QString, QVector<Definition>> &meanings) {
+    QSqlQuery query(m_db);
+    query.prepare(
+        "SELECT d.id, pos.name AS pos, d.definition, d.example "
+        "FROM Definitions d "
+        "JOIN PartsOfSpeech pos ON d.pos_id = pos.id "
+        "WHERE d.word_id = :word_id"
+        );
+    query.bindValue(":word_id", wordId);
+    if (!query.exec()) return false;
+
+    QMap<int, Definition> defMap; // 存储definition_id到Definition的映射
+    QMap<int, QString> posMap;    // 存储definition_id到词性的映射
+
+    // 先加载基本释义
+    while (query.next()) {
+        int defId = query.value("id").toInt();
+        QString pos = query.value("pos").toString();
+        QString defText = query.value("definition").toString();
+        QString example = query.value("example").toString();
+
+        Definition def;
+        def.definition = defText;
+        def.example = example;
+
+        defMap[defId] = def;
+        posMap[defId] = pos;
+
+        if (!meanings.contains(pos)) {
+            meanings[pos] = QVector<Definition>();
+        }
+    }
+
+    // 加载同义词
+    query.prepare("SELECT definition_id, term FROM Synonyms WHERE definition_id IN (SELECT id FROM Definitions WHERE word_id = :word_id)");
+    query.bindValue(":word_id", wordId);
+    if (query.exec()) {
+        while (query.next()) {
+            int defId = query.value("definition_id").toInt();
+            QString syn = query.value("term").toString();
+
+            if (defMap.contains(defId)) {
+                defMap[defId].synonyms.append(syn);
+            }
+        }
+    }
+
+    // 加载反义词
+    query.prepare("SELECT definition_id, term FROM Antonyms WHERE definition_id IN (SELECT id FROM Definitions WHERE word_id = :word_id)");
+    query.bindValue(":word_id", wordId);
+    if (query.exec()) {
+        while (query.next()) {
+            int defId = query.value("definition_id").toInt();
+            QString ant = query.value("term").toString();
+
+            if (defMap.contains(defId)) {
+                defMap[defId].antonyms.append(ant);
+            }
+        }
+    }
+
+    // 将所有释义添加到结果中
+    for (auto it = defMap.begin(); it != defMap.end(); ++it) {
+        int defId = it.key();
+        QString pos = posMap[defId];
+        Definition def = it.value();
+
+        // 使用标准库容器去重（跨Qt版本兼容）
+        std::set<QString> uniqueSynonyms(def.synonyms.begin(), def.synonyms.end());
+        def.synonyms.clear();
+        def.synonyms.reserve(uniqueSynonyms.size());
+        for (const QString &syn : uniqueSynonyms) {
+            def.synonyms.append(syn);
+        }
+
+        std::set<QString> uniqueAntonyms(def.antonyms.begin(), def.antonyms.end());
+        def.antonyms.clear();
+        def.antonyms.reserve(uniqueAntonyms.size());
+        for (const QString &ant : uniqueAntonyms) {
+            def.antonyms.append(ant);
+        }
+
+        meanings[pos].append(def);
+    }
 
     return true;
 }
 
-bool WordDatabase::createWordTable()
-{
-    QSqlQuery query(m_db); // 指定使用m_db连接;
-    return query.exec(
-        "CREATE TABLE IF NOT EXISTS Words ("
-        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "word TEXT NOT NULL, "
-        "pronunciation TEXT, "
-        "meaning TEXT NOT NULL, "
-        "example TEXT, "
-        "last_reviewed DATETIME, "
-        "review_count INTEGER DEFAULT 0, "
-        "difficulty INTEGER DEFAULT 3"
-        ")"
-    );
-}
-
-bool WordDatabase::createCategoryTable()
-{
-    QSqlQuery query(m_db); // 指定使用m_db连接
-    return query.exec(
-        "CREATE TABLE IF NOT EXISTS Categories ("
-        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "name TEXT NOT NULL, "
-        "description TEXT"
-        ")"
-    );
-}
-
-bool WordDatabase::createUserTable()
-{
-    QSqlQuery query(m_db); // 指定使用m_db连接
-    return query.exec(
-        "CREATE TABLE IF NOT EXISTS Users ("
-        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "username TEXT UNIQUE NOT NULL, "
-        "password TEXT NOT NULL"
-        ")"
-    );
-}
-
-bool WordDatabase::createLearningRecordTable()
-{
-    QSqlQuery query(m_db); // 指定使用m_db连接
-    return query.exec(
-        "CREATE TABLE IF NOT EXISTS LearningRecords ("
-        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "word_id INTEGER NOT NULL, "
-        "user_id INTEGER NOT NULL, "
-        "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, "
-        "correct BOOLEAN NOT NULL, "
-        "difficulty INTEGER NOT NULL, "
-        "FOREIGN KEY (word_id) REFERENCES Words(id), "
-        "FOREIGN KEY (user_id) REFERENCES Users(id)"
-        ")"
-    );
-}
-
-bool WordDatabase::createWordCategoryTable()
-{
-    QSqlQuery query(m_db); // 指定使用m_db连接
-    return query.exec(
-        "CREATE TABLE IF NOT EXISTS WordCategories ("
-        "word_id INTEGER NOT NULL, "
-        "category_id INTEGER NOT NULL, "
-        "PRIMARY KEY (word_id, category_id), "
-        "FOREIGN KEY (word_id) REFERENCES Words(id), "
-        "FOREIGN KEY (category_id) REFERENCES Categories(id)"
-        ")"
-    );
-}
-
-bool WordDatabase::addWord(const Word &word)
-{
-    QSqlQuery query(m_db);
-    query.prepare(
-        "INSERT INTO Words (word, pronunciation, meaning, example, last_reviewed, review_count, difficulty) "
-        "VALUES (:word, :pronunciation, :meaning, :example, :last_reviewed, :review_count, :difficulty)"
-    );
-    query.bindValue(":word", word.word);
-    query.bindValue(":pronunciation", word.pronunciation);
-    query.bindValue(":meaning", word.meaning);
-    query.bindValue(":example", word.example);
-    query.bindValue(":last_reviewed", word.lastReviewed);
-    query.bindValue(":review_count", word.reviewCount);
-    query.bindValue(":difficulty", word.difficulty);
-    
-    return query.exec();
-}
-
-bool WordDatabase::addCategory(const Category &category)
-{
-    QSqlQuery query(m_db);
-    query.prepare(
-        "INSERT INTO Categories (name, description) "
-        "VALUES (:name, :description)"
-    );
-    query.bindValue(":name", category.name);
-    query.bindValue(":description", category.description);
-    
-    return query.exec();
-}
-
-QVector<Word> WordDatabase::getWordsByName(const QString &wordName)
-{
+QVector<Word> WordDatabase::getAllWords() {
     QVector<Word> words;
     QSqlQuery query(m_db);
-    query.prepare("SELECT * FROM Words WHERE word = :word");
-    query.bindValue(":word", wordName);
-
-    if (query.exec()) {
-        while (query.next()) {
-            Word word;
-            word.id = query.value("id").toInt();
-            word.word = query.value("word").toString();
-            word.pronunciation = query.value("pronunciation").toString();
-            word.meaning = query.value("meaning").toString();
-            word.example = query.value("example").toString();
-            word.lastReviewed = query.value("last_reviewed").toDateTime();
-            word.reviewCount = query.value("review_count").toInt();
-            word.difficulty = query.value("difficulty").toInt();
-            words.append(word);
-        }
+    if (!query.exec("SELECT id FROM Words ORDER BY word")) {
+        return words;
     }
-    return words;
-}
-
-QVector<Category> WordDatabase::getCategoriesByName(const QString &categoryName)
-{
-    QVector<Category> categories;
-    QSqlQuery query(m_db);
-    query.prepare("SELECT * FROM Categories WHERE name = :name");
-    query.bindValue(":name", categoryName);
-
-    if (query.exec()) {
-        while (query.next()) {
-            Category category;
-            category.id = query.value("id").toInt();
-            category.name = query.value("name").toString();
-            category.description = query.value("description").toString();
-            categories.append(category);
-        }
-    }
-
-    return categories;
-}
-
-// ??? 是否应该在这里实现存疑
-bool WordDatabase::addUser(const QString &username, const QString &password)
-{
-    QSqlQuery query(m_db);
-    query.prepare(
-        "INSERT INTO Users (username, password) "
-        "VALUES (:username, :password)"
-    );
-    query.bindValue(":username", username);
-    query.bindValue(":password", password); // 实际应用中应加密存储
-    
-    return query.exec();
-}
-// ???
-
-bool WordDatabase::authenticateUser(const QString &username, const QString &password)
-{
-    QSqlQuery query(m_db);
-    query.prepare(
-        "SELECT id FROM Users WHERE username = :username AND password = :password"
-    );
-    query.bindValue(":username", username);
-    query.bindValue(":password", password);
-    
-    if (query.exec() && query.next()) {
-        return true;
-    }
-    return false;
-}
-
-int WordDatabase::getUserId(const QString &username)
-{
-    QSqlQuery query(m_db);
-    query.prepare("SELECT id FROM Users WHERE username = :username");
-    query.bindValue(":username", username);
-    
-    if (query.exec() && query.next()) {
-        return query.value(0).toInt();
-    }
-    return -1;
-}
-
-bool WordDatabase::addLearningRecord(const LearningRecord &record)
-{
-    QSqlQuery query(m_db);
-    query.prepare(
-        "INSERT INTO LearningRecords (word_id, user_id, correct, difficulty) "
-        "VALUES (:word_id, :user_id, :correct, :difficulty)"
-    );
-    query.bindValue(":word_id", record.wordId);
-    query.bindValue(":user_id", record.userId);
-    query.bindValue(":correct", record.correct);
-    query.bindValue(":difficulty", record.difficulty);
-    
-    if (query.exec()) {
-        // 更新单词的最后复习时间和复习次数
-        QSqlQuery updateQuery;
-        updateQuery.prepare(
-            "UPDATE Words SET last_reviewed = CURRENT_TIMESTAMP, "
-            "review_count = review_count + 1 "
-            "WHERE id = :word_id"
-        );
-        updateQuery.bindValue(":word_id", record.wordId);
-        return updateQuery.exec();
-    }
-    return false;
-}
-
-QVector<Word> WordDatabase::getAllWords()
-{
-    QVector<Word> words;
-    QSqlQuery query(m_db);
-    query.exec("SELECT * FROM Words");
 
     while (query.next()) {
-        Word word;
-        word.id = query.value("id").toInt();
-        word.word = query.value("word").toString();
-        word.pronunciation = query.value("pronunciation").toString();
-        word.meaning = query.value("meaning").toString();
-        word.example = query.value("example").toString();
-        word.lastReviewed = query.value("last_reviewed").toDateTime();
-        word.reviewCount = query.value("review_count").toInt();
-        word.difficulty = query.value("difficulty").toInt();
-        words.append(word);
+        int id = query.value("id").toInt();
+        words.append(getWordById(id));
     }
-    
     return words;
 }
 
-QVector<Category> WordDatabase::getAllCategories()
-{
-    QVector<Category> categories;
-
-    // 显式使用当前数据库连接（m_db）
+QVector<Word> WordDatabase::getWordsByName(const QString &wordName) {
+    QVector<Word> words;
     QSqlQuery query(m_db);
-
-    // 执行查询
-    if (!query.exec("SELECT * FROM Categories")) {
-        qWarning() << "查询分类失败:" << query.lastError().text();
-        return categories; // 返回空向量表示失败
+    query.prepare("SELECT id FROM Words WHERE word = :word");
+    query.bindValue(":word", wordName);
+    if (!query.exec()) {
+        return words;
     }
 
-    // 遍历结果集
+    while (query.next()) {
+        int id = query.value("id").toInt();
+        words.append(getWordById(id));
+    }
+    return words;
+}
+
+QVector<Word> WordDatabase::getWordsByCategory(int categoryId) {
+    QVector<Word> words;
+    QSqlQuery query(m_db);
+    query.prepare(
+        "SELECT w.id FROM Words w "
+        "JOIN WordCategories wc ON w.id = wc.word_id "
+        "WHERE wc.category_id = :category_id"
+        );
+    query.bindValue(":category_id", categoryId);
+    if (!query.exec()) {
+        return words;
+    }
+
+    while (query.next()) {
+        int id = query.value("id").toInt();
+        words.append(getWordById(id));
+    }
+    return words;
+}
+
+QVector<Word> WordDatabase::getWordsToReview(int userId, int count) {
+    QVector<Word> words;
+
+    // 使用SM-2算法的简化版本选择需要复习的单词
+    // 基本逻辑：根据难度和上次复习时间计算复习优先级
+    QSqlQuery query(m_db);
+    query.prepare(
+        "SELECT w.id, "
+        "   (CASE "
+        "       WHEN w.difficulty = 1 THEN 1.0 "  // 简单 - 长间隔
+        "       WHEN w.difficulty = 2 THEN 1.5 "  // 较简单
+        "       WHEN w.difficulty = 3 THEN 2.0 "  // 中等
+        "       WHEN w.difficulty = 4 THEN 3.0 "  // 较难
+        "       ELSE 4.0 END) * "  // 困难 - 短间隔
+        "   JULIANDAY('now') - JULIANDAY(w.last_reviewed) AS days_since_review, "
+        "   w.review_count "
+        "FROM Words w "
+        "LEFT JOIN LearningRecords lr ON w.id = lr.word_id AND lr.user_id = :user_id "
+        "GROUP BY w.id "
+        "HAVING days_since_review > (CASE "
+        "       WHEN w.review_count = 0 THEN 0 "  // 新单词立即复习
+        "       WHEN w.review_count = 1 THEN 1 "  // 第1次复习后1天
+        "       WHEN w.review_count = 2 THEN 3 "  // 第2次复习后3天
+        "       WHEN w.review_count = 3 THEN 7 "  // 第3次复习后7天
+        "       WHEN w.review_count = 4 THEN 14 " // 第4次复习后14天
+        "       ELSE 30 END) / (CASE "  // 5次及以上复习后30天
+        "       WHEN w.difficulty = 1 THEN 2.0 "  // 简单单词间隔加倍
+        "       WHEN w.difficulty = 2 THEN 1.5 "
+        "       WHEN w.difficulty = 3 THEN 1.0 "
+        "       WHEN w.difficulty = 4 THEN 0.7 "  // 困难单词间隔缩短
+        "       ELSE 0.5 END) "  // 极难单词间隔减半
+        "ORDER BY days_since_review DESC "
+        "LIMIT :count"
+        );
+    query.bindValue(":user_id", userId);
+    query.bindValue(":count", count);
+
+    if (!query.exec()) {
+        return words;
+    }
+
+    while (query.next()) {
+        int id = query.value("id").toInt();
+        words.append(getWordById(id));
+    }
+    return words;
+}
+
+bool WordDatabase::deleteWord(int id) {
+    QSqlQuery query(m_db);
+    query.prepare("SELECT id FROM Words WHERE id = :id");
+    query.bindValue(":id", id);
+    if (!query.exec() || !query.next()) return false;
+
+    m_db.transaction();
+
+    // 1. 删除单词-分类关联
+    query.prepare("DELETE FROM WordCategories WHERE word_id = :id");
+    query.bindValue(":id", id);
+    if (!query.exec()) {
+        m_db.rollback();
+        return false;
+    }
+
+    // 2. 删除学习记录
+    query.prepare("DELETE FROM LearningRecords WHERE word_id = :id");
+    query.bindValue(":id", id);
+    if (!query.exec()) {
+        m_db.rollback();
+        return false;
+    }
+
+    // 3. 删除单词（会通过外键约束自动删除关联的音标、释义等）
+    query.prepare("DELETE FROM Words WHERE id = :id");
+    query.bindValue(":id", id);
+    if (!query.exec()) {
+        m_db.rollback();
+        return false;
+    }
+
+    return m_db.commit();
+}
+
+// -------------------- 分类管理方法 --------------------
+bool WordDatabase::addCategory(const Category &category) {
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO Categories (name, description) VALUES (:name, :description)");
+    query.bindValue(":name", category.name);
+    query.bindValue(":description", category.description);
+    return query.exec();
+}
+
+bool WordDatabase::deleteCategory(int id) {
+    QSqlQuery query(m_db);
+    query.prepare("DELETE FROM Categories WHERE id = :id");
+    query.bindValue(":id", id);
+    return query.exec();
+}
+
+QVector<Category> WordDatabase::getAllCategories() {
+    QVector<Category> categories;
+    QSqlQuery query(m_db);
+    if (!query.exec("SELECT id, name, description FROM Categories ORDER BY name")) {
+        return categories;
+    }
+
     while (query.next()) {
         Category category;
         category.id = query.value("id").toInt();
@@ -374,498 +643,302 @@ QVector<Category> WordDatabase::getAllCategories()
         category.description = query.value("description").toString();
         categories.append(category);
     }
-
     return categories;
 }
 
-Category WordDatabase::getCategoryById(int id)
-{
+Category WordDatabase::getCategoryById(int id) {
     Category category;
     QSqlQuery query(m_db);
-
-    // 准备SQL查询
     query.prepare("SELECT id, name, description FROM Categories WHERE id = :id");
     query.bindValue(":id", id);
-
-    // 执行查询
-    if (!query.exec()) {
-        qWarning() << "查询分类失败:" << query.lastError().text();
-        return category; // 返回空对象
+    if (!query.exec() || !query.next()) {
+        return category;
     }
 
-    // 检查是否有结果
-    if (query.next()) {
-        // 从查询结果中提取数据
-        category.id = query.value("id").toInt();
-        category.name = query.value("name").toString();
-        category.description = query.value("description").toString();
-    } else {
-        qWarning() << "未找到ID为" << id << "的分类";
-    }
-
+    category.id = id;
+    category.name = query.value("name").toString();
+    category.description = query.value("description").toString();
     return category;
 }
 
-bool WordDatabase::assignWordToCategory(int wordId, int categoryId)
-{
+QVector<Category> WordDatabase::getCategoriesByName(const QString &categoryName) {
+    QVector<Category> categories;
     QSqlQuery query(m_db);
-    query.prepare(
-        "INSERT INTO WordCategories (word_id, category_id) "
-        "VALUES (:word_id, :category_id)"
-    );
+    query.prepare("SELECT id, name, description FROM Categories WHERE name LIKE :name");
+    query.bindValue(":name", "%" + categoryName + "%");
+    if (!query.exec()) {
+        return categories;
+    }
+
+    while (query.next()) {
+        Category category;
+        category.id = query.value("id").toInt();
+        category.name = query.value("name").toString();
+        category.description = query.value("description").toString();
+        categories.append(category);
+    }
+    return categories;
+}
+
+bool WordDatabase::assignWordToCategory(int wordId, int categoryId) {
+    QSqlQuery query(m_db);
+    query.prepare("INSERT OR IGNORE INTO WordCategories (word_id, category_id) VALUES (:word_id, :category_id)");
     query.bindValue(":word_id", wordId);
     query.bindValue(":category_id", categoryId);
-    
     return query.exec();
 }
 
-QVector<Word> WordDatabase::getWordsByCategory(int categoryId)
-{
-    QVector<Word> words;
+bool WordDatabase::removeWordFromCategory(int wordId, int categoryId) {
     QSqlQuery query(m_db);
-    query.prepare(
-        "SELECT w.* FROM Words w "
-        "JOIN WordCategories wc ON w.id = wc.word_id "
-        "WHERE wc.category_id = :category_id"
-    );
+    query.prepare("DELETE FROM WordCategories WHERE word_id = :word_id AND category_id = :category_id");
+    query.bindValue(":word_id", wordId);
     query.bindValue(":category_id", categoryId);
-    
-    if (query.exec()) {
-        while (query.next()) {
-            Word word;
-            word.id = query.value("id").toInt();
-            word.word = query.value("word").toString();
-            word.pronunciation = query.value("pronunciation").toString();
-            word.meaning = query.value("meaning").toString();
-            word.example = query.value("example").toString();
-            word.lastReviewed = query.value("last_reviewed").toDateTime();
-            word.reviewCount = query.value("review_count").toInt();
-            word.difficulty = query.value("difficulty").toInt();
-            words.append(word);
-        }
-    }
-    
-    return words;
+    return query.exec();
 }
 
-QVector<Word> WordDatabase::getWordsToReview(int userId, int count)
-{
-    QVector<Word> words;
-    
-    // 这里实现一个简单的复习算法：
-    // 1. 优先复习未复习过的单词
-    // 2. 其次复习难度较高的单词
-    // 3. 最后复习最近未复习的单词
-    
+// -------------------- 用户管理方法 --------------------
+bool WordDatabase::addUser(const QString &username, const QString &password) {
+    // 注意：实际应用中应该对密码进行加密存储
     QSqlQuery query(m_db);
-    query.prepare(
-        "SELECT w.* FROM Words w "
-        "LEFT JOIN (SELECT word_id FROM LearningRecords WHERE user_id = :user_id) lr "
-        "ON w.id = lr.word_id "
-        "WHERE lr.word_id IS NULL "  // 未复习过的单词
-        "ORDER BY RANDOM() "
-        "LIMIT :count/2"
-    );
-    query.bindValue(":user_id", userId);
-    query.bindValue(":count", count);
-    
-    if (query.exec()) {
-        while (query.next()) {
-            Word word;
-            word.id = query.value("id").toInt();
-            word.word = query.value("word").toString();
-            word.pronunciation = query.value("pronunciation").toString();
-            word.meaning = query.value("meaning").toString();
-            word.example = query.value("example").toString();
-            word.lastReviewed = query.value("last_reviewed").toDateTime();
-            word.reviewCount = query.value("review_count").toInt();
-            word.difficulty = query.value("difficulty").toInt();
-            words.append(word);
-        }
-    }
-    
-    // 如果未复习的单词不够，补充一些需要复习的单词
-    if (words.size() < count) {
-        QSqlQuery query2(m_db);
-        query2.prepare(
-            "SELECT w.* FROM Words w "
-            "JOIN LearningRecords lr ON w.id = lr.word_id "
-            "WHERE lr.user_id = :user_id "
-            "GROUP BY w.id "
-            "ORDER BY "
-            "  CASE WHEN w.difficulty >= 4 THEN 0 ELSE 1 END, "  // 优先难度高的
-            "  w.last_reviewed ASC "  // 优先最近未复习的
-            "LIMIT :remaining_count"
-        );
-        query2.bindValue(":user_id", userId);
-        query2.bindValue(":remaining_count", count - words.size());
-        
-        if (query2.exec()) {
-            while (query2.next()) {
-                Word word;
-                word.id = query2.value("id").toInt();
-                word.word = query2.value("word").toString();
-                word.pronunciation = query2.value("pronunciation").toString();
-                word.meaning = query2.value("meaning").toString();
-                word.example = query2.value("example").toString();
-                word.lastReviewed = query2.value("last_reviewed").toDateTime();
-                word.reviewCount = query2.value("review_count").toInt();
-                word.difficulty = query2.value("difficulty").toInt();
-                words.append(word);
-            }
-        }
-    }
-    
-    return words;
+    query.prepare("INSERT INTO Users (username, password) VALUES (:username, :password)");
+    query.bindValue(":username", username);
+    query.bindValue(":password", password);
+    return query.exec();
 }
 
-double WordDatabase::getLearningAccuracy(int userId, int days)
-{
+bool WordDatabase::authenticateUser(const QString &username, const QString &password) {
     QSqlQuery query(m_db);
-    query.prepare(
-        "SELECT AVG(correct) FROM LearningRecords "
-        "WHERE user_id = :user_id "
-        "AND timestamp >= DATE('now', :days || ' day')"
-    );
-    query.bindValue(":user_id", userId);
-    query.bindValue(":days", -days);
-    
-    if (query.exec() && query.next()) {
-        return query.value(0).toDouble() * 100.0; // 转换为百分比
-    }
-    return 0.0;
+    query.prepare("SELECT id FROM Users WHERE username = :username AND password = :password");
+    query.bindValue(":username", username);
+    query.bindValue(":password", password);
+    return query.exec() && query.next();
 }
 
-// 根据ID删除单词
-bool WordDatabase::deleteWord(int id)
-{
+int WordDatabase::getUserId(const QString &username) {
     QSqlQuery query(m_db);
-
-    // 首先检查单词是否存在
-    query.prepare("SELECT id FROM Words WHERE id = :id");
-    query.bindValue(":id", id);
-
+    query.prepare("SELECT id FROM Users WHERE username = :username");
+    query.bindValue(":username", username);
     if (!query.exec() || !query.next()) {
-        qWarning() << "删除单词失败: 未找到ID为" << id << "的单词";
-        return false;
+        return -1;
     }
-
-    // 开始事务
-    m_db.transaction();
-
-    // 1. 删除单词-分类关联
-    query.prepare("DELETE FROM WordCategories WHERE word_id = :id");
-    query.bindValue(":id", id);
-
-    if (!query.exec()) {
-        m_db.rollback();
-        qWarning() << "删除单词分类关联失败:" << query.lastError().text();
-        return false;
-    }
-
-    // 2. 删除学习记录
-    query.prepare("DELETE FROM LearningRecords WHERE word_id = :id");
-    query.bindValue(":id", id);
-
-    if (!query.exec()) {
-        m_db.rollback();
-        qWarning() << "删除学习记录失败:" << query.lastError().text();
-        return false;
-    }
-
-    // 3. 删除单词本身
-    query.prepare("DELETE FROM Words WHERE id = :id");
-    query.bindValue(":id", id);
-
-    if (!query.exec()) {
-        m_db.rollback();
-        qWarning() << "删除单词失败:" << query.lastError().text();
-        return false;
-    }
-
-    // 提交事务
-    if (!m_db.commit()) {
-        qWarning() << "提交事务失败:" << m_db.lastError().text();
-        return false;
-    }
-
-    qInfo() << "成功删除单词，ID:" << id;
-    return true;
+    return query.value("id").toInt();
 }
 
-// 根据ID获取单词
-Word WordDatabase::getWordById(int id)
-{
-    Word word;
+// -------------------- 学习记录管理方法 --------------------
+bool WordDatabase::addLearningRecord(const LearningRecord &record) {
     QSqlQuery query(m_db);
-
     query.prepare(
-        "SELECT id, word, pronunciation, meaning, example, last_reviewed, review_count, difficulty "
-        "FROM Words WHERE id = :id"
+        "INSERT INTO LearningRecords (word_id, user_id, timestamp, correct, difficulty) "
+        "VALUES (:word_id, :user_id, :timestamp, :correct, :difficulty)"
         );
-    query.bindValue(":id", id);
+    query.bindValue(":word_id", record.wordId);
+    query.bindValue(":user_id", record.userId);
+    query.bindValue(":timestamp", record.timestamp);
+    query.bindValue(":correct", record.correct);
+    query.bindValue(":difficulty", record.difficulty);
 
     if (!query.exec()) {
-        qWarning() << "查询单词失败:" << query.lastError().text();
-        return word;
+        return false;
     }
 
-    if (query.next()) {
-        word.id = query.value("id").toInt();
-        word.word = query.value("word").toString();
-        word.pronunciation = query.value("pronunciation").toString();
-        word.meaning = query.value("meaning").toString();
-        word.example = query.value("example").toString();
-        word.lastReviewed = query.value("last_reviewed").toDateTime();
-        word.reviewCount = query.value("review_count").toInt();
-        word.difficulty = query.value("difficulty").toInt();
+    // 更新单词的最后复习时间和复习次数
+    query.prepare(
+        "UPDATE Words SET "
+        "   last_reviewed = :timestamp, "
+        "   review_count = review_count + 1, "
+        "   difficulty = :difficulty "
+        "WHERE id = :word_id"
+        );
+    query.bindValue(":timestamp", record.timestamp);
+    query.bindValue(":difficulty", record.difficulty);
+    query.bindValue(":word_id", record.wordId);
+
+    return query.exec();
+}
+
+QVector<LearningRecord> WordDatabase::getUserLearningRecords(int userId, int days) {
+    QVector<LearningRecord> records;
+    QSqlQuery query(m_db);
+
+
+    if (days > 0) {
+        query.prepare(
+            "SELECT id, word_id, user_id, timestamp, correct, difficulty "
+            "FROM LearningRecords "
+            "WHERE user_id = :user_id AND timestamp >= DATE('now', :days || ' days') "
+            "ORDER BY timestamp DESC"
+            );
+        query.bindValue(":user_id", userId);
+        query.bindValue(":days", -days);
     } else {
-        qWarning() << "未找到ID为" << id << "的单词";
+        query.prepare(
+            "SELECT id, word_id, user_id, timestamp, correct, difficulty "
+            "FROM LearningRecords "
+            "WHERE user_id = :user_id "
+            "ORDER BY timestamp DESC"
+            );
+        query.bindValue(":user_id", userId);
     }
 
-    return word;
+    if (!query.exec()) {
+        return records;
+    }
+
+    while (query.next()) {
+        LearningRecord record;
+        record.id = query.value("id").toInt();
+        record.wordId = query.value("word_id").toInt();
+        record.userId = userId;
+        record.timestamp = query.value("timestamp").toDateTime();
+        record.correct = query.value("correct").toBool();
+        record.difficulty = query.value("difficulty").toInt();
+        records.append(record);
+    }
+    return records;
 }
 
-// 删除分类
-bool WordDatabase::deleteCategory(int id)
-{
+double WordDatabase::getLearningAccuracy(int userId, int days) {
     QSqlQuery query(m_db);
 
-    // 检查分类是否存在
-    query.prepare("SELECT id FROM Categories WHERE id = :id");
-    query.bindValue(":id", id);
+    if (days > 0) {
+        query.prepare(
+            "SELECT AVG(correct) AS accuracy "
+            "FROM LearningRecords "
+            "WHERE user_id = :user_id AND timestamp >= DATE('now', :days || ' days')"
+            );
+        query.bindValue(":user_id", userId);
+        query.bindValue(":days", -days);
+    } else {
+        query.prepare(
+            "SELECT AVG(correct) AS accuracy "
+            "FROM LearningRecords "
+            "WHERE user_id = :user_id"
+            );
+        query.bindValue(":user_id", userId);
+    }
 
     if (!query.exec() || !query.next()) {
-        qWarning() << "删除分类失败: 未找到ID为" << id << "的分类";
-        return false;
+        return 0.0;
     }
 
-    // 开始事务
-    m_db.transaction();
-
-    // 1. 删除单词-分类关联
-    query.prepare("DELETE FROM WordCategories WHERE category_id = :id");
-    query.bindValue(":id", id);
-
-    if (!query.exec()) {
-        m_db.rollback();
-        qWarning() << "删除单词分类关联失败:" << query.lastError().text();
-        return false;
-    }
-
-    // 2. 删除分类
-    query.prepare("DELETE FROM Categories WHERE id = :id");
-    query.bindValue(":id", id);
-
-    if (!query.exec()) {
-        m_db.rollback();
-        qWarning() << "删除分类失败:" << query.lastError().text();
-        return false;
-    }
-
-    // 提交事务
-    if (!m_db.commit()) {
-        qWarning() << "提交事务失败:" << m_db.lastError().text();
-        return false;
-    }
-
-    qInfo() << "成功删除分类，ID:" << id;
-    return true;
+    return query.value("accuracy").toDouble() * 100.0; // 转换为百分比
 }
 
-// 从分类中移除单词
-bool WordDatabase::removeWordFromCategory(int wordId, int categoryId)
-{
-    QSqlQuery query(m_db);
+// -------------------- 数据库工具方法 --------------------
+bool WordDatabase::insertSampleData() {
+    // 插入示例词性
+    QVector<QString> posList = {"n.", "v.", "adj.", "adv.", "prep.", "pron.", "conj.", "interj."};
+    for (const QString &pos : posList) {
+        if (getOrCreatePartOfSpeech(pos) == -1) {
+            return false;
+        }
+    }
 
-    // 检查关联是否存在
-    query.prepare(
-        "SELECT word_id FROM WordCategories "
-        "WHERE word_id = :wordId AND category_id = :categoryId"
-        );
-    query.bindValue(":wordId", wordId);
-    query.bindValue(":categoryId", categoryId);
+    // 插入示例分类
+    Category category;
+    category.name = "常用词汇";
+    category.description = "日常生活中最常用的基础词汇";
+    if (!addCategory(category)) {
+        return false;
+    }
+    int commonCategoryId = getCategoryById(1).id;
 
-    if (!query.exec() || !query.next()) {
-        qWarning() << "移除单词分类关联失败: 未找到关联 (wordId=" << wordId
-                   << ", categoryId=" << categoryId << ")";
+    // 插入示例单词
+    Word word;
+
+    // 示例单词1: apple
+    word.word = "apple";
+    word.difficulty = 1;
+
+    // 添加音标
+    Phonetic phonetic;
+    phonetic.text = "/ˈæpl/";
+    phonetic.audio = "https://example.com/audio/apple.mp3";
+    word.phonetics.append(phonetic);
+
+    // 添加释义（名词）
+    Definition def;
+    def.definition = "a round fruit with red, green, or yellow skin and firm white flesh";
+    def.example = "She took a bite of the apple.";
+    def.synonyms = {"fruit", "pome"};
+    word.meanings["n."].append(def);
+
+    if (!addWord(word)) {
+        qInfo()<<"插入失败";
+        return false;
+    }
+    int appleId = getWordsByName("apple").first().id;
+    assignWordToCategory(appleId, commonCategoryId);
+
+    // 示例单词2: beautiful
+    word = Word();
+    word.word = "beautiful";
+    word.difficulty = 2;
+
+    phonetic.text = "/ˈbjuːtɪfl/";
+    phonetic.audio = "https://example.com/audio/beautiful.mp3";
+    word.phonetics.clear();
+    word.phonetics.append(phonetic);
+
+    def = Definition();
+    def.definition = "pleasing the senses or mind aesthetically";
+    def.example = "She has beautiful eyes.";
+    def.synonyms = {"attractive", "gorgeous", "lovely"};
+    def.antonyms = {"ugly", "unattractive"};
+    word.meanings["adj."].append(def);
+
+    if (!addWord(word)) {
+        return false;
+    }
+    int beautifulId = getWordsByName("beautiful").first().id;
+    assignWordToCategory(beautifulId, commonCategoryId);
+
+    // 插入示例用户
+    if (!addUser("admin", "admin")) {
         return false;
     }
 
-    // 删除关联
-    query.prepare(
-        "DELETE FROM WordCategories "
-        "WHERE word_id = :wordId AND category_id = :categoryId"
-        );
-    query.bindValue(":wordId", wordId);
-    query.bindValue(":categoryId", categoryId);
+    // 插入示例学习记录
+    LearningRecord record;
+    record.wordId = appleId;
+    record.userId = getUserId("admin");
+    record.timestamp = QDateTime::currentDateTime().addDays(-1);
+    record.correct = true;
+    record.difficulty = 1;
 
-    if (!query.exec()) {
-        qWarning() << "移除单词分类关联失败:" << query.lastError().text();
+    if (!addLearningRecord(record)) {
         return false;
     }
 
-    qInfo() << "成功从分类中移除单词 (wordId=" << wordId
-            << ", categoryId=" << categoryId << ")";
-    return true;
+    record.wordId = beautifulId;
+    record.timestamp = QDateTime::currentDateTime().addDays(-2);
+    record.correct = false;
+    record.difficulty = 2;
+
+    return addLearningRecord(record);
 }
 
-QMap<QString, QString> WordDatabase::getpath()
-{
+QMap<QString, QString> WordDatabase::getpath() {
     QMap<QString, QString> dbPaths;
     QDir dataDir(QCoreApplication::applicationDirPath() + "/datas");
+    if (!dataDir.exists()) return dbPaths;
 
-    if (!dataDir.exists()) {
-        qWarning() << "数据目录不存在:" << dataDir.path();
-        return dbPaths;
+    QStringList filters{"*.db"};
+    foreach (QFileInfo file, dataDir.entryInfoList(filters, QDir::Files)) {
+        dbPaths[file.baseName()] = file.absoluteFilePath();
     }
-
-    // 获取所有.db文件
-    QStringList filters;
-    filters << "*.db";
-    QFileInfoList files = dataDir.entryInfoList(filters, QDir::Files);
-
-    // 构建数据库名称到路径的映射
-    for (const QFileInfo &file : files) {
-        QString dbName = file.baseName();  // 文件名（不含扩展名）
-        QString dbPath = file.absoluteFilePath();
-        dbPaths.insert(dbName, dbPath);
-    }
-
     return dbPaths;
 }
 
-QVector<QString> WordDatabase::getlist()
-{
+QVector<QString> WordDatabase::getlist() {
     QVector<QString> dbNames;
     QDir dataDir(QCoreApplication::applicationDirPath() + "/datas");
+    if (!dataDir.exists()) return dbNames;
 
-    if (!dataDir.exists()) {
-        qWarning() << "数据目录不存在:" << dataDir.path();
-        return dbNames;
+    QStringList files = dataDir.entryList({"*.db"}, QDir::Files);
+    foreach (QString file, files) {
+        dbNames.append(file.left(file.lastIndexOf('.')));
     }
-
-    // 获取所有.db文件
-    QStringList filters;
-    filters << "*.db";
-    QStringList files = dataDir.entryList(filters, QDir::Files);
-
-    // 提取数据库名称（不含扩展名）
-    for (const QString &fileName : files) {
-        dbNames.append(fileName.left(fileName.lastIndexOf('.')));
-    }
-
     return dbNames;
 }
 
-bool WordDatabase::insertSampleData() // 测试用
-{
-    // 添加示例分类并获取分类ID
-    int category1Id = 1, category2Id = 2, category3Id = 3;
-
-    {
-        Category category;
-        category.name = "基础词汇";
-        category.description = "日常生活中常用的基础单词";
-
-        if (addCategory(category)) {
-
-         }
-    }
-
-    {
-        Category category;
-        category.name = "学术词汇";
-        category.description = "学术领域中使用的专业词汇";
-        if (addCategory(category)) {
-
-        }
-    }
-
-    {
-        Category category;
-        category.name = "商务词汇";
-        category.description = "商务场景中使用的专业词汇";
-
-        if (addCategory(category)) {
-
-        }
-    }
-
-    // 添加示例单词并获取单词ID
-    int word1Id = 1, word2Id = 2, word3Id = 3;
-
-    {
-        Word word;
-        word.word = "apple";
-        word.pronunciation = "/ˈæpl/";
-        word.meaning = "苹果";
-        word.example = "I like to eat apples in the morning.";
-        word.difficulty = 1;
-
-        if (addWord(word)) {
-
-        }
-    }
-
-    {
-        Word word;
-        word.word = "abstraction";
-        word.pronunciation = "/æbˈstrækʃn/";
-        word.meaning = "抽象；抽象概念";
-        word.example = "In computer science, abstraction is a key concept.";
-        word.difficulty = 4;
-        QSqlQuery query;
-        if (addWord(word)) {
-
-        }
-    }
-
-    {
-        Word word;
-        word.word = "negotiation";
-        word.pronunciation = "/nɪˌɡəʊʃiˈeɪʃn/";
-        word.meaning = "谈判；协商";
-        word.example = "We had a successful negotiation with the client.";
-        word.difficulty = 3;
-        QSqlQuery query;
-        if (addWord(word)) {
-
-        }
-    }
-
-    // 分配单词到分类
-    if (word1Id > 0 && category1Id > 0) assignWordToCategory(word1Id, category1Id);
-    if (word2Id > 0 && category2Id > 0) assignWordToCategory(word2Id, category2Id);
-    if (word3Id > 0 && category3Id > 0) assignWordToCategory(word3Id, category3Id);
-
-    // 添加示例用户
-    addUser("user1", "password1");
-
-    return true;
-}
-
-QDebug operator<<(QDebug o,const Word& w)
-{
-    o<<"__________________\n";
-    o<<w.word<<"\n";
-    o<<"id:"<<w.id<<"\n";
-    o<<"meaning:"<<w.meaning<<"\n";
-    o<<"pronunciation:"<<w.pronunciation<<"\n";
-    o<<"example:"<<w.example<<"\n";
-    o<<"difficulty:"<<w.difficulty<<"\n";
-    o<<"reviewCount:"<<w.reviewCount<<"\n";
-    o<<"lastReviewed:"<<w.lastReviewed<<"\n";
-    o<<"__________________"<<"\n";
-    return o;
-}
-
-QDebug operator<<(QDebug o,const Category c)
-{
-    o<<"__________________\n";
-    o<<c.name<<"\n";
-    o<<"id:"<<c.id<<"\n";
-    o<<"description:"<<c.description<<"\n";
-    o<<"__________________"<<"\n";
-    return o;
-}
