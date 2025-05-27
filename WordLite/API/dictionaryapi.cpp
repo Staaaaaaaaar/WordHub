@@ -1,4 +1,3 @@
-// dictionaryapi.cpp
 #include "dictionaryapi.h"
 
 DictionaryAPI::DictionaryAPI(QObject *parent)
@@ -72,61 +71,18 @@ Word DictionaryAPI::createWordFromApiResult(const QJsonArray& apiResult)
     // 设置单词
     if (firstEntry.contains("word") && firstEntry["word"].isString()) {
         newWord.word = firstEntry["word"].toString();
+    } else {
+        return newWord; // 如果没有单词，返回空对象
     }
 
-    // 设置发音
+    // 解析音标信息
     if (firstEntry.contains("phonetics") && firstEntry["phonetics"].isArray()) {
-        QJsonArray phonetics = firstEntry["phonetics"].toArray();
-        for (const QJsonValue& phonetic : phonetics) {
-            QJsonObject phonObj = phonetic.toObject();
-            if (phonObj.contains("text") && phonObj["text"].isString()) {
-                newWord.pronunciation = phonObj["text"].toString();
-                break;
-            }
-        }
+        parsePhonetics(firstEntry["phonetics"].toArray(), newWord);
     }
 
-    // 设置释义
-    QStringList allMeanings;
+    // 解析释义信息
     if (firstEntry.contains("meanings") && firstEntry["meanings"].isArray()) {
-        QJsonArray meanings = firstEntry["meanings"].toArray();
-        for (const QJsonValue& meaning : meanings) {
-            QJsonObject meaningObj = meaning.toObject();
-            QString partOfSpeech = "";
-            if (meaningObj.contains("partOfSpeech") && meaningObj["partOfSpeech"].isString()) {
-                partOfSpeech = meaningObj["partOfSpeech"].toString() + ". ";
-            }
-
-            if (meaningObj.contains("definitions") && meaningObj["definitions"].isArray()) {
-                QJsonArray definitions = meaningObj["definitions"].toArray();
-                for (const QJsonValue& definition : definitions) {
-                    QJsonObject defObj = definition.toObject();
-                    if (defObj.contains("definition") && defObj["definition"].isString()) {
-                        allMeanings.append(partOfSpeech + defObj["definition"].toString());
-                    }
-                }
-            }
-        }
-    }
-    newWord.meaning = allMeanings.join("\n");
-
-    // 设置例句
-    if (firstEntry.contains("meanings") && firstEntry["meanings"].isArray()) {
-        QJsonArray meanings = firstEntry["meanings"].toArray();
-        for (const QJsonValue& meaning : meanings) {
-            QJsonObject meaningObj = meaning.toObject();
-            if (meaningObj.contains("definitions") && meaningObj["definitions"].isArray()) {
-                QJsonArray definitions = meaningObj["definitions"].toArray();
-                for (const QJsonValue& definition : definitions) {
-                    QJsonObject defObj = definition.toObject();
-                    if (defObj.contains("example") && defObj["example"].isString()) {
-                        newWord.example = defObj["example"].toString();
-                        break;
-                    }
-                }
-                if (!newWord.example.isEmpty()) break;
-            }
-        }
+        parseMeanings(firstEntry["meanings"].toArray(), newWord);
     }
 
     // 初始化学习相关信息
@@ -135,6 +91,100 @@ Word DictionaryAPI::createWordFromApiResult(const QJsonArray& apiResult)
     newWord.difficulty = 0;
 
     return newWord;
+}
+
+void DictionaryAPI::parsePhonetics(const QJsonArray& phoneticsArray, Word& word)
+{
+    for (const QJsonValue& phoneticValue : phoneticsArray) {
+        if (!phoneticValue.isObject()) continue;
+
+        QJsonObject phoneticObj = phoneticValue.toObject();
+        Phonetic phonetic;
+
+        // 提取音标文本
+        if (phoneticObj.contains("text") && phoneticObj["text"].isString()) {
+            phonetic.text = phoneticObj["text"].toString();
+        }
+
+        // 提取发音音频
+        if (phoneticObj.contains("audio") && phoneticObj["audio"].isString()) {
+            QString audioUrl = phoneticObj["audio"].toString();
+            // 确保URL有效（如果是相对URL，添加协议前缀）
+            if (!audioUrl.isEmpty() && !audioUrl.startsWith("http")) {
+                audioUrl = "https:" + audioUrl;
+            }
+            phonetic.audio = audioUrl;
+        }
+
+        // 仅添加有效的音标信息
+        if (!phonetic.text.isEmpty() || !phonetic.audio.isEmpty()) {
+            word.phonetics.append(phonetic);
+        }
+    }
+}
+
+void DictionaryAPI::parseMeanings(const QJsonArray& meaningsArray, Word& word)
+{
+    for (const QJsonValue& meaningValue : meaningsArray) {
+        if (!meaningValue.isObject()) continue;
+
+        QJsonObject meaningObj = meaningValue.toObject();
+
+        // 获取词性
+        QString partOfSpeech = "";
+        if (meaningObj.contains("partOfSpeech") && meaningObj["partOfSpeech"].isString()) {
+            partOfSpeech = meaningObj["partOfSpeech"].toString();
+        }
+
+        if (partOfSpeech.isEmpty()) continue;
+
+        // 解析该词性下的所有释义
+        if (meaningObj.contains("definitions") && meaningObj["definitions"].isArray()) {
+            QJsonArray definitionsArray = meaningObj["definitions"].toArray();
+
+            for (const QJsonValue& definitionValue : definitionsArray) {
+                if (!definitionValue.isObject()) continue;
+
+                QJsonObject definitionObj = definitionValue.toObject();
+                Definition definition;
+
+                // 提取释义内容
+                if (definitionObj.contains("definition") && definitionObj["definition"].isString()) {
+                    definition.definition = definitionObj["definition"].toString();
+                }
+
+                // 提取例句
+                if (definitionObj.contains("example") && definitionObj["example"].isString()) {
+                    definition.example = definitionObj["example"].toString();
+                }
+
+                // 提取同义词
+                if (definitionObj.contains("synonyms") && definitionObj["synonyms"].isArray()) {
+                    QJsonArray synonymsArray = definitionObj["synonyms"].toArray();
+                    for (const QJsonValue& synonymValue : synonymsArray) {
+                        if (synonymValue.isString()) {
+                            definition.synonyms.append(synonymValue.toString());
+                        }
+                    }
+                }
+
+                // 提取反义词
+                if (definitionObj.contains("antonyms") && definitionObj["antonyms"].isArray()) {
+                    QJsonArray antonymsArray = definitionObj["antonyms"].toArray();
+                    for (const QJsonValue& antonymValue : antonymsArray) {
+                        if (antonymValue.isString()) {
+                            definition.antonyms.append(antonymValue.toString());
+                        }
+                    }
+                }
+
+                // 仅添加有效的释义
+                if (!definition.definition.isEmpty()) {
+                    word.meanings[partOfSpeech].append(definition);
+                }
+            }
+        }
+    }
 }
 
 void DictionaryAPI::onReplyFinished(QNetworkReply* reply)
@@ -149,7 +199,7 @@ void DictionaryAPI::onReplyFinished(QNetworkReply* reply)
             QJsonArray resultArray = doc.array();
             currentWord = createWordFromApiResult(resultArray);
 
-            if (!currentWord.g_word().isEmpty()) {
+            if (!currentWord.word.isEmpty()) {
                 emit wordInfoReceived(currentWord);
             } else {
                 errorMessage = "Failed to parse word information";

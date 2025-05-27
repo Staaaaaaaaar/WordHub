@@ -1,4 +1,3 @@
-// dictionaryapi.h
 #ifndef DICTIONARYAPI_H
 #define DICTIONARYAPI_H
 
@@ -9,7 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
-#include <QEventLoop>  // 添加这一行
+#include <QEventLoop>
 #include <QTimer>
 #include "../back_head/utils.h"
 
@@ -37,7 +36,27 @@ private:
     Word currentWord;  // 存储当前查询的单词
     bool requestFinished;  // 请求是否完成的标志
     QString errorMessage;  // 错误信息
+
+    /**
+     * @brief 从API返回的JSON数组创建Word对象
+     * @param apiResult API返回的JSON数组
+     * @return 解析后的Word对象
+     */
     Word createWordFromApiResult(const QJsonArray& apiResult);
+
+    /**
+     * @brief 解析音标信息
+     * @param phoneticsArray 音标JSON数组
+     * @param word 要填充的Word对象
+     */
+    void parsePhonetics(const QJsonArray& phoneticsArray, Word& word);
+
+    /**
+     * @brief 解析释义信息
+     * @param meaningsArray 释义JSON数组
+     * @param word 要填充的Word对象
+     */
+    void parseMeanings(const QJsonArray& meaningsArray, Word& word);
 };
 
 #endif // DICTIONARYAPI_H
