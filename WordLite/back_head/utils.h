@@ -47,6 +47,8 @@ public:
     Word(QString word = ""): word(word), lastReviewed(QDateTime::currentDateTime()), reviewCount(0), difficulty(3) {}
 
     QString g_word(){return word;}
+
+    bool isEmpty(){return word.isEmpty();}
 };
 
 // 输出运算符重载，方便调试

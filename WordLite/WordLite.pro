@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     # achievementwidget.cpp \
     back_head/test.cpp \
+    back_src/loadword.cpp \
     back_src\utils.cpp \
     # gamewidget.cpp \
     # learnwidget.cpp \
