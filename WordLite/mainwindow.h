@@ -35,6 +35,8 @@ public:
     void connectSignals();
 
 private slots:
+    void showMes(QString message, int timeout=0);
+    void clearMes();
 
 private:
     Ui::MainWindow *ui;

@@ -8,26 +8,17 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    // 确保数据目录存在
-    QString dataDir = QCoreApplication::applicationDirPath() + "/datas";
-    QDir dir(dataDir);
-    if (!dir.exists()) {
-        if (!dir.mkpath(".")) {
-            qFatal("无法创建数据目录!");
-            return 1;
-        }
-    }
+    qInfo()<<WordDatabase::getlist();
+    qInfo()<<WordDatabase::getpath();
 
-    QString lib="myfaverator";
-    WordDatabase db1(lib);
-    QString dbPath1 = QCoreApplication::applicationDirPath() +"/datas/"+ lib +".db";
-    if (!db1.initDatabase(dbPath1)) {
-        qFatal("数据库初始化失败!");
-        return 1;
-    }
+    QString lib="myfrq"; // 自定义数据库的名称
+    WordDatabase db1; // 创建自定义数据库
+    db1.NewDatabase(lib);
 
-    // 测试添加单词
-    Word word;
+    // 在database.cpp中初始化时调用insertSampleData()插入了一些测试的数据，可以去看一看长啥样，到时候需要注释掉
+
+    // 测试手动添加单词
+    Word word; // 看一下头文件Word的结构
     word.word = "abcd";
     word.meaning = "whatcanisay";
     if (db1.addWord(word)) {
@@ -43,7 +34,7 @@ int main(int argc, char *argv[])
 
     qInfo()<<"________________________1__________________________";
     qInfo()<<db1.getCategoryById(1).name<<"\n";
-    for(auto p:db1.getWordsByCategory(1))
+    for(auto p:db1.getWordsByCategory(1)) // 获取分类id1的所有单词
     {
         qInfo()<<p;
     }
@@ -62,12 +53,11 @@ int main(int argc, char *argv[])
         qInfo()<<p;
     }
 
-    db1.deleteWord(6);
-    qInfo()<<"word id=2 is deleted\n";
+    db1.deleteWord(6); // 根据id删除单词
 
-    qInfo()<<db1.getWordById(4);
+    qInfo()<<db1.getWordById(4); // 根据id获取单词
 
-    db1.removeWordFromCategory(1,1);
+    db1.removeWordFromCategory(1,1); // 去除单词分类的关连关系
     qInfo()<<"________________________1__________________________";
     qInfo()<<db1.getCategoryById(1).name<<"\n";
     for(auto p:db1.getWordsByCategory(1))
@@ -90,7 +80,17 @@ int main(int argc, char *argv[])
     }
 
 
+    // qInfo()<<"测试查找单词\n";
+    // qInfo()<<db1.getWordsByName("abcd");
+    // qInfo()<<db1.getWordsByName("dhohf");// 返回的是一个QVector对象，这里直接把Qvector打印了
 
+    // WordDatabase db2("newdir");
+    // db2.initDatabase("newdir");
+    // db2.NewDatabase("newdir");
+    // for(auto p:db2.getAllWords())
+    // {
+    //     qInfo()<<p;
+    // }
 
     return 0;
 }

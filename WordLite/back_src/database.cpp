@@ -1,8 +1,14 @@
 #include "../back_head/database.h"
 
-WordDatabase::WordDatabase(const QString &connectionName)
-    : m_connectionName(connectionName)
+WordDatabase::WordDatabase()
 {
+    QString dataDir = QCoreApplication::applicationDirPath() + "/datas/";
+    QDir dir(dataDir);
+    if (!dir.exists()) {
+        if (!dir.mkpath(".")) {
+            qFatal("无法创建数据目录2!");
+        }
+    }
 }
 
 WordDatabase::~WordDatabase()
@@ -21,42 +27,93 @@ void WordDatabase::close() {
     }
 }
 
-bool WordDatabase::initDatabase(const QString &dbPath) // 创建链接，打开数据库
+bool WordDatabase::initDatabase(const QString &name) // 创建链接，打开已有数据库
 {
-    // 如果连接已存在，先移除它
+    m_connectionName=name;
+    const QString dbPath = QCoreApplication::applicationDirPath() +"/datas/"+ name +".db";
+    QFileInfo fileInfo(dbPath);
+    if (!fileInfo.exists() || !fileInfo.isFile()) {
+        qInfo() << "指定的数据库文件不存在:" << dbPath;
+        return false;
+    }
+
+    Path=dbPath;
+
+    if (!openDatabase(Path, false)) { // 新建数据库并创建表
+        return false;
+    }
+
+    qInfo()<<"加载数据库成功\n";
+
+    // 测试用，测试完成后注释掉
+    insertSampleData();
+    // 测试用，测试完成后注释掉
+
+    return true;
+}
+
+bool WordDatabase::NewDatabase(const QString &name) // 创建链接，创建新的数据库
+{
+    m_connectionName=name;
+    QString dataDir = QCoreApplication::applicationDirPath() + "/datas/";
+    QString dbPath = dataDir + name + ".db";
+    QFileInfo fileInfo(dbPath);
+    QDir dir(fileInfo.absolutePath()); // 获取目录部分（dataDir）
+
+    if (!dir.exists() && !dir.mkpath(".")) {
+        qFatal("无法创建数据目录: %s", qPrintable(dir.path()));
+        return false;
+    }
+    Path=dbPath;
+
+    if (!openDatabase(Path, true)) { // 新建数据库并创建表
+        return false;
+    }
+    qInfo()<<"新建数据库成功\n";
+
+    insertSampleData(); // 仅在新建时插入示例数据
+    return true;
+}
+
+bool WordDatabase::openDatabase(const QString &dbPath, bool isNew) {
     if (QSqlDatabase::contains(m_connectionName)) {
         QSqlDatabase::removeDatabase(m_connectionName);
     }
 
-    // 创建新连接
     m_db = QSqlDatabase::addDatabase("QSQLITE", m_connectionName);
     m_db.setDatabaseName(dbPath);
-
-    qDebug() << "数据库文件:" << dbPath;
 
     if (!m_db.open()) {
         qDebug() << "无法打开数据库:" << m_db.lastError().text();
         return false;
     }
 
-    // 创建表
-    if (!createTables()) {
-        qDebug() << "创建表失败:" << m_db.lastError().text();
-        return false;
+    if (isNew) { // 新建数据库时创建表和索引
+        if (!createTables()) {
+            m_db.close();
+            return false;
+        }
     }
-
-    insertSampleData();
-
     return true;
 }
 
 bool WordDatabase::createTables()
 {
-    return createWordTable() && 
-           createCategoryTable() && 
-           createUserTable() && 
-           createLearningRecordTable() && 
-           createWordCategoryTable();
+    if (!createWordTable() || 
+        !createCategoryTable() || 
+        !createUserTable() || 
+        !createLearningRecordTable() || 
+        !createWordCategoryTable()) {
+        return false;
+    }
+
+    // 创建索引
+    QSqlQuery query(m_db);
+    query.exec("CREATE INDEX IF NOT EXISTS idx_words_word ON Words (word)");
+    query.exec("CREATE INDEX IF NOT EXISTS idx_categories_name ON Categories (name)");
+    query.exec("CREATE INDEX IF NOT EXISTS idx_users_username ON Users (username)");
+
+    return true;
 }
 
 bool WordDatabase::createWordTable()
@@ -160,6 +217,50 @@ bool WordDatabase::addCategory(const Category &category)
     query.bindValue(":description", category.description);
     
     return query.exec();
+}
+
+QVector<Word> WordDatabase::getWordsByName(const QString &wordName)
+{
+    QVector<Word> words;
+    QSqlQuery query(m_db);
+    query.prepare("SELECT * FROM Words WHERE word = :word");
+    query.bindValue(":word", wordName);
+
+    if (query.exec()) {
+        while (query.next()) {
+            Word word;
+            word.id = query.value("id").toInt();
+            word.word = query.value("word").toString();
+            word.pronunciation = query.value("pronunciation").toString();
+            word.meaning = query.value("meaning").toString();
+            word.example = query.value("example").toString();
+            word.lastReviewed = query.value("last_reviewed").toDateTime();
+            word.reviewCount = query.value("review_count").toInt();
+            word.difficulty = query.value("difficulty").toInt();
+            words.append(word);
+        }
+    }
+    return words;
+}
+
+QVector<Category> WordDatabase::getCategoriesByName(const QString &categoryName)
+{
+    QVector<Category> categories;
+    QSqlQuery query(m_db);
+    query.prepare("SELECT * FROM Categories WHERE name = :name");
+    query.bindValue(":name", categoryName);
+
+    if (query.exec()) {
+        while (query.next()) {
+            Category category;
+            category.id = query.value("id").toInt();
+            category.name = query.value("name").toString();
+            category.description = query.value("description").toString();
+            categories.append(category);
+        }
+    }
+
+    return categories;
 }
 
 // ??? 是否应该在这里实现存疑
@@ -607,6 +708,54 @@ bool WordDatabase::removeWordFromCategory(int wordId, int categoryId)
     qInfo() << "成功从分类中移除单词 (wordId=" << wordId
             << ", categoryId=" << categoryId << ")";
     return true;
+}
+
+QMap<QString, QString> WordDatabase::getpath()
+{
+    QMap<QString, QString> dbPaths;
+    QDir dataDir(QCoreApplication::applicationDirPath() + "/datas");
+
+    if (!dataDir.exists()) {
+        qWarning() << "数据目录不存在:" << dataDir.path();
+        return dbPaths;
+    }
+
+    // 获取所有.db文件
+    QStringList filters;
+    filters << "*.db";
+    QFileInfoList files = dataDir.entryInfoList(filters, QDir::Files);
+
+    // 构建数据库名称到路径的映射
+    for (const QFileInfo &file : files) {
+        QString dbName = file.baseName();  // 文件名（不含扩展名）
+        QString dbPath = file.absoluteFilePath();
+        dbPaths.insert(dbName, dbPath);
+    }
+
+    return dbPaths;
+}
+
+QVector<QString> WordDatabase::getlist()
+{
+    QVector<QString> dbNames;
+    QDir dataDir(QCoreApplication::applicationDirPath() + "/datas");
+
+    if (!dataDir.exists()) {
+        qWarning() << "数据目录不存在:" << dataDir.path();
+        return dbNames;
+    }
+
+    // 获取所有.db文件
+    QStringList filters;
+    filters << "*.db";
+    QStringList files = dataDir.entryList(filters, QDir::Files);
+
+    // 提取数据库名称（不含扩展名）
+    for (const QString &fileName : files) {
+        dbNames.append(fileName.left(fileName.lastIndexOf('.')));
+    }
+
+    return dbNames;
 }
 
 bool WordDatabase::insertSampleData() // 测试用
