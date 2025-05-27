@@ -1,5 +1,4 @@
-QT       += core gui
-QT += sql # 启用SQL模块（数据库）
+QT       += core gui sql network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     # achievementwidget.cpp \
     back_head/test.cpp \
+    back_src\utils.cpp \
     # gamewidget.cpp \
     # learnwidget.cpp \
     # main.cpp \
@@ -20,9 +20,11 @@ SOURCES += \
     # reviewwidget.cpp \
     # userwidget.cpp \
     # wordwidget.cpp \
-    back_src/database.cpp
+    back_src/database.cpp \
+    API/dictionaryapi.cpp
 
 HEADERS += \
+    back_head/utils.h\
     # achievementwidget.h \
     # gamewidget.h \
     # learnwidget.h \
@@ -31,7 +33,8 @@ HEADERS += \
     # reviewwidget.h \
     # userwidget.h \
     # wordwidget.h \
-    back_head/database.h
+    back_head/database.h \
+    API/dictionaryapi.h
 
 FORMS += \
     achievementwidget.ui \
