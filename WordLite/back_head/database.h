@@ -10,70 +10,95 @@
 #include <QVector>
 #include <QDateTime>
 
+#include <QMap>
+#include <QCoreApplication>
+#include <QDir>
+#include <set>
 #include "./utils.h"
 
 
-class WordDatabase : public QObject
-{
+/**
+ * @brief 单词数据库管理类
+ *
+ * 负责与SQLite数据库交互，管理单词、分类、用户和学习记录
+ */
+class WordDatabase : public QObject {
     Q_OBJECT
 public:
-
     explicit WordDatabase();
 
     ~WordDatabase();
 
+    // 数据库状态管理
     bool isOpen() const;
     void close();
 
-    // 初始化数据库连接
-    bool initDatabase(const QString &dbPath); // 加载已有的数据库
-    bool NewDatabase(const QString &dbPath); // 创建全新的数据库
-    
+    // 数据库操作
+    bool initDatabase(const QString &name); // 打开已有数据库
+    bool NewDatabase(const QString &name); // 创建新数据库
+
     // 单词管理
-    bool addWord(const Word &word); // 添加一个单词对象 已实现
-    bool deleteWord(int id); // 删除某个id的单词 已实现
-    QVector<Word> getAllWords(); // 获取某个库中的所有词汇 已实现
-    Word getWordById(int id); // 根据id获取单词 已实现
-    QVector<Word> getWordsByName(const QString &wordName);// 直接查找某个单词 已实现
-    QVector<Word> getWordsByCategory(int categoryId); // 获取某个分类下的所有词汇 已实现
-    QVector<Word> getWordsToReview(int userId, int count = 20); // 某个用户指定数目的词汇进行复习 已实现基本的选择办法
-    
-    // 分类管理(可以进行自定义分类)
-    bool addCategory(const Category &category);// 添加一个分类对象 已实现
-    bool deleteCategory(int id); // 删除一个分类对象 已实现
-    QVector<Category> getAllCategories();// 获取某个库中的所有分类 已实现
-    Category getCategoryById(int id);  // 根据id获取一个分类对象 已实现
-    QVector<Category> getCategoriesByName(const QString &categoryName); // 根据名称查找某个分类对象 已实现
-    bool assignWordToCategory(int wordId, int categoryId); // 将一个词汇与分类关联起来 已实现
-    bool removeWordFromCategory(int wordId, int categoryId); // 从某个分类中移除单词 已实现
-    
-    // 用户管理 // 这部分没有经过测试，还没想好是否应该在这里实现
+    bool addWord(const Word &word); // 添加新单词
+    bool deleteWord(int id); // 删除单词
+    QVector<Word> getAllWords(); // 获取所有单词
+    Word getWordById(int id); // 根据ID获取单词
+    QVector<Word> getWordsByName(const QString &wordName); // 按名称查找单词
+    QVector<Word> getWordsByCategory(int categoryId); // 获取指定分类下的单词
+    QVector<Word> getWordsToReview(int userId, int count = 20); // 获取需要复习的单词（基于间隔重复算法）
+
+    // 分类管理
+    bool addCategory(const Category &category); // 添加分类
+    bool deleteCategory(int id); // 删除分类
+    QVector<Category> getAllCategories(); // 获取所有分类
+    Category getCategoryById(int id); // 根据ID获取分类
+    QVector<Category> getCategoriesByName(const QString &categoryName); // 按名称查找分类
+    bool assignWordToCategory(int wordId, int categoryId); // 将单词添加到分类
+    bool removeWordFromCategory(int wordId, int categoryId); // 将单词从分类中移除
+
+    // 用户管理
     bool addUser(const QString &username, const QString &password); // 添加用户
-    bool authenticateUser(const QString &username, const QString &password);  // 用户认证
-    int getUserId(const QString &username); // 获取用户id
-    
+    bool authenticateUser(const QString &username, const QString &password); // 验证用户
+    int getUserId(const QString &username); // 获取用户ID
+
     // 学习记录管理
-    bool addLearningRecord(const LearningRecord &record); // 添加一个学习记录对象 已实现
-    QVector<LearningRecord> getUserLearningRecords(int userId, int days = 30);
-    double getLearningAccuracy(int userId, int days = 30); // 已学习比例 已实现
-    
-    // 数据库工具方法
-    bool createTables();
-    bool insertSampleData();
-    static QMap<QString,QString> getpath (); // 获取key为数据库名称，value为存储路径的 map  已实现
-    static QVector<QString> getlist(); // 获取当前已有的数据库名称列表 已实现
-    const QString& getPath(){return Path;} // 获取当前数据库的路径 已实现
+
+    bool addLearningRecord(const LearningRecord &record); // 添加学习记录
+    QVector<LearningRecord> getUserLearningRecords(int userId, int days = 30); // 获取用户学习记录
+    double getLearningAccuracy(int userId, int days = 30); // 计算学习准确率
+
+    // 工具方法
+    bool createTables(); // 创建数据库表结构
+    bool insertSampleData(); // 插入示例数据
+    static QMap<QString, QString> getpath(); // 获取所有数据库文件路径
+    static QVector<QString> getlist(); // 获取所有数据库名称
+    const QString& getPath() { return Path; } // 获取当前数据库路径
 
 private:
-    QSqlDatabase m_db;
-    QString Path;
-    QString m_connectionName; // 存储连接名称
-    bool createWordTable();
-    bool createCategoryTable();
-    bool createUserTable();
-    bool createLearningRecordTable();
-    bool createWordCategoryTable();
-    bool openDatabase(const QString &dbPath, bool isNew);
+    QSqlDatabase m_db; // 数据库连接
+    QString Path; // 当前数据库路径
+    QString m_connectionName; // 数据库连接名称
+
+    // 表创建方法
+    bool createWordTable(); // 创建单词表
+    bool createCategoryTable(); // 创建分类表
+    bool createUserTable(); // 创建用户表
+    bool createLearningRecordTable(); // 创建学习记录表
+    bool createWordCategoryTable(); // 创建单词-分类关联表
+    bool createPhoneticsTable(); // 创建音标表
+    bool createPartsOfSpeechTable(); // 创建词性表
+    bool createDefinitionsTable(); // 创建释义表
+    bool createSynonymsTable(); // 创建同义词表
+    bool createAntonymsTable(); // 创建反义词表
+
+    // 辅助方法
+    bool openDatabase(const QString &dbPath, bool isNew); // 打开数据库
+    bool execSql(const QString &sql); // 执行SQL语句
+    int getOrCreatePartOfSpeech(const QString &posName); // 获取或创建词性
+    bool savePhonetics(int wordId, const QVector<Phonetic> &phonetics); // 保存音标
+    bool saveDefinitions(int wordId, const QMap<QString, QVector<Definition>> &meanings); // 保存释义
+    bool loadPhonetics(int wordId, QVector<Phonetic> &phonetics); // 加载音标
+    bool loadDefinitions(int wordId, QMap<QString, QVector<Definition>> &meanings); // 加载释义
+
 };
 
 #endif // DATABASE_H
