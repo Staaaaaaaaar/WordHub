@@ -25,4 +25,13 @@ private:
     Ui::QueryWidget *ui;
 };
 
+//自定义字典类
+class Dictionary
+{
+public:
+
+private:
+
+};
+
 #endif // QUERYWIDGET_H
