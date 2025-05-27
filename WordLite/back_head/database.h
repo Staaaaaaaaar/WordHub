@@ -105,7 +105,7 @@ public:
     // 数据库工具方法
     bool createTables();
     bool insertSampleData();
-    static QMap<QString,QString> getpath (); // 获取key为数据库名称，value为存储路径的 map  已实现
+    static QMap<QString,QString> getpath(); // 获取key为数据库名称，value为存储路径的 map  已实现
     static QVector<QString> getlist(); // 获取当前已有的数据库名称列表 已实现
     const QString& getPath(){return Path;} // 获取当前数据库的路径 已实现
 

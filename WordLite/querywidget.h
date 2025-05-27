@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <wordwidget.h>
+#include <./back_head/database.h>
 
 namespace Ui {
 class QueryWidget;
@@ -16,22 +17,27 @@ public:
     explicit QueryWidget(QWidget *parent = nullptr);
     ~QueryWidget();
 
+    WordDatabase* wordDataBase;
+    QString defaultWordDB;
+    QVector<QString> wordDBList;
+
+    void setupUI();
+    void connectSignals();
+
 private slots:
     void on_searchEdit_returnPressed();
 
     void on_tabWidget_tabCloseRequested(int index);
 
+private: signals:
+    void sendMes(QString message, int timeout=0);
+    void clearMes();
+
+
 private:
     Ui::QueryWidget *ui;
 };
 
-//自定义字典类
-class Dictionary
-{
-public:
 
-private:
-
-};
 
 #endif // QUERYWIDGET_H

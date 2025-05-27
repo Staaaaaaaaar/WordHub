@@ -10,27 +10,27 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    # achievementwidget.cpp \
-    back_head/test.cpp \
-    # gamewidget.cpp \
-    # learnwidget.cpp \
-    # main.cpp \
-    # mainwindow.cpp \
-    # querywidget.cpp \
-    # reviewwidget.cpp \
-    # userwidget.cpp \
-    # wordwidget.cpp \
+    achievementwidget.cpp \
+    # back_head/test.cpp \
+    gamewidget.cpp \
+    learnwidget.cpp \
+    main.cpp \
+    mainwindow.cpp \
+    querywidget.cpp \
+    reviewwidget.cpp \
+    userwidget.cpp \
+    wordwidget.cpp \
     back_src/database.cpp
 
 HEADERS += \
-    # achievementwidget.h \
-    # gamewidget.h \
-    # learnwidget.h \
-    # mainwindow.h \
-    # querywidget.h \
-    # reviewwidget.h \
-    # userwidget.h \
-    # wordwidget.h \
+    achievementwidget.h \
+    gamewidget.h \
+    learnwidget.h \
+    mainwindow.h \
+    querywidget.h \
+    reviewwidget.h \
+    userwidget.h \
+    wordwidget.h \
     back_head/database.h
 
 FORMS += \

@@ -6,26 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>463</width>
-    <height>364</height>
+    <width>576</width>
+    <height>498</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>0</y>
-     <width>40</width>
-     <height>12</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>ach</string>
-   </property>
-  </widget>
  </widget>
  <resources/>
  <connections/>

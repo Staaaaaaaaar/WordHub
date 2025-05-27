@@ -15,6 +15,10 @@ public:
     explicit GameWidget(QWidget *parent = nullptr);
     ~GameWidget();
 
+    // 设置UI和连接信号槽
+    void setupUI();
+    void connectSignals();
+
 private:
     Ui::GameWidget *ui;
 };
