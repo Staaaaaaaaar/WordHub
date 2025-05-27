@@ -9,6 +9,7 @@
 #include <QString>
 #include <QVector>
 #include <QDateTime>
+
 #include <QMap>
 #include <QCoreApplication>
 #include <QDir>
@@ -25,6 +26,7 @@ class WordDatabase : public QObject {
     Q_OBJECT
 public:
     explicit WordDatabase();
+
     ~WordDatabase();
 
     // 数据库状态管理
@@ -59,6 +61,7 @@ public:
     int getUserId(const QString &username); // 获取用户ID
 
     // 学习记录管理
+
     bool addLearningRecord(const LearningRecord &record); // 添加学习记录
     QVector<LearningRecord> getUserLearningRecords(int userId, int days = 30); // 获取用户学习记录
     double getLearningAccuracy(int userId, int days = 30); // 计算学习准确率
@@ -95,6 +98,7 @@ private:
     bool saveDefinitions(int wordId, const QMap<QString, QVector<Definition>> &meanings); // 保存释义
     bool loadPhonetics(int wordId, QVector<Phonetic> &phonetics); // 加载音标
     bool loadDefinitions(int wordId, QMap<QString, QVector<Definition>> &meanings); // 加载释义
+
 };
 
 #endif // DATABASE_H

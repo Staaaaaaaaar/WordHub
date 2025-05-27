@@ -1,9 +1,11 @@
 #include "../back_head/database.h"
 
+
 WordDatabase::WordDatabase() {
     QString dataDir = QCoreApplication::applicationDirPath() + "/datas/";
     QDir dir(dataDir);
     if (!dir.exists()) dir.mkpath(".");
+
 }
 
 WordDatabase::~WordDatabase() {
@@ -84,6 +86,7 @@ bool WordDatabase::initDatabase(const QString &name) // 创建链接，打开已
 bool WordDatabase::NewDatabase(const QString &name) // 创建链接，创建新的数据库
 {
     m_connectionName=name;
+
     QString dataDir = QCoreApplication::applicationDirPath() + "/datas/";
     QString dbPath = dataDir + name + ".db";
     QFileInfo fileInfo(dbPath);
@@ -123,6 +126,7 @@ bool WordDatabase::openDatabase(const QString &dbPath, bool isNew) {
             return false;
         }
     }
+
     return true;
 }
 
@@ -132,6 +136,7 @@ bool WordDatabase::execSql(const QString &sql) {
         qWarning() << "SQL执行失败:" << query.lastError().text() << "\nSQL:" << sql;
         return false;
     }
+
     return true;
 }
 
@@ -754,6 +759,7 @@ bool WordDatabase::addLearningRecord(const LearningRecord &record) {
 QVector<LearningRecord> WordDatabase::getUserLearningRecords(int userId, int days) {
     QVector<LearningRecord> records;
     QSqlQuery query(m_db);
+
 
     if (days > 0) {
         query.prepare(

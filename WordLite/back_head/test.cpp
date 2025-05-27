@@ -11,7 +11,9 @@ int main(int argc, char *argv[])
     qInfo()<<WordDatabase::getlist();
     qInfo()<<WordDatabase::getpath();
 
+
     QString lib="test1"; // 自定义数据库的名称
+
     WordDatabase db1; // 创建自定义数据库
     db1.NewDatabase(lib);
 
@@ -80,12 +82,20 @@ int main(int argc, char *argv[])
     }
 
 
+
     qInfo()<<"测试查找单词\n";
     qInfo()<<db1.getWordsByName("abcd");
     qInfo()<<"6666";
     qInfo()<<db1.getWordsByName("dhohf");// 返回的是一个QVector对象，这里直接把Qvector打印了
     qInfo()<<"6666";
     // WordDatabase db2();
+
+    // qInfo()<<"测试查找单词\n";
+    // qInfo()<<db1.getWordsByName("abcd");
+    // qInfo()<<db1.getWordsByName("dhohf");// 返回的是一个QVector对象，这里直接把Qvector打印了
+
+    // WordDatabase db2("newdir");
+
     // db2.initDatabase("newdir");
     // db2.NewDatabase("newdir");
     // for(auto p:db2.getAllWords())
