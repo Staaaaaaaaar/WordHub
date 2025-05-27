@@ -77,7 +77,7 @@ bool WordDatabase::initDatabase(const QString &name) // 创建链接，打开已
     qInfo()<<"加载数据库成功\n";
 
     // 测试用，测试完成后注释掉
-    insertSampleData();
+    // insertSampleData();
     // 测试用，测试完成后注释掉
 
     return true;
@@ -103,7 +103,8 @@ bool WordDatabase::NewDatabase(const QString &name) // 创建链接，创建新�
     }
     qInfo()<<"新建数据库成功\n";
 
-    insertSampleData(); // 仅在新建时插入示例数据
+    // insertSampleData(); // 仅在新建时插入示例数据
+
     return true;
 }
 
