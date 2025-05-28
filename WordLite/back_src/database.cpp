@@ -569,6 +569,72 @@ QVector<Word> WordDatabase::getWordsByReviewCount(int maxReviewCount, int count,
     return words;
 }
 
+// 更新单词学习信息并添加学习记录
+bool WordDatabase::updateWordLearningInfo(int wordId, bool correct, int difficultyChange, int userId) {
+    if (wordId <= 0 || userId <= 0) {
+        qWarning() << "无效的单词ID或用户ID";
+        return false;
+    }
+
+    // 开始事务确保数据一致性
+    m_db.transaction();
+
+    // 1. 获取当前单词信息
+    QSqlQuery query(m_db);
+    query.prepare("SELECT review_count, difficulty FROM Words WHERE id = :id");
+    query.bindValue(":id", wordId);
+
+    if (!query.exec() || !query.next()) {
+        qWarning() << "获取单词信息失败或单词不存在:" << query.lastError().text();
+        m_db.rollback();
+        return false;
+    }
+
+    int currentReviewCount = query.value(0).toInt();
+    int currentDifficulty = query.value(1).toInt();
+
+    // 2. 更新单词信息
+    // 更新复习次数
+    int newReviewCount = currentReviewCount + 1;
+
+    // 更新难度值（限制在1-5范围内）
+    int newDifficulty = currentDifficulty + difficultyChange;
+    newDifficulty = qBound(1, newDifficulty, 5); // 确保难度在1-5之间
+
+    // 更新数据库中的单词信息
+    query.prepare("UPDATE Words SET "
+                  "last_reviewed = CURRENT_TIMESTAMP, "
+                  "review_count = :review_count, "
+                  "difficulty = :difficulty "
+                  "WHERE id = :id");
+    query.bindValue(":review_count", newReviewCount);
+    query.bindValue(":difficulty", newDifficulty);
+    query.bindValue(":id", wordId);
+
+    if (!query.exec()) {
+        qWarning() << "更新单词信息失败:" << query.lastError().text();
+        m_db.rollback();
+        return false;
+    }
+
+    // 3. 添加学习记录
+    query.prepare("INSERT INTO LearningRecords (word_id, user_id, timestamp, correct, difficulty) "
+                  "VALUES (:word_id, :user_id, CURRENT_TIMESTAMP, :correct, :difficulty)");
+    query.bindValue(":word_id", wordId);
+    query.bindValue(":user_id", userId);
+    query.bindValue(":correct", correct);
+    query.bindValue(":difficulty", newDifficulty);
+
+    if (!query.exec()) {
+        qWarning() << "添加学习记录失败:" << query.lastError().text();
+        m_db.rollback();
+        return false;
+    }
+
+    // 提交事务
+    return m_db.commit();
+}
+
 QVector<Word> WordDatabase::getWordsByCategory(int categoryId) {
     QVector<Word> words;
     QSqlQuery query(m_db);

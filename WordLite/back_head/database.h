@@ -43,6 +43,8 @@ public:
     QVector<Word> getRandomWords(int count, int categoryId = -1);
     // 新增：获取复习次数小于等于指定值的单词
     QVector<Word> getWordsByReviewCount(int maxReviewCount, int count = -1, int categoryId = -1);
+    // 新增：更新单词学习信息并添加学习记录
+    bool updateWordLearningInfo(int wordId, bool correct, int difficultyChange=0, int userId=1);
 
     // 分类管理
     bool addCategory(const Category &category); // 添加分类
@@ -63,6 +65,7 @@ public:
     QVector<LearningRecord> getUserLearningRecords(int userId, int days = 30); // 获取用户学习记录
     double getLearningAccuracy(int userId, int days = 30); // 计算学习准确率
 
+    // 重置学习记录
     bool resetLearningRecords();
 
     // 工具方法
