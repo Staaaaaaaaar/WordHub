@@ -3,6 +3,7 @@
 #include<QDir>
 #include<QDebug>
 #include "database.h"
+#include "loadword.h"
 #include "../back_src/loadword.cpp"
 
 int main(int argc, char *argv[])
@@ -10,19 +11,23 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
 
-    // 导入
+    //导入
     // QString jsonFilePath = "D:\\PKU\\25_spring\\chengshe\\vocabulary_learning\\vocabulary_learning\\oxford_9_structed\\oxford_9_structed.json";
     // QString dbName = "oxford_9";
-    // if (importWordsFromJson(jsonFilePath, dbName)) {
+    // Wordloader wordloader;
+    // if (wordloader.importWordsFromJson(jsonFilePath, dbName)) {
     //     qDebug() << "数据导入成功！";
     // } else {
     //     qDebug() << "数据导入失败！";
     // }
 
+    QString txtPath="D:\\PKU\\25_spring\\chengshe\\vocabulary_learning\\english-wordlists\\GRE_abridged.txt";
+    Wordloader wordloader;
+    wordloader.importWordFromTXT(txtPath,"GRE_abridged","oxford_9",true);
 
-    WordDatabase test;
-    test.initDatabase("oxford_9");
-    qInfo()<<test.getWordsByName("tomato");
+    // WordDatabase test;
+    // test.initDatabase("oxford_9");
+    // qInfo()<<test.getWordsByName("tomato");
 
     // for(auto p:test.getAllWords())
     // {
