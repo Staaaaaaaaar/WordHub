@@ -1,142 +1,193 @@
-#include <QCoreApplication>
-#include "./back_head/learner.h"
-#include <QFileInfo>
-#include <QDebug>
+// // test_learner.cpp
+// #include <QCoreApplication>
+// #include <QDebug>
+// #include <QDir>
+// #include "../back_head/Learner.h"
 
-void printUserInfo(const Learner& learner, const QString& prefix = "")
+// bool testSingleton()
+// {
+//     Learner* instance1 = Learner::getInstance();
+//     Learner* instance2 = Learner::getInstance();
+
+//     qDebug() << "[1] Singleton Test:";
+//     qDebug() << "Instance1 address:" << instance1;
+//     qDebug() << "Instance2 address:" << instance2;
+
+//     bool success = (instance1 == instance2) && (instance1 != nullptr);
+//     qDebug() << (success ? "✓ Passed" : "✗ Failed");
+//     return success;
+// }
+
+// bool testDatabasePath()
+// {
+//     QString actualPath = Learner::getUserDatabasePath();
+//     QString expectedPath = QCoreApplication::applicationDirPath()
+//                            + "/User/learning_data.db";
+
+//     qDebug() << "\n[2] Database Path Test:";
+//     qDebug() << "Expected:" << expectedPath;
+//     qDebug() << "Actual  :" << actualPath;
+
+//     bool success = (actualPath == expectedPath);
+//     qDebug() << (success ? "✓ Passed" : "✗ Failed");
+//     return success;
+// }
+
+// bool testUserCreation()
+// {
+//     Learner* learner = Learner::getInstance();
+
+//     qDebug() << "\n[3] User Creation Test:";
+//     bool createResult = learner->createNewUser("testUser", "password123");
+//     qDebug() << "Create user result:" << createResult;
+
+//     bool verifyResult = learner->verifyPassword("password123");
+//     qDebug() << "Password verification:" << verifyResult;
+
+//     bool success = createResult && verifyResult;
+//     qDebug() << (success ? "✓ Passed" : "✗ Failed");
+//     return success;
+// }
+
+// void cleanupTestData()
+// {
+//     QString dbPath = Learner::getUserDatabasePath();
+//     QFile::remove(dbPath);
+//     qDebug() << "\nCleaned up test database:" << dbPath;
+// }
+
+// int main(int argc, char *argv[])
+// {
+//     QCoreApplication a(argc, argv);
+
+//     // 重定向到测试目录
+//     QString testDir = QCoreApplication::applicationDirPath() + "/test_data/";
+//     QDir().mkpath(testDir);
+//     QCoreApplication::setApplicationVersion("TEST");
+//     QCoreApplication::setApplicationName("LearnerTest");
+//     qputenv("QStandardPaths::AppDataLocation", testDir.toUtf8());
+
+//     qDebug() << "=== Starting Command Line Tests ===";
+
+//     int passed = 0;
+//     passed += testSingleton();
+//     passed += testDatabasePath();
+//     passed += testUserCreation();
+
+//     qDebug() << "\n=== Test Summary ===";
+//     qDebug() << "Passed:" << passed << "/ 3 tests";
+
+//     cleanupTestData();
+//     return (passed == 3) ? 0 : 1;
+// }
+
+#include <QTest>
+#include "../back_head/learner.h"
+
+class LearnerTest : public QObject
 {
-    qDebug() << prefix << "用户名:" << learner.getName();
-    qDebug() << prefix << "头像路径:" << learner.getHeadImagePath();
-    qDebug() << prefix << "开始学习时间:" << learner.getStartTime().toString(Qt::ISODate);
-    qDebug() << prefix << "已学习总数:" << learner.getTotalLearned();
-    qDebug() << prefix << "是否登录:" << (learner.isUserLoggedIn() ? "是" : "否");
-    qDebug() << "----------------------------------------";
+    Q_OBJECT
+
+private slots:
+    void initTestCase();
+    void cleanupTestCase();
+
+    void testSingletonInstance();
+    void testCreateNewUser();
+    void testResetUser();
+    void testVerifyPassword();
+    void testSetName();
+    void testSetPassword();
+    void testSetHeadImagePath();
+    void testIsUserLoggedIn();
+};
+
+void LearnerTest::initTestCase()
+{
+    // 初始化操作，例如可以在这里删除之前的测试数据库
+    QDir userDir(Learner::getUserDir());
+    if (userDir.exists()) {
+        userDir.removeRecursively();
+    }
 }
 
-bool verifyDatabaseExists()
+void LearnerTest::cleanupTestCase()
 {
-    QString dbPath = QCoreApplication::applicationDirPath() + "/User/user_data.sqlite";
-    QFileInfo fileInfo(dbPath);
-    bool exists = fileInfo.exists() && fileInfo.isFile();
-    qDebug() << "数据库文件检查:" << dbPath << (exists ? "存在" : "不存在");
-    
-    // 如果文件存在，打印文件大小
-    if (exists) {
-        qDebug() << "数据库文件大小:" << fileInfo.size() << "字节";
+    // 清理操作，例如删除测试数据库
+    QDir userDir(Learner::getUserDir());
+    if (userDir.exists()) {
+        userDir.removeRecursively();
     }
-    
-    return exists;
 }
 
-int main(int argc, char *argv[])
+void LearnerTest::testSingletonInstance()
 {
-    QCoreApplication a(argc, argv);
-    
-    qDebug() << "===== 开始测试 Learner 类 =====";
-    qDebug() << "应用程序目录:" << QCoreApplication::applicationDirPath();
-    qDebug() << "预期数据库路径:" << QCoreApplication::applicationDirPath() + "/User/user_data.sqlite";
-    
-    // 测试1: 初始化 - 应该创建Guest用户
-    qDebug() << "\n测试1: 初始化 Learner 类";
-    {
-        qDebug() << "创建第一个Learner实例";
-        Learner learner;
-        printUserInfo(learner, "初始状态:");
-        
-        // 验证数据库是否创建
-        verifyDatabaseExists();
-    }
-    
-    // 测试2: 创建新用户
-    qDebug() << "\n测试2: 创建新用户";
-    {
-        qDebug() << "创建第二个Learner实例";
-        Learner learner;
-        bool createResult = learner.createNewUser("测试用户", "password123");
-        qDebug() << "创建用户结果:" << (createResult ? "成功" : "失败");
-        printUserInfo(learner, "创建用户后:");
-        
-        // 验证数据库是否创建
-        verifyDatabaseExists();
-    }
-    
-    // 测试3: 修改用户信息
-    qDebug() << "\n测试3: 修改用户信息";
-    {
-        qDebug() << "创建第三个Learner实例";
-        Learner learner;
-        learner.setName("修改后的用户名");
-        learner.setHeadImagePath(":/images/new_avatar.png");
-        learner.setTotalLearned(50);
-        printUserInfo(learner, "修改后:");
-        
-        // 验证数据库是否创建
-        verifyDatabaseExists();
-    }
-    
-    // 测试4: 验证密码
-    qDebug() << "\n测试4: 验证密码";
-    {
-        qDebug() << "创建第四个Learner实例";
-        Learner learner;
-        qDebug() << "正确密码验证结果:" << (learner.verifyPassword("password123") ? "成功" : "失败");
-        qDebug() << "错误密码验证结果:" << (learner.verifyPassword("wrong_password") ? "成功" : "失败");
-        
-        // 验证数据库是否创建
-        verifyDatabaseExists();
-    }
-    
-    // 测试5: 重启应用 - 验证数据持久化
-    qDebug() << "\n测试5: 验证数据持久化";
-    {
-        qDebug() << "创建第五个Learner实例 (模拟应用重启)";
-        Learner newLearner;
-        printUserInfo(newLearner, "重启后加载的用户:");
-        
-        // 验证数据库是否创建
-        verifyDatabaseExists();
-    }
-    
-    // 测试6: 重置用户
-    qDebug() << "\n测试6: 重置用户";
-    {
-        qDebug() << "创建第六个Learner实例";
-        Learner learner;
-        bool resetResult = learner.resetUser(true);
-        qDebug() << "重置用户结果:" << (resetResult ? "成功" : "失败");
-        printUserInfo(learner, "重置后:");
-        
-        // 验证数据库是否创建
-        verifyDatabaseExists();
-    }
-    
-    // 测试7: 重置后创建新用户
-    qDebug() << "\n测试7: 重置后创建新用户";
-    {
-        qDebug() << "创建第七个Learner实例";
-        Learner learner;
-        bool createResult = learner.createNewUser("新用户", "new_password");
-        qDebug() << "创建新用户结果:" << (createResult ? "成功" : "失败");
-        printUserInfo(learner, "创建新用户后:");
-        
-        // 验证数据库是否创建
-        verifyDatabaseExists();
-    }
-    
-    // 测试8: 已有用户时尝试创建新用户 - 应该失败
-    qDebug() << "\n测试8: 已有用户时尝试创建新用户";
-    {
-        qDebug() << "创建第八个Learner实例";
-        Learner learner;
-        bool createResult = learner.createNewUser("冲突用户", "password");
-        qDebug() << "尝试创建新用户结果:" << (createResult ? "成功" : "失败");
-        printUserInfo(learner, "尝试后:");
-        
-        // 验证数据库是否创建
-        verifyDatabaseExists();
-    }
-    
-    qDebug() << "\n===== 测试完成 =====";
-    
-    return 0;
+    Learner* instance1 = Learner::getInstance();
+    Learner* instance2 = Learner::getInstance();
+    QVERIFY(instance1 == instance2);
 }
+
+void LearnerTest::testCreateNewUser()
+{
+    Learner* learner = Learner::getInstance();
+    bool result = learner->createNewUser("testuser", "testpassword");
+    QVERIFY(result);
+}
+
+void LearnerTest::testResetUser()
+{
+    Learner* learner = Learner::getInstance();
+    bool result = learner->resetUser(true);
+    QVERIFY(result);
+}
+
+void LearnerTest::testVerifyPassword()
+{
+    Learner* learner = Learner::getInstance();
+    learner->createNewUser("testuser", "testpassword");
+    bool result = learner->verifyPassword("testpassword");
+    QVERIFY(result);
+}
+
+void LearnerTest::testSetName()
+{
+    Learner* learner = Learner::getInstance();
+    learner->setName("newtestuser");
+    QCOMPARE(learner->getName(), QString("newtestuser"));
+}
+
+void LearnerTest::testSetPassword()
+{
+    Learner* learner = Learner::getInstance();
+    learner->setPassword("newtestpassword");
+    bool result = learner->verifyPassword("newtestpassword");
+    QVERIFY(result);
+}
+
+void LearnerTest::testSetHeadImagePath()
+{
+    Learner* learner = Learner::getInstance();
+    QString testImagePath = "test_image.png";
+    learner->setHeadImage(testImagePath);
+    QVERIFY(!learner->getHeadImage().isEmpty());
+}
+
+void LearnerTest::testIsUserLoggedIn()
+{
+    Learner* learner = Learner::getInstance();
+    // 确保用户未登录
+    learner->resetUser(true);
+
+    bool createResult = learner->createNewUser("testuser", "testpassword");
+    QVERIFY(createResult);
+
+    bool result = learner->isUserLoggedIn();
+    QVERIFY(result);
+
+    learner->resetUser(true);
+    result = learner->isUserLoggedIn();
+    QVERIFY(!result);
+}
+
+QTEST_MAIN(LearnerTest)
+#include "learner_test.moc"

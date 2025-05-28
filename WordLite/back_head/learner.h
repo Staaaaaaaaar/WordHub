@@ -4,65 +4,73 @@
 #include <QString>
 #include <QDateTime>
 #include <QSqlDatabase>
-#include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlQuery>
 #include <QCryptographicHash>
 #include <QDir>
-#include <QDebug>
 
 class Learner
 {
 private:
+    // 单例模式核心成员
+    static Learner* instance;
+
+    // 数据库配置
+public:
+    static const QString DB_CONNECTION_NAME;  // 需要在cpp文件初始化
+    static const QString DB_FILENAME;
+private:
+    // 实例成员
     QString m_hashPassword;
     QDateTime m_startLearningTime;
-    int m_totalLearned;
+    int m_totalLearned = 0;
     QString m_name;
-    QString m_headImagePath;
-    
-    // 数据库连接
+    QString m_headImage;
     QSqlDatabase m_db;
-    static const QString DB_CONNECTION_NAME; // 数据库连接名称
-    static const QString DB_FILENAME; // SQLite数据库文件名
-    
-    // 修改：将USER_DIR改为私有静态方法
-    static const QString& getUserDir();
 
-    // 初始化数据库连接
-    bool initDatabase();
-    
-    // 创建用户表
-    bool createUserTable();
-    
-    // 加密密码
-    QString hashPassword(const QString& password) const;
-    
-    // 从数据库加载用户数据
-    bool loadUserData();
-    
-    // 保存用户数据到数据库
-    bool saveUserData();
-
-public:
+    // 私有构造函数实现单例
     Learner();
     ~Learner();
 
-    // 用户信息设置
+    // 禁止拷贝
+    Learner(const Learner&) = delete;
+    Learner& operator=(const Learner&) = delete;
+public:
+    // 静态方法
+    static const QString& getUserDir();
+private:
+    // 数据库操作
+    bool initDatabase();
+    bool createUserTable();
+    QString hashPassword(const QString& password) const;
+    bool loadUserData();
+    bool saveUserData();
+
+public:
+    // 单例访问点
+    static Learner* getInstance();
+
+    // 添加用户目录访问方法
+    static QString getUserDatabasePath();
+    static QString getUserAvatarPath();
+
+    // 用户信息管理
     void setName(const QString& newName);
     void setPassword(const QString& password);
     bool verifyPassword(const QString& password) const;
-    QDateTime getStartTime() const { return m_startLearningTime; }
-    void setHeadImagePath(const QString& newPath);
-    void setTotalLearned(int value);
-    int getTotalLearned() const { return m_totalLearned; }
+    void setHeadImage(const QString& name){m_headImage=name;};
+    void setTotalLearned(int value){m_totalLearned=value;};
 
-    // 用户管理
+    // 用户状态操作
     bool createNewUser(const QString& username, const QString& password);
     bool resetUser(bool confirm = false);
     bool isUserLoggedIn() const;
-    
-    // 获取用户信息
+
+    // 访问器
+    QDateTime getStartTime() const { return m_startLearningTime; }
     QString getName() const { return m_name; }
-    QString getHeadImagePath() const { return m_headImagePath; }
+    QString getHeadImage() const { return m_headImage; }
+    int getTotalLearned() const { return m_totalLearned; }
 };
 
 #endif // LEARNER_H
