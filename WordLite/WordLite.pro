@@ -18,8 +18,8 @@ SOURCES += \
     #reviewwidget.cpp \
     #userwidget.cpp \
     #wordwidget.cpp \
-    #test/test.cpp \
-    test/learner_test.cpp \
+    test/test.cpp \
+    #test/learner_test.cpp \
     back_src/loadword.cpp \
     back_src/utils.cpp \
     back_src/database.cpp \

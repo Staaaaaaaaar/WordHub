@@ -20,44 +20,6 @@ void WordDatabase::close() {
     m_db.close();
 }
 
-// bool WordDatabase::initDatabase(const QString &name) {
-//     m_connectionName = name;
-//     QString dbPath = QCoreApplication::applicationDirPath() + "/datas/" + name + ".db";
-//     if (!QFile::exists(dbPath)) {
-//         qInfo() << "数据库文件不存在:" << dbPath;
-//         return false;
-//     }
-//     Path = dbPath;
-//     return openDatabase(Path, false);
-// }
-
-// bool WordDatabase::NewDatabase(const QString &name) {
-//     m_connectionName = name;
-//     QString dbPath = QCoreApplication::applicationDirPath() + "/datas/" + name + ".db";
-//     Path = dbPath;
-//     insertSampleData();
-//     return openDatabase(Path, true);
-// }
-
-// bool WordDatabase::openDatabase(const QString &dbPath, bool isNew) {
-//     if (QSqlDatabase::contains(m_connectionName))
-//         QSqlDatabase::removeDatabase(m_connectionName);
-
-//     m_db = QSqlDatabase::addDatabase("QSQLITE", m_connectionName);
-//     m_db.setDatabaseName(dbPath);
-
-//     if (!m_db.open()) {
-//         qDebug() << "打开数据库失败:" << m_db.lastError().text();
-//         return false;
-//     }
-
-//     if (isNew && !createTables()) {
-//         m_db.close();
-//         return false;
-//     }
-//     return true;
-// }
-
 bool WordDatabase::initDatabase(const QString &name) // 创建链接，打开已有数据库
 {
     m_connectionName=name;
@@ -943,3 +905,21 @@ QVector<QString> WordDatabase::getlist() {
     return dbNames;
 }
 
+// 新增：重置所有学习记录信息
+bool WordDatabase::resetLearningRecords() {
+    m_db.transaction();
+
+    // 删除所有学习记录
+    if (!execSql("DELETE FROM LearningRecords")) {
+        m_db.rollback();
+        return false;
+    }
+
+    // 重置所有单词的复习信息
+    if (!execSql("UPDATE Words SET last_reviewed = NULL, review_count = 0, difficulty = 3")) {
+        m_db.rollback();
+        return false;
+    }
+
+    return m_db.commit();
+}

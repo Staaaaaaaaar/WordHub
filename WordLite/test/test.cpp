@@ -1,114 +1,125 @@
 #include <QCoreApplication>
-#include "learner.h"
-#include <QFileInfo>
-#include <QDebug>
+#include<QString>
+#include<QDir>
+#include<QDebug>
+#include "../back_head/database.h"
+#include "../back_head/loadword.h"
 
-void printUserInfo(const Learner& learner, const QString& prefix = "")
-{
-    qDebug() << prefix << "用户名:" << learner.getName();
-    qDebug() << prefix << "头像路径:" << learner.getHeadImagePath();
-    qDebug() << prefix << "开始学习时间:" << learner.getStartTime().toString(Qt::ISODate);
-    qDebug() << prefix << "已学习总数:" << learner.getTotalLearned();
-    qDebug() << prefix << "是否登录:" << (learner.isUserLoggedIn() ? "是" : "否");
-    qDebug() << "----------------------------------------";
-}
-
-bool verifyDatabaseExists()
-{
-    QString dbPath = QCoreApplication::applicationDirPath() + "/User/user_data.sqlite";
-    QFileInfo fileInfo(dbPath);
-    bool exists = fileInfo.exists() && fileInfo.isFile();
-    qDebug() << "数据库文件检查:" << dbPath << (exists ? "存在" : "不存在");
-    return exists;
-}
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    
-    qDebug() << "===== 开始测试 Learner 类 =====";
-    qDebug() << "应用程序目录:" << QCoreApplication::applicationDirPath();
-    
-    // 测试1: 初始化 - 应该创建Guest用户
-    qDebug() << "\n测试1: 初始化 Learner 类";
-    {
-        qDebug() << "创建第一个Learner实例";
-        Learner learner;
-        printUserInfo(learner, "初始状态:");
-        
-        // 验证数据库是否创建
-        verifyDatabaseExists();
-    }
-    
-    // 测试2: 创建新用户
-    qDebug() << "\n测试2: 创建新用户";
-    {
-        qDebug() << "创建第二个Learner实例";
-        Learner learner;
-        bool createResult = learner.createNewUser("测试用户", "password123");
-        qDebug() << "创建用户结果:" << (createResult ? "成功" : "失败");
-        printUserInfo(learner, "创建用户后:");
-    }
-    
-    // 测试3: 修改用户信息
-    qDebug() << "\n测试3: 修改用户信息";
-    {
-        qDebug() << "创建第三个Learner实例";
-        Learner learner;
-        learner.setName("修改后的用户名");
-        learner.setHeadImagePath(":/images/new_avatar.png");
-        learner.setTotalLearned(50);
-        printUserInfo(learner, "修改后:");
-    }
-    
-    // 测试4: 验证密码
-    qDebug() << "\n测试4: 验证密码";
-    {
-        qDebug() << "创建第四个Learner实例";
-        Learner learner;
-        qDebug() << "正确密码验证结果:" << (learner.verifyPassword("password123") ? "成功" : "失败");
-        qDebug() << "错误密码验证结果:" << (learner.verifyPassword("wrong_password") ? "成功" : "失败");
-    }
-    
-    // 测试5: 重启应用 - 验证数据持久化
-    qDebug() << "\n测试5: 验证数据持久化";
-    {
-        qDebug() << "创建第五个Learner实例 (模拟应用重启)";
-        Learner newLearner;
-        printUserInfo(newLearner, "重启后加载的用户:");
-    }
-    
-    // 测试6: 重置用户
-    qDebug() << "\n测试6: 重置用户";
-    {
-        qDebug() << "创建第六个Learner实例";
-        Learner learner;
-        bool resetResult = learner.resetUser(true);
-        qDebug() << "重置用户结果:" << (resetResult ? "成功" : "失败");
-        printUserInfo(learner, "重置后:");
-    }
-    
-    // 测试7: 重置后创建新用户
-    qDebug() << "\n测试7: 重置后创建新用户";
-    {
-        qDebug() << "创建第七个Learner实例";
-        Learner learner;
-        bool createResult = learner.createNewUser("新用户", "new_password");
-        qDebug() << "创建新用户结果:" << (createResult ? "成功" : "失败");
-        printUserInfo(learner, "创建新用户后:");
-    }
-    
-    // 测试8: 已有用户时尝试创建新用户 - 应该失败
-    qDebug() << "\n测试8: 已有用户时尝试创建新用户";
-    {
-        qDebug() << "创建第八个Learner实例";
-        Learner learner;
-        bool createResult = learner.createNewUser("冲突用户", "password");
-        qDebug() << "尝试创建新用户结果:" << (createResult ? "成功" : "失败");
-        printUserInfo(learner, "尝试后:");
-    }
-    
-    qDebug() << "\n===== 测试完成 =====";
-    
+
+
+    //导入
+    // QString jsonFilePath = "D:\\PKU\\25_spring\\chengshe\\vocabulary_learning\\vocabulary_learning\\oxford_9_structed\\oxford_9_structed.json";
+    // QString dbName = "oxford_9";
+    // Wordloader wordloader;
+    // if (wordloader.importWordsFromJson(jsonFilePath, dbName)) {
+    //     qDebug() << "数据导入成功！";
+    // } else {
+    //     qDebug() << "数据导入失败！";
+    // }
+
+    QString txtPath="D:\\PKU\\25_spring\\chengshe\\vocabulary_learning\\english-wordlists\\test.txt";
+    Wordloader wordloader;
+    wordloader.importWordFromTXT(txtPath,"test","oxford_9");
+
+    // WordDatabase test;
+    // test.initDatabase("oxford_9");
+    // qInfo()<<test.getWordsByName("tomato");
+
+    // for(auto p:test.getAllWords())
+    // {
+    //      qInfo()<<p;
+    // }
+
+
+    // // 在database.cpp中初始化时调用insertSampleData()插入了一些测试的数据，可以去看一看长啥样，到时候需要注释掉
+
+    // // // 测试手动添加单词
+    // // Word word; // 看一下头文件Word的结构
+    // // word.word = "abcd";
+    // // word.meanings['none'].append(Definition("测试"));
+    // // if (db1.addWord(word)) {
+    // //     qInfo() << "单词添加成功";
+    // // } else {
+    // //     qWarning() << "单词添加失败";
+    // // }
+
+    // for(auto p:db1.getAllWords())
+    // {
+    //     qInfo()<<p;
+    // }
+
+    // qInfo()<<"________________________1__________________________";
+    // qInfo()<<db1.getCategoryById(1).name<<"\n";
+    // for(auto p:db1.getWordsByCategory(1)) // 获取分类id1的所有单词
+    // {
+    //     qInfo()<<p;
+    // }
+
+    // qInfo()<<"_______________________2___________________________";
+    // qInfo()<<db1.getCategoryById(2).name<<"\n";
+    // for(auto p:db1.getWordsByCategory(2))
+    // {
+    //     qInfo()<<p;
+    // }
+
+    // qInfo()<<"_______________________3___________________________";
+    // qInfo()<<db1.getCategoryById(3).name<<"\n";
+    // for(auto p:db1.getWordsByCategory(3))
+    // {
+    //     qInfo()<<p;
+    // }
+
+    // db1.deleteWord(6); // 根据id删除单词
+
+    // qInfo()<<db1.getWordById(4); // 根据id获取单词
+
+    // db1.removeWordFromCategory(1,1); // 去除单词分类的关连关系
+    // qInfo()<<"________________________1__________________________";
+    // qInfo()<<db1.getCategoryById(1).name<<"\n";
+    // for(auto p:db1.getWordsByCategory(1))
+    // {
+    //     qInfo()<<p;
+    // }
+
+    // qInfo()<<"_______________________2___________________________";
+    // qInfo()<<db1.getCategoryById(2).name<<"\n";
+    // for(auto p:db1.getWordsByCategory(2))
+    // {
+    //     qInfo()<<p;
+    // }
+
+    // qInfo()<<"_______________________3___________________________";
+    // qInfo()<<db1.getCategoryById(3).name<<"\n";
+    // for(auto p:db1.getWordsByCategory(3))
+    // {
+    //     qInfo()<<p;
+    // }
+
+
+
+    // qInfo()<<"测试查找单词\n";
+    // qInfo()<<db1.getWordsByName("abcd");
+    // qInfo()<<"6666";
+    // qInfo()<<db1.getWordsByName("dhohf");// 返回的是一个QVector对象，这里直接把Qvector打印了
+    // qInfo()<<"6666";
+    // // WordDatabase db2();
+
+    // // qInfo()<<"测试查找单词\n";
+    // // qInfo()<<db1.getWordsByName("abcd");
+    // // qInfo()<<db1.getWordsByName("dhohf");// 返回的是一个QVector对象，这里直接把Qvector打印了
+
+    // // WordDatabase db2("newdir");
+
+    // // db2.initDatabase("newdir");
+    // // db2.NewDatabase("newdir");
+    // // for(auto p:db2.getAllWords())
+    // // {
+    // //     qInfo()<<p;
+    // // }
+
     return 0;
 }

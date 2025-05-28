@@ -61,10 +61,11 @@ public:
     int getUserId(const QString &username); // 获取用户ID
 
     // 学习记录管理
-
     bool addLearningRecord(const LearningRecord &record); // 添加学习记录
     QVector<LearningRecord> getUserLearningRecords(int userId, int days = 30); // 获取用户学习记录
     double getLearningAccuracy(int userId, int days = 30); // 计算学习准确率
+
+    bool resetLearningRecords();
 
     // 工具方法
     bool createTables(); // 创建数据库表结构
