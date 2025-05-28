@@ -38,10 +38,25 @@ template <> constexpr inline auto MainWindow::qt_create_metaobjectdata<qt_meta_t
 {
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
-        "MainWindow"
+        "MainWindow",
+        "showMes",
+        "",
+        "message",
+        "timeout",
+        "clearMes"
     };
 
     QtMocHelpers::UintData qt_methods {
+        // Slot 'showMes'
+        QtMocHelpers::SlotData<void(QString, int)>(1, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::QString, 3 }, { QMetaType::Int, 4 },
+        }}),
+        // Slot 'showMes'
+        QtMocHelpers::SlotData<void(QString)>(1, 2, QMC::AccessPrivate | QMC::MethodCloned, QMetaType::Void, {{
+            { QMetaType::QString, 3 },
+        }}),
+        // Slot 'clearMes'
+        QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -63,10 +78,14 @@ Q_CONSTINIT const QMetaObject MainWindow::staticMetaObject = { {
 void MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     auto *_t = static_cast<MainWindow *>(_o);
-    (void)_t;
-    (void)_c;
-    (void)_id;
-    (void)_a;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: _t->showMes((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<int>>(_a[2]))); break;
+        case 1: _t->showMes((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
+        case 2: _t->clearMes(); break;
+        default: ;
+        }
+    }
 }
 
 const QMetaObject *MainWindow::metaObject() const
@@ -85,6 +104,18 @@ void *MainWindow::qt_metacast(const char *_clname)
 int MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QMainWindow::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 3)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 3;
+    }
+    if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 3)
+            *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
+        _id -= 3;
+    }
     return _id;
 }
 QT_WARNING_POP

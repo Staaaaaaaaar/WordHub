@@ -19,6 +19,9 @@ public:
     void setupUI();
     void connectSignals();
 
+private slots:
+    void on_guessButton_clicked();
+
 private:
     Ui::GameWidget *ui;
 };

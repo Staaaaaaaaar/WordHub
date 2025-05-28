@@ -14,6 +14,9 @@ SOURCES += \
     # back_src/loadword.cpp \
     back_src\utils.cpp \
     gamewidget.cpp \
+    guess_according_to_description/guess_word.cpp \
+    guess_word.cpp \
+    guess_word_widget.cpp \
     learnwidget.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -27,6 +30,8 @@ SOURCES += \
 HEADERS += \
     achievementwidget.h \
     gamewidget.h \
+    guess_according_to_description_h/guess_word.h \
+    guess_word_widget.h \
     learnwidget.h \
     mainwindow.h \
     querywidget.h \
@@ -41,6 +46,7 @@ HEADERS += \
 FORMS += \
     achievementwidget.ui \
     gamewidget.ui \
+    guess_word_widget.ui \
     learnwidget.ui \
     mainwindow.ui \
     querywidget.ui \
