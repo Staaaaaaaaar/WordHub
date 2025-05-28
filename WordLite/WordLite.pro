@@ -9,33 +9,37 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    achievementwidget.cpp \
-    # back_head/test.cpp \
-    # back_src/loadword.cpp \
-    back_src\utils.cpp \
-    gamewidget.cpp \
-    learnwidget.cpp \
-    main.cpp \
-    mainwindow.cpp \
-    querywidget.cpp \
-    reviewwidget.cpp \
-    userwidget.cpp \
-    wordwidget.cpp \
+    #achievementwidget.cpp \
+    #gamewidget.cpp \
+    #learnwidget.cpp \
+    #main.cpp \
+    #mainwindow.cpp \
+    #querywidget.cpp \
+    #reviewwidget.cpp \
+    #userwidget.cpp \
+    #wordwidget.cpp \
+    #test/test.cpp \
+    test/learner_test.cpp \
+    back_src/loadword.cpp \
+    back_src/utils.cpp \
     back_src/database.cpp \
+    back_src/learner.cpp \
     API/dictionaryapi.cpp
 
 HEADERS += \
-    achievementwidget.h \
-    gamewidget.h \
-    learnwidget.h \
-    mainwindow.h \
-    querywidget.h \
-    reviewwidget.h \
-    userwidget.h \
-    wordwidget.h \
+    #achievementwidget.h \
+    #gamewidget.h \
+    #learnwidget.h \
+    #mainwindow.h \
+    #querywidget.h \
+    #reviewwidget.h \
+    #userwidget.h \
+    #wordwidget.h \
     back_head/database.h \
-    API/dictionaryapi.h \
     back_head/utils.h\
+    back_head/loadword.h \
+    back_head/learner.h \
+    API/dictionaryapi.h \
 
 
 FORMS += \
