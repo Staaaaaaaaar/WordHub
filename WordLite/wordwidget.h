@@ -2,6 +2,11 @@
 #define WORDWIDGET_H
 
 #include <QWidget>
+#include <QLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <./back_head/database.h>
 
 namespace Ui {
 class WordWidget;
@@ -18,7 +23,7 @@ public:
     QString word;
 
     // 设置UI和连接信号槽
-    void setupUI();
+    void setupUI(QVector<Word> wordList);
     void connectSignals();
 
 private:

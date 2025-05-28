@@ -21,12 +21,12 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::setupUI(){
-    UserWidget* userWidget = new UserWidget;
-    QueryWidget* queryWidget = new QueryWidget;
-    LearnWidget* learnWidget = new LearnWidget;
-    ReviewWidget* reviewWidget = new ReviewWidget;
-    AchievementWidget* achievementWidget = new AchievementWidget;
-    GameWidget* gameWidget = new GameWidget;
+    userWidget = new UserWidget(this);
+    queryWidget = new QueryWidget(this);
+    learnWidget = new LearnWidget(this);
+    reviewWidget = new ReviewWidget(this);
+    achievementWidget = new AchievementWidget(this);
+    gameWidget = new GameWidget(this);
 
     ui->stackedWidget->addWidget(userWidget);
     ui->stackedWidget->addWidget(queryWidget);
@@ -64,6 +64,17 @@ void MainWindow::connectSignals(){
     connect(ui->gameButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(5);
     });
+
+    connect(queryWidget, SIGNAL(sendMes(QString,int)), this, SLOT(showMes(QString,int)));
+    connect(queryWidget, SIGNAL(clearMes()), this, SLOT(clearMes()));
 }
 
+void MainWindow::showMes(QString message, int timeout)
+{
+    ui->statusbar->showMessage(message, timeout);
+}
+void MainWindow::clearMes()
+{
+    ui->statusbar->clearMessage();
+}
 
