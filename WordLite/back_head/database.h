@@ -16,12 +16,6 @@
 #include <set>
 #include "./utils.h"
 
-
-/**
- * @brief 单词数据库管理类
- *
- * 负责与SQLite数据库交互，管理单词、分类、用户和学习记录
- */
 class WordDatabase : public QObject {
     Q_OBJECT
 public:
@@ -45,6 +39,10 @@ public:
     QVector<Word> getWordsByName(const QString &wordName); // 按名称查找单词
     QVector<Word> getWordsByCategory(int categoryId); // 获取指定分类下的单词
     QVector<Word> getWordsToReview(int userId, int count = 20); // 获取需要复习的单词（基于间隔重复算法）
+    // 新增：从指定分类中随机获取指定数量的单词
+    QVector<Word> getRandomWords(int count, int categoryId = -1);
+    // 新增：获取复习次数小于等于指定值的单词
+    QVector<Word> getWordsByReviewCount(int maxReviewCount, int count = -1, int categoryId = -1);
 
     // 分类管理
     bool addCategory(const Category &category); // 添加分类

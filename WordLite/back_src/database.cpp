@@ -473,6 +473,102 @@ QVector<Word> WordDatabase::getWordsByName(const QString &wordName) {
     return words;
 }
 
+// 从指定分类中随机获取指定数量的单词
+QVector<Word> WordDatabase::getRandomWords(int count, int categoryId) {
+    QVector<Word> words;
+
+    if (count <= 0) {
+        return words;
+    }
+
+    QSqlQuery query(m_db);
+
+    if (categoryId == -1) {
+        // 获取所有单词中的随机单词
+        query.prepare("SELECT id FROM Words ORDER BY RANDOM() LIMIT :count");
+    } else {
+        // 获取指定分类中的随机单词
+        query.prepare("SELECT w.id FROM Words w "
+                      "JOIN WordCategories wc ON w.id = wc.word_id "
+                      "WHERE wc.category_id = :categoryId "
+                      "ORDER BY RANDOM() LIMIT :count");
+        query.bindValue(":categoryId", categoryId);
+    }
+
+    query.bindValue(":count", count);
+
+    if (!query.exec()) {
+        qWarning() << "获取随机单词失败:" << query.lastError().text();
+        return words;
+    }
+
+    QVector<int> wordIds;
+    while (query.next()) {
+        wordIds.append(query.value(0).toInt());
+    }
+
+    // 为每个ID获取完整的单词信息
+    for (int id : wordIds) {
+        Word word = getWordById(id);
+        if (!word.word.isEmpty()) {
+            words.append(word);
+        }
+    }
+
+    return words;
+}
+
+// 获取复习次数小于等于指定值的单词
+QVector<Word> WordDatabase::getWordsByReviewCount(int maxReviewCount, int count, int categoryId) {
+    QVector<Word> words;
+
+    // 构建SQL查询
+    QString sql = "SELECT id FROM Words WHERE review_count <= :maxReviewCount ";
+
+    // 如果指定了分类，添加分类筛选条件
+    if (categoryId != -1) {
+        sql += "AND id IN (SELECT word_id FROM WordCategories WHERE category_id = :categoryId) ";
+    }
+
+    // 如果指定了数量，添加LIMIT限制
+    if (count > 0) {
+        sql += "ORDER BY RANDOM() LIMIT :count";
+    }
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":maxReviewCount", maxReviewCount);
+
+    if (categoryId != -1) {
+        query.bindValue(":categoryId", categoryId);
+    }
+
+    if (count > 0) {
+        query.bindValue(":count", count);
+    }
+
+    if (!query.exec()) {
+        qWarning() << "获取低复习次数单词失败:" << query.lastError().text();
+        return words;
+    }
+
+    // 收集符合条件的单词ID
+    QVector<int> wordIds;
+    while (query.next()) {
+        wordIds.append(query.value(0).toInt());
+    }
+
+    // 为每个ID获取完整的单词信息
+    for (int id : wordIds) {
+        Word word = getWordById(id);
+        if (!word.word.isEmpty()) {
+            words.append(word);
+        }
+    }
+
+    return words;
+}
+
 QVector<Word> WordDatabase::getWordsByCategory(int categoryId) {
     QVector<Word> words;
     QSqlQuery query(m_db);
