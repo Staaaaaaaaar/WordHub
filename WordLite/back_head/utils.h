@@ -46,8 +46,8 @@ public:
 
     Word(QString word = ""): word(word), reviewCount(0), difficulty(3) {}
 
-    QString g_word(){return word;}
-    int g_id(){return id;}
+    QString g_word() const {return word;}
+    int g_id() const {return id;}
 
     bool isEmpty(){return word.isEmpty();}
 };

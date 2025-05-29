@@ -7,13 +7,16 @@ QueryWidget::QueryWidget(QWidget *parent)
 {
     ui->setupUi(this);
 
+
+    //初始化成员变量
+    wordDataBase = new WordDatabase;
+    wordDBList = WordDatabase::getlist();
+
+
     // 设置UI和连接信号槽
     setupUI();
     connectSignals();
-    //初始化数据库连接
-    wordDataBase = new WordDatabase;
-    wordDBList = WordDatabase::getlist();
-    // wordDataBase->initDatabase();
+
 }
 
 QueryWidget::~QueryWidget()
@@ -25,16 +28,19 @@ QueryWidget::~QueryWidget()
 void QueryWidget::setupUI()
 {
     //设置comboBox
-    for (QString DBname: wordDBList)
+    for (const QString &DBname: std::as_const(wordDBList))
     {
         ui->comboBox->addItem(DBname);
     }
+    //初始化连接
+    if (!wordDBList.isEmpty()) wordDataBase->initDatabase(wordDBList.first());
+
 }
 
 void QueryWidget::connectSignals()
 {
     connect(ui->searchEdit, &QLineEdit::returnPressed, this, &QueryWidget::on_searchEdit_returnPressed);
-
+    connect(ui->comboBox, &QComboBox::currentTextChanged, this, &QueryWidget::on_comboBox_currentTextChanged);
 }
 
 
@@ -50,19 +56,26 @@ void QueryWidget::on_searchEdit_returnPressed()
         if (ui->tabWidget->tabBar()->tabText(index) == cur_word)
         {
             ui->tabWidget->setCurrentIndex(index);
+            emit sendMes(cur_word + "查询完成", 3000);
             return;
         }
     }
     //判断word是否是个有效查询
-
+    QVector<Word> wordList = wordDataBase->getWordsByName(cur_word);
+    if (wordList.isEmpty())
+    {
+        emit sendMes("未找到相关单词", 3000);
+        return;
+    }
     //生成一个实例wordWidget
-    WordWidget* wordWidget = new WordWidget(cur_word);
+    WordWidget* wordWidget = new WordWidget(cur_word, wordDataBase);
+    wordWidget->setupUI(wordList);
     //将wordWidget装入tabWidget并显示
     ui->tabWidget->addTab(wordWidget, cur_word);
     ui->tabWidget->setCurrentWidget(wordWidget);
 
     //向mainWindow发射信号
-    emit clearMes();
+    emit sendMes(cur_word + "查询完成", 3000);
 }
 
 
@@ -72,5 +85,13 @@ void QueryWidget::on_tabWidget_tabCloseRequested(int index)
     QWidget* tmp = ui->tabWidget->widget(index);
     ui->tabWidget->removeTab(index);
     delete tmp;
+}
+
+
+void QueryWidget::on_comboBox_currentTextChanged(const QString &DBname)
+{
+    emit sendMes("正在连接数据库 "+DBname);
+    if (wordDataBase->initDatabase(DBname)) emit sendMes("成功连接数据库 "+DBname, 3000);
+    else emit sendMes("连接失败", 3000);
 }
 

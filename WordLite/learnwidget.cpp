@@ -51,10 +51,10 @@ void LearnWidget::setupUI()
 void LearnWidget::connectSignals()
 {
     //点击词库跳转到词库信息界面
-    for (DictButton* dictButton : defaultButtons) {
+    for (DictButton* dictButton : std::as_const(defaultButtons)) {
         connect(dictButton, &QToolButton::clicked, this, &LearnWidget::on_dictButton_clicked);
     }
-    for (DictButton* dictButton : customizeButtons) {
+    for (DictButton* dictButton : std::as_const(customizeButtons)) {
         connect(dictButton, &QToolButton::clicked, this, &LearnWidget::on_dictButton_clicked);
     }
     //点击“+”添加自定义词库
