@@ -1,4 +1,4 @@
-QT       += core gui sql network
+QT       += core gui sql network testlib
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -10,9 +10,6 @@ CONFIG += c++17
 
 SOURCES += \
     achievementwidget.cpp \
-    # back_head/test.cpp \
-    # back_src/loadword.cpp \
-    back_src\utils.cpp \
     gamewidget.cpp \
     learnwidget.cpp \
     main.cpp \
@@ -21,7 +18,12 @@ SOURCES += \
     reviewwidget.cpp \
     userwidget.cpp \
     wordwidget.cpp \
+    # test/test.cpp \
+    # test/learner_test.cpp \
+    back_src/loadword.cpp \
+    back_src/utils.cpp \
     back_src/database.cpp \
+    back_src/learner.cpp \
     API/dictionaryapi.cpp
 
 HEADERS += \
@@ -34,8 +36,10 @@ HEADERS += \
     userwidget.h \
     wordwidget.h \
     back_head/database.h \
-    API/dictionaryapi.h \
     back_head/utils.h\
+    back_head/loadword.h \
+    back_head/learner.h \
+    API/dictionaryapi.h \
 
 
 FORMS += \
