@@ -33,7 +33,7 @@ void WordWidget::setupUI(QVector<Word> wordList)
         QHBoxLayout* topRowLayout = new QHBoxLayout(topRowWidget);
         topRowLayout->setContentsMargins(0, 0, 0, 0);
 
-        QLabel* wordLabel = new QLabel(word.g_word(), topRowWidget);
+        /*QLabel* wordLabel = new QLabel(word.g_word(), topRowWidget);
         QFont wordFont = wordLabel->font();
         wordFont.setPointSize(14);
         wordFont.setBold(true);
@@ -81,7 +81,7 @@ void WordWidget::setupUI(QVector<Word> wordList)
         wordBox->setStyleSheet("QGroupBox { border: 1px solid #ddd; border-radius: 5px; margin-top: 5px; }");
         wordBox->setContentsMargins(5, 5, 5, 5);
 
-        layout->addWidget(wordBox);
+        layout->addWidget(wordBox);*/
     }
     layout->addStretch();
 }

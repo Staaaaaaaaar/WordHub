@@ -2,6 +2,7 @@
 #define GAMEWIDGET_H
 
 #include <QWidget>
+#include "guess_word_widget.h"
 
 namespace Ui {
 class GameWidget;
@@ -20,10 +21,13 @@ public:
     void connectSignals();
 
 private slots:
-    void on_guessButton_clicked();
+    void onGuessWordWidgetExit();
+    void onBeginSignalCome();
+    void onAnswerSignalCome();
 
 private:
     Ui::GameWidget *ui;
+    guess_word_widget *guessWordWidget;
 };
 
 #endif // GAMEWIDGET_H

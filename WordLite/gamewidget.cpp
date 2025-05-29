@@ -1,12 +1,14 @@
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
-#include "guess_according_to_description_h/guess_word.h"
+#include <QDebug>
 
 GameWidget::GameWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::GameWidget)
 {
     ui->setupUi(this);
+    setupUI();
+    connectSignals();
 }
 
 GameWidget::~GameWidget()
@@ -14,9 +16,31 @@ GameWidget::~GameWidget()
     delete ui;
 }
 
-void GameWidget::on_guessButton_clicked()
+void GameWidget::setupUI()
 {
-    guess_word g;
-    g.processingPython();
+    guessWordWidget=new guess_word_widget(this);
+    ui->stackedWidget->addWidget(guessWordWidget);
 }
 
+void GameWidget::connectSignals()
+{
+    connect(ui->guessButton, &QToolButton::clicked, this, [=](){
+        ui->stackedWidget->setCurrentWidget(guessWordWidget);
+    });
+    connect(guessWordWidget, &guess_word_widget::exitRequested, this, &GameWidget::onGuessWordWidgetExit);
+}
+
+void GameWidget::onGuessWordWidgetExit()
+{
+    ui->stackedWidget->setCurrentIndex(0);
+}
+
+void GameWidget::onBeginSignalCome()
+{
+
+}
+
+void GameWidget::onAnswerSignalCome()
+{
+
+}

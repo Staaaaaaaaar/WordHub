@@ -10,12 +10,12 @@ CONFIG += c++17
 
 SOURCES += \
     achievementwidget.cpp \
-    # back_head/test.cpp \
+    #back_head/test.cpp \
     # back_src/loadword.cpp \
     back_src\utils.cpp \
     gamewidget.cpp \
     guess_according_to_description/guess_word.cpp \
-    guess_word.cpp \
+    #guess_word.cpp \
     guess_word_widget.cpp \
     learnwidget.cpp \
     main.cpp \
@@ -23,6 +23,7 @@ SOURCES += \
     querywidget.cpp \
     reviewwidget.cpp \
     userwidget.cpp \
+    wordle.cpp \
     wordwidget.cpp \
     back_src/database.cpp \
     API/dictionaryapi.cpp
@@ -37,6 +38,7 @@ HEADERS += \
     querywidget.h \
     reviewwidget.h \
     userwidget.h \
+    wordle.h \
     wordwidget.h \
     back_head/database.h \
     API/dictionaryapi.h \
@@ -52,6 +54,7 @@ FORMS += \
     querywidget.ui \
     reviewwidget.ui \
     userwidget.ui \
+    wordle.ui \
     wordwidget.ui
 
 # Default rules for deployment.
