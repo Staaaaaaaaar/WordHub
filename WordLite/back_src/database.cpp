@@ -339,6 +339,25 @@ Word WordDatabase::getWordById(int id) {
     return word;
 }
 
+bool WordDatabase::ifWordinCategory(int wordid, int categoryid) {
+    QSqlQuery query(m_db);
+    query.prepare("SELECT COUNT(*) FROM WordCategories WHERE word_id = :wordid AND category_id = :categoryid");
+    query.bindValue(":wordid", wordid);
+    query.bindValue(":categoryid", categoryid);
+
+    if (!query.exec()) {
+        qWarning() << "SQL执行失败:" << query.lastError().text() << "\nSQL:" << query.lastQuery();
+        return false;
+    }
+
+    if (query.next()) {
+        int count = query.value(0).toInt();
+        return count > 0;
+    }
+
+    return false;
+}
+
 bool WordDatabase::loadPhonetics(int wordId, QVector<Phonetic> &phonetics) {
     QSqlQuery query(m_db);
     query.prepare("SELECT text, audio FROM Phonetics WHERE word_id = :word_id");
