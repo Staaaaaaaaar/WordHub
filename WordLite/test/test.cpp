@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
+    qInfo()<<WordDatabase::getlist();
 
     //导入
     // QString jsonFilePath = "D:\\PKU\\25_spring\\chengshe\\vocabulary_learning\\vocabulary_learning\\oxford_9_structed\\oxford_9_structed.json";
@@ -71,11 +72,11 @@ int main(int argc, char *argv[])
 
 
 
-    QString newname="r_oxford_9";
-        WordDatabase out;
-        out.initDatabase(newname);
-        qInfo()<<out.getTotalWordCount();
-        qInfo()<<out.getRandomWords(1);
+    // QString newname="oxford_9";
+    //     WordDatabase out;
+    //     out.initDatabase(newname);
+    //     qInfo()<<out.getTotalWordCount();
+    //     qInfo()<<out.getRandomWords(1);
 
 
 

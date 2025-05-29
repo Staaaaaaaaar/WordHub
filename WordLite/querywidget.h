@@ -29,6 +29,8 @@ private slots:
 
     void on_tabWidget_tabCloseRequested(int index);
 
+    void on_comboBox_currentTextChanged(const QString &arg1);
+
 private: signals:
     void sendMes(QString message, int timeout=0);
     void clearMes();
