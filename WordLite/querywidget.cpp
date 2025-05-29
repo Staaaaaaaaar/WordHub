@@ -41,6 +41,9 @@ void QueryWidget::connectSignals()
 {
     connect(ui->searchEdit, &QLineEdit::returnPressed, this, &QueryWidget::on_searchEdit_returnPressed);
     connect(ui->comboBox, &QComboBox::currentTextChanged, this, &QueryWidget::on_comboBox_currentTextChanged);
+
+    connect(wordWidget, SIGNAL(WordWidget::sendMes(QString,int)), this, SLOT(showMes(QString,int)));
+    connect(wordWidget, SIGNAL(WordWidget::clearMes()), this, SLOT(clearMes()));
 }
 
 
@@ -68,7 +71,7 @@ void QueryWidget::on_searchEdit_returnPressed()
         return;
     }
     //生成一个实例wordWidget
-    WordWidget* wordWidget = new WordWidget(cur_word, wordDataBase);
+    wordWidget = new WordWidget(cur_word, wordDataBase, this);
     wordWidget->setupUI(wordList);
     //将wordWidget装入tabWidget并显示
     ui->tabWidget->addTab(wordWidget, cur_word);
@@ -95,3 +98,11 @@ void QueryWidget::on_comboBox_currentTextChanged(const QString &DBname)
     else emit sendMes("连接失败", 3000);
 }
 
+void QueryWidget::showMes(QString message, int timeout)
+{
+    emit sendMes(message, timeout);
+}
+void QueryWidget::clearMess()
+{
+    emit clearMes();
+}

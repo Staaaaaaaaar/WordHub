@@ -65,8 +65,8 @@ void MainWindow::connectSignals(){
         ui->stackedWidget->setCurrentIndex(5);
     });
 
-    connect(queryWidget, SIGNAL(sendMes(QString,int)), this, SLOT(showMes(QString,int)));
-    connect(queryWidget, SIGNAL(clearMes()), this, SLOT(clearMes()));
+    connect(queryWidget, SIGNAL(QueryWidget::sendMes(QString,int)), this, SLOT(showMes(QString,int)));
+    connect(queryWidget, SIGNAL(QueryWidget::clearMes()), this, SLOT(clearMes()));
 }
 
 void MainWindow::showMes(QString message, int timeout)

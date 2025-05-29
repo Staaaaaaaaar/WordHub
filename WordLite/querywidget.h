@@ -17,6 +17,7 @@ public:
     explicit QueryWidget(QWidget *parent = nullptr);
     ~QueryWidget();
 
+    WordWidget* wordWidget;
     WordDatabase* wordDataBase;
     QString defaultWordDB;
     QVector<QString> wordDBList;
@@ -30,6 +31,9 @@ private slots:
     void on_tabWidget_tabCloseRequested(int index);
 
     void on_comboBox_currentTextChanged(const QString &arg1);
+
+    void showMes(QString message, int timeout);
+    void clearMess();
 
 private: signals:
     void sendMes(QString message, int timeout=0);

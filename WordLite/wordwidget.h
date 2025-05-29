@@ -34,6 +34,9 @@ public:
     void setupUI(QVector<Word> wordList);
     void connectSignals();
 
+private: signals:
+    void sendMes(QString message, int timeout=0);
+    void clearMes();
 private:
     Ui::WordWidget *ui;
 

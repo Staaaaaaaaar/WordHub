@@ -119,9 +119,21 @@ void WordWidget::setupUI(QVector<Word> wordList)
             QAction* act = new QAction(cat.name, favMenu);
             act->setCheckable(true);
             act->setData(cat.id);
-            // 判断当前单词是否已在该分类，可根据DBptr->isWordInCategory(word.id, cat.id)实现
-            // act->setChecked(DBptr && DBptr->isWordInCategory(word.id, cat.id));
-            act->setChecked(false); // 如需联动数据库请替换此行
+            // 判断当前单词是否已在该分类
+                act->setChecked(true);
+
+            // 关联槽函数，点击时自动更新数据库和UI
+            connect(act, &QAction::toggled, this, [=]() {
+                if (!DBptr) return;
+                if (act->isChecked()) {
+                    DBptr->assignWordToCategory(word.id, cat.id);
+                } else {
+                    DBptr->removeWordFromCategory(word.id, cat.id);
+                }
+                // 刷新UI
+                this->setupUI(DBptr->getWordsByName(word.g_word()));
+            });
+
             favMenu->addAction(act);
             catActions.append(act);
         }
@@ -133,13 +145,23 @@ void WordWidget::setupUI(QVector<Word> wordList)
         connect(newCatAction, &QAction::triggered, this, [this, word]() {
             bool ok = false;
             QString catName = QInputDialog::getText(this, "新建分类", "请输入分类名称：", QLineEdit::Normal, "", &ok);
-            if (ok && !catName.trimmed().isEmpty() && DBptr) {
-            int newCatId = DBptr->addCategory(catName.trimmed());
-            if (newCatId >= 0) {
-                DBptr->assignWordToCategory(word.id, newCatId);
+            if (!ok || catName.trimmed().isEmpty() || !DBptr) return;
+
+            QString catDesc = QInputDialog::getText(this, "新建分类", "请输入分类描述（可选）：", QLineEdit::Normal, "", &ok);
+            // catDesc 可为空
+
+            Category newCat;
+            newCat.name = catName.trimmed();
+            newCat.description = catDesc.trimmed();
+
+            bool okk = DBptr->addCategory(newCat);
+            if (okk) {
+                emit sendMes("新分类已创建: " + newCat.name, 3000);
                 // 刷新UI
                 this->setupUI(DBptr->getWordsByName(word.g_word()));
             }
+            else {
+                emit sendMes("创建分类失败", 3000);
             }
         });
 
@@ -182,7 +204,7 @@ void WordWidget::setupUI(QVector<Word> wordList)
         //         }
         //     }
         // }
-        
+
         if (!wordCats.isEmpty()) {
             QWidget* tagWidget = new QWidget(wordBox);
             QHBoxLayout* tagLayout = new QHBoxLayout(tagWidget);
