@@ -21,9 +21,31 @@ int main(int argc, char *argv[])
     //     qDebug() << "数据导入失败！";
     // }
 
-    QString txtPath="D:\\PKU\\25_spring\\chengshe\\vocabulary_learning\\english-wordlists\\test.txt";
-    Wordloader wordloader;
-    wordloader.importWordFromTXT(txtPath,"test","oxford_9");
+    // QString txtPath="D:\\PKU\\25_spring\\chengshe\\vocabulary_learning\\english-wordlists\\test.txt";
+    // Wordloader wordloader;
+    // wordloader.importWordFromTXT(txtPath,"test","oxford_9");
+
+    WordDatabase test;
+    test.initDatabase("test");
+
+    for(auto p:test.getAllWords())
+    {
+        qInfo()<<p.word;
+        qInfo()<<p.reviewCount;
+        qInfo()<<p.lastReviewed;
+    }
+
+
+    qInfo()<<test.getAllWords().size();
+
+    test.resetLearningRecords();
+    for(auto p:test.getAllWords())
+    {
+        qInfo()<<p.word;
+        qInfo()<<p.reviewCount;
+        qInfo()<<p.lastReviewed;
+    }
+
 
     // WordDatabase test;
     // test.initDatabase("oxford_9");

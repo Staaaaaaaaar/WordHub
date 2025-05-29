@@ -119,6 +119,14 @@ bool Learner::resetUser(bool confirm) {
     m_hashPassword.clear();
     m_headImage.clear();
     m_totalLearned = 0;
+
+    // 同时重置所有数据库中保存的学习记录
+    for(auto name:WordDatabase::getlist())
+    {
+        WordDatabase db;
+        db.initDatabase(name);
+        db.resetLearningRecords();
+    }
     return true;
 }
 

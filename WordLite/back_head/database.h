@@ -70,7 +70,7 @@ public:
     // 新增：获取数据库中学习记录的总数
     int getTotalLearningRecordCount(int days = -1,int userId =1);
 
-    // 重置学习记录
+    // 重置学习当前数据库的学习记录
     bool resetLearningRecords();
 
     // 工具方法

@@ -8,7 +8,7 @@
 #include <QSqlQuery>
 #include <QCryptographicHash>
 #include <QDir>
-
+#include "database.h"
 class Learner
 {
 private:
