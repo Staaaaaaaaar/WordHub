@@ -184,7 +184,7 @@ QString avatarPath = Learner::getUserAvatarPath();
 - **返回值**：`bool`，如果用户创建成功返回 `true`，如果用户已经登录则返回 `false`。
 
 ### `resetUser(bool confirm = false)`
-- **功能**：重置用户数据，将数据库中的用户信息删除，并清空 `Learner` 类实例中的相关数据。
+- **功能**：重置用户数据，将数据库中的用户信息删除，并清空 `Learner` 类实例中的相关数据。同时会清空所有单词数据库中有关学习记录的部分。
 - **参数**：
   - `confirm`：确认是否重置用户数据，默认为 `false`。
 - **返回值**：`bool`，如果确认重置且操作成功返回 `true`，否则返回 `false`。

@@ -25,31 +25,59 @@ int main(int argc, char *argv[])
     // Wordloader wordloader;
     // wordloader.importWordFromTXT(txtPath,"test","oxford_9");
 
-    WordDatabase test;
-    test.initDatabase("test");
-
-    for(auto p:test.getAllWords())
-    {
-        qInfo()<<p.word;
-        qInfo()<<p.reviewCount;
-        qInfo()<<p.lastReviewed;
-    }
-
-
-    qInfo()<<test.getAllWords().size();
-
-    test.resetLearningRecords();
-    for(auto p:test.getAllWords())
-    {
-        qInfo()<<p.word;
-        qInfo()<<p.reviewCount;
-        qInfo()<<p.lastReviewed;
-    }
-
-
     // WordDatabase test;
-    // test.initDatabase("oxford_9");
-    // qInfo()<<test.getWordsByName("tomato");
+    // test.initDatabase("test");
+
+    // for(auto p:test.getAllWords())
+    // {
+    //     qInfo()<<p.word;
+    //     qInfo()<<p.reviewCount;
+    //     qInfo()<<p.lastReviewed;
+    // }
+
+
+    // qInfo()<<test.getAllWords().size();
+
+    // test.resetLearningRecords();
+    // for(auto p:test.getAllWords())
+    // {
+    //     qInfo()<<p.word;
+    //     qInfo()<<p.reviewCount;
+    //     qInfo()<<p.lastReviewed;
+    // }
+    // QVector<QString> lis=WordDatabase::getlist();
+    // for(auto name:lis)
+    // {
+    //     qInfo()<<name;
+    //     int i=0;
+    //     QString newname="r_"+name;
+    //     WordDatabase test;
+    //     test.initDatabase(name);
+    //     WordDatabase out;
+    //     out.NewDatabase(newname);
+    //     for(auto word:test.getAllWords())
+    //     {
+    //         Word ne;
+    //         ne.word=word.word;
+    //         ne.difficulty=word.difficulty;
+    //         ne.meanings=word.meanings;
+    //         ne.phonetics=word.phonetics;
+    //         out.addWord(ne);
+    //         qInfo()<<++i;
+    //     }
+    // }
+
+
+
+
+
+    QString newname="r_oxford_9";
+        WordDatabase out;
+        out.initDatabase(newname);
+        qInfo()<<out.getTotalWordCount();
+        qInfo()<<out.getRandomWords(1);
+
+
 
     // for(auto p:test.getAllWords())
     // {
