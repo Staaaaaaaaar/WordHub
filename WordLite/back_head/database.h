@@ -39,6 +39,7 @@ public:
     bool deleteWord(int id); // 删除单词
     QVector<Word> getAllWords(); // 获取所有单词
     Word getWordById(int id); // 根据ID获取单词
+    bool ifWordinCategory(int wordid,int categoryid); // 判断某个单词是否属于某个分类
     QVector<Word> getWordsByName(const QString &wordName); // 按名称查找单词
     QVector<Word> getWordsByCategory(int categoryId); // 获取指定分类下的单词
     QVector<Word> getWordsToReview(int count = 20,int userId=1); // 获取需要复习的单词（基于间隔重复算法）

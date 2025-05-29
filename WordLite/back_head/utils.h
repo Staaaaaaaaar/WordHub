@@ -46,8 +46,14 @@ public:
 
     Word(QString word = ""): word(word), reviewCount(0), difficulty(3) {}
 
-    QString g_word() const {return word;}
-    int g_id() const {return id;}
+
+    QString g_word()const{return word;}
+    QVector<Phonetic> g_phonrtics()const{return phonetics;}
+    int g_id()const{return id;}
+    QMap<QString, QVector<Definition>> g_meanings()const{return meanings;}
+    QDateTime g_lastReviewed()const{return lastReviewed;}
+    int g_reviewCount()const{return reviewCount;}
+    int g_difficulty()const{return difficulty;}
 
     bool isEmpty(){return word.isEmpty();}
 };
