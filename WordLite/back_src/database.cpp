@@ -635,6 +635,61 @@ bool WordDatabase::updateWordLearningInfo(int wordId, bool correct, int difficul
     return m_db.commit();
 }
 
+// 获取数据库中单词的总数
+int WordDatabase::getTotalWordCount(int categoryId) {
+    QSqlQuery query(m_db);
+
+    if (categoryId == -1) {
+        // 查询所有单词的数量
+        query.exec("SELECT COUNT(*) FROM Words");
+    } else {
+        // 查询指定分类下的单词数量
+        query.prepare("SELECT COUNT(*) FROM WordCategories WHERE category_id = :categoryId");
+        query.bindValue(":categoryId", categoryId);
+        query.exec();
+    }
+
+    if (query.next()) {
+        return query.value(0).toInt();
+    }
+
+    return 0;
+}
+
+// 获取数据库中学习记录的总数
+int WordDatabase::getTotalLearningRecordCount(int days,int userId) {
+    QSqlQuery query(m_db);
+    QString sql = "SELECT COUNT(*) FROM LearningRecords";
+
+    // 根据用户ID和时间范围添加筛选条件
+    if (userId != -1 || days != -1) {
+        sql += " WHERE";
+        QStringList conditions;
+
+        if (userId != -1) {
+            conditions.append("user_id = :userId");
+        }
+
+        if (days > 0) {
+            conditions.append("timestamp >= DATE('now', '-" + QString::number(days) + " days')");
+        }
+
+        sql += " " + conditions.join(" AND ");
+    }
+
+    query.prepare(sql);
+
+    if (userId != -1) {
+        query.bindValue(":userId", userId);
+    }
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();
+    }
+
+    return 0;
+}
+
 QVector<Word> WordDatabase::getWordsByCategory(int categoryId) {
     QVector<Word> words;
     QSqlQuery query(m_db);
@@ -881,7 +936,7 @@ bool WordDatabase::addLearningRecord(const LearningRecord &record) {
     return query.exec();
 }
 
-QVector<LearningRecord> WordDatabase::getUserLearningRecords(int userId, int days) {
+QVector<LearningRecord> WordDatabase::getUserLearningRecords(int days,int userId) {
     QVector<LearningRecord> records;
     QSqlQuery query(m_db);
 
@@ -922,7 +977,7 @@ QVector<LearningRecord> WordDatabase::getUserLearningRecords(int userId, int day
     return records;
 }
 
-double WordDatabase::getLearningAccuracy(int userId, int days) {
+double WordDatabase::getLearningAccuracy(int days,int userId) {
     QSqlQuery query(m_db);
 
     if (days > 0) {

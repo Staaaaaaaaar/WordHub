@@ -30,6 +30,9 @@ public:
     // 数据库操作
     bool initDatabase(const QString &name); // 打开已有数据库
     bool NewDatabase(const QString &name); // 创建新数据库
+    // 新增：获取数据库中单词的总数
+    int getTotalWordCount(int categoryId = -1);
+
 
     // 单词管理
     bool addWord(const Word &word); // 添加新单词
@@ -38,7 +41,7 @@ public:
     Word getWordById(int id); // 根据ID获取单词
     QVector<Word> getWordsByName(const QString &wordName); // 按名称查找单词
     QVector<Word> getWordsByCategory(int categoryId); // 获取指定分类下的单词
-    QVector<Word> getWordsToReview(int userId, int count = 20); // 获取需要复习的单词（基于间隔重复算法）
+    QVector<Word> getWordsToReview(int count = 20,int userId=1); // 获取需要复习的单词（基于间隔重复算法）
     // 新增：从指定分类中随机获取指定数量的单词
     QVector<Word> getRandomWords(int count, int categoryId = -1);
     // 新增：获取复习次数小于等于指定值的单词
@@ -62,8 +65,10 @@ public:
 
     // 学习记录管理
     bool addLearningRecord(const LearningRecord &record); // 添加学习记录
-    QVector<LearningRecord> getUserLearningRecords(int userId, int days = 30); // 获取用户学习记录
-    double getLearningAccuracy(int userId, int days = 30); // 计算学习准确率
+    QVector<LearningRecord> getUserLearningRecords(int days = 30,int userId=1); // 获取用户学习记录
+    double getLearningAccuracy(int days = 30,int userId=1); // 计算学习准确率
+    // 新增：获取数据库中学习记录的总数
+    int getTotalLearningRecordCount(int days = -1,int userId =1);
 
     // 重置学习记录
     bool resetLearningRecords();
