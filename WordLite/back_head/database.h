@@ -81,6 +81,8 @@ public:
     int getTotalLearningRecordCount(int days = -1,int userId =1);
     // 在连续多少天内每一天的学习数目
     QVector<int> getDailyLearningCountInDays(int days = 30, int userId = 1);
+    // 在连续多少天内每一天的学习正确率
+    QVector<double> getDailyLearningAccuracyInDays(int days = 30, int userId = 1);
     // 重置学习当前数据库的学习记录
     bool resetLearningRecords();
 

@@ -1127,6 +1127,39 @@ QVector<int> WordDatabase::getDailyLearningCountInDays(int days, int userId) {
     return dailyCounts;
 }
 
+// 实现获取指定天数内每一天学习正确率的方法
+QVector<double> WordDatabase::getDailyLearningAccuracyInDays(int days, int userId) {
+    QVector<double> dailyAccuracies(days, 0.0);
+    QDateTime endTime = QDateTime::currentDateTime();
+    QDateTime startTime = endTime.addDays(-days);
+
+    QSqlQuery query(m_db);
+    query.prepare("SELECT DATE(timestamp), SUM(CASE WHEN correct THEN 1 ELSE 0 END), COUNT(*) FROM LearningRecords WHERE userId = :userId AND timestamp BETWEEN :startTime AND :endTime GROUP BY DATE(timestamp)");
+    query.bindValue(":userId", userId);
+    query.bindValue(":startTime", startTime);
+    query.bindValue(":endTime", endTime);
+
+    if (query.exec()) {
+        while (query.next()) {
+            QDate date = query.value(0).toDate();
+            int correctCount = query.value(1).toInt();
+            int totalCount = query.value(2).toInt();
+
+            double accuracy = totalCount > 0 ? static_cast<double>(correctCount) / totalCount : 0.0;
+
+            QDateTime dateTime = QDateTime(date, QTime(0, 0));
+            int daysDiff = startTime.daysTo(dateTime);
+            if (daysDiff >= 0 && daysDiff < days) {
+                dailyAccuracies[daysDiff] = accuracy;
+            }
+        }
+    } else {
+        qWarning() << "查询学习记录正确率失败:" << query.lastError().text();
+    }
+
+    return dailyAccuracies;
+}
+
 // -------------------- 数据库工具方法 --------------------
 bool WordDatabase::insertSampleData() {
     // 插入示例词性
