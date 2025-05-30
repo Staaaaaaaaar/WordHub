@@ -55,8 +55,9 @@ public:
     bool updateWordLearningInfo(int wordId, bool correct, int difficultyChange=0, int userId=1);
     // 输入正在学习单词的id，返回该单词的正确释义和3个其他选项；返回列表第一项是输入单词的释义
     QVector<QString> FourmeaningtoChoice(int wordid);
-    // 在 database.h 文件的 WordDatabase 类中添加以下声明
+    // difficult==1 认为是已经掌握
     QVector<Word> getWordsWithDifficultyOne(int categoryId = -1);
+    int learnednum();
 
     // 分类管理
     bool addCategory(const Category &category); // 添加分类

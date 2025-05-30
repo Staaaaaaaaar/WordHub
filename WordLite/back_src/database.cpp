@@ -1090,6 +1090,13 @@ QVector<Word> WordDatabase::getWordsWithDifficultyOne(int categoryId) {
     return words;
 }
 
+int WordDatabase::learnednum()
+{
+    return getWordsWithDifficultyOne().size();
+}
+
+
+
 
 // -------------------- 数据库工具方法 --------------------
 bool WordDatabase::insertSampleData() {
