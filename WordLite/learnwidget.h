@@ -5,6 +5,8 @@
 #include <QWidget>
 #include <QGridLayout>
 #include <QList>
+#include <QScrollArea>
+#include <back_head/database.h>
 
 namespace Ui {
 class LearnWidget;
@@ -20,7 +22,6 @@ public:
     explicit DictButton(QString text="词库名"); //附加一个字典指针
     ~DictButton();
 
-
 private:
 
 };
@@ -34,6 +35,10 @@ class LearnWidget : public QWidget
 public:
     explicit LearnWidget(QWidget *parent = nullptr);
     ~LearnWidget();
+
+    WordDatabase* DBptr;
+    QVector<QString> defaultDictNames;
+    QVector<QString> customDictNames;
 
     void addButtonsToGrid(QGridLayout *grid, const QList<DictButton*> &buttons, int columns = 3);
     void initDictWidget();

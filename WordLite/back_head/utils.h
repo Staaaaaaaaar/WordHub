@@ -46,6 +46,7 @@ public:
 
     Word(QString word = ""): word(word), reviewCount(0), difficulty(3) {}
 
+
     QString g_word()const{return word;}
     QVector<Phonetic> g_phonrtics()const{return phonetics;}
     int g_id()const{return id;}
