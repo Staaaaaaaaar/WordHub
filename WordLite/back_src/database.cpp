@@ -1097,6 +1097,35 @@ int WordDatabase::learnednum()
 
 
 
+// 实现获取指定天数内每一天学习数量的方法
+QVector<int> WordDatabase::getDailyLearningCountInDays(int days, int userId) {
+    QVector<int> dailyCounts(days, 0);
+    QDateTime endTime = QDateTime::currentDateTime();
+    QDateTime startTime = endTime.addDays(-days);
+
+    QSqlQuery query(m_db);
+    query.prepare("SELECT DATE(timestamp), COUNT(*) FROM LearningRecords WHERE userId = :userId AND timestamp BETWEEN :startTime AND :endTime GROUP BY DATE(timestamp)");
+    query.bindValue(":userId", userId);
+    query.bindValue(":startTime", startTime);
+    query.bindValue(":endTime", endTime);
+
+    if (query.exec()) {
+        while (query.next()) {
+            QDate date = query.value(0).toDate();
+            int count = query.value(1).toInt();
+            // 使用 QDateTime::fromDate 和 QTime(0, 0) 将 QDate 转换为 QDateTime
+            QDateTime dateTime = QDateTime(date, QTime(0, 0));
+            int daysDiff = startTime.daysTo(dateTime);
+            if (daysDiff >= 0 && daysDiff < days) {
+                dailyCounts[daysDiff] = count;
+            }
+        }
+    } else {
+        qWarning() << "查询学习记录数量失败:" << query.lastError().text();
+    }
+
+    return dailyCounts;
+}
 
 // -------------------- 数据库工具方法 --------------------
 bool WordDatabase::insertSampleData() {
