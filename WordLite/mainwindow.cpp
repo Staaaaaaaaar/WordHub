@@ -50,10 +50,12 @@ void MainWindow::connectSignals(){
     connect(ui->learnButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(2);
     });
+
     //复习界面
     // connect(ui->reviewButton, &QToolButton::clicked, this, [=](){
     //     ui->stackedWidget->setCurrentIndex(3);
     // });
+
     //成就界面
     connect(ui->achievementButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(3);
