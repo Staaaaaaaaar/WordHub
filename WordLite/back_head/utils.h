@@ -44,9 +44,16 @@ public:
     int reviewCount; // 复习次数，用于计算复习间隔
     int difficulty; // 难度等级（1-5），1表示简单，5表示困难
 
-    Word(QString word = ""): word(word), lastReviewed(QDateTime::currentDateTime()), reviewCount(0), difficulty(3) {}
+    Word(QString word = ""): word(word), reviewCount(0), difficulty(3) {}
 
-    QString g_word(){return word;}
+
+    QString g_word()const{return word;}
+    QVector<Phonetic> g_phonrtics()const{return phonetics;}
+    int g_id()const{return id;}
+    QMap<QString, QVector<Definition>> g_meanings()const{return meanings;}
+    QDateTime g_lastReviewed()const{return lastReviewed;}
+    int g_reviewCount()const{return reviewCount;}
+    int g_difficulty()const{return difficulty;}
 
     bool isEmpty(){return word.isEmpty();}
 };

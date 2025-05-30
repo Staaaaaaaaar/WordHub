@@ -1,4 +1,4 @@
-QT       += core gui sql network
+QT       += core gui sql network testlib
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -11,7 +11,7 @@ CONFIG += c++17
 SOURCES += \
     achievementwidget.cpp \
     #back_head/test.cpp \
-    # back_src/loadword.cpp \
+    back_src/loadword.cpp \
     back_src\utils.cpp \
     gamewidget.cpp \
     guess_according_to_description/guess_word.cpp \
@@ -24,8 +24,8 @@ SOURCES += \
     reviewwidget.cpp \
     userwidget.cpp \
     wordle.cpp \
-    wordwidget.cpp \
     back_src/database.cpp \
+    back_src/learner.cpp \
     API/dictionaryapi.cpp
 
 HEADERS += \
@@ -39,10 +39,11 @@ HEADERS += \
     reviewwidget.h \
     userwidget.h \
     wordle.h \
-    wordwidget.h \
     back_head/database.h \
-    API/dictionaryapi.h \
     back_head/utils.h\
+    back_head/loadword.h \
+    back_head/learner.h \
+    API/dictionaryapi.h \
 
 
 FORMS += \
@@ -53,9 +54,9 @@ FORMS += \
     mainwindow.ui \
     querywidget.ui \
     reviewwidget.ui \
-    userwidget.ui \
     wordle.ui \
-    wordwidget.ui
+    userwidget.ui
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

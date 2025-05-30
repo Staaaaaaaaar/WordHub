@@ -1,15 +1,25 @@
 #include "learnwidget.h"
 #include "ui_learnwidget.h"
 
+
 LearnWidget::LearnWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::LearnWidget)
 {
     ui->setupUi(this);
-    //初始化defaultButtons
 
+    DBptr = new WordDatabase();
+    //初始化defaultDictNames
+    defaultDictNames = DBptr->getlist();
     //初始化customizeButtons
-
+    customDictNames = {
+        "自定义词库1",
+        "自定义词库2",
+        "自定义词库3",
+        "自定义词库4",
+        "自定义词库5",
+        "自定义词库6"
+    };
     //设置UI和连接信号槽
     setupUI();
     connectSignals();
@@ -26,35 +36,68 @@ void LearnWidget::setupUI()
     ui->stackedWidget->setCurrentIndex(0);
     //设置添加词库按钮
     addDictButton = new DictButton("+");
-    //设置按钮间距
-    ui->defaultLayout->setSpacing(10);
-    ui->customizeLayout->setSpacing(10);
-    //设置边距
-    ui->defaultLayout->setContentsMargins(10, 10, 10, 10);
-    ui->customizeLayout->setContentsMargins(10, 10, 10, 10);
 
-    //设置默认词库
-    defaultButtons.clear();
-    for (int i = 0; i < 6; ++i) {
-        defaultButtons.append(new DictButton(QString("默认%1").arg(i+1)));
-    }
-    addButtonsToGrid(ui->defaultLayout, defaultButtons, 4);
 
-    //设置自定义词库
-    customizeButtons.clear();
-    for (int i = 0; i < 5; ++i) {
-        customizeButtons.append(new DictButton(QString("自定义%1").arg(i+1)));
+    // 响应式布局：用QScrollArea+QWidget+QGridLayout
+    QWidget* defaultContainer = new QWidget;
+    QGridLayout* defaultGrid = new QGridLayout(defaultContainer);
+    defaultGrid->setSpacing(10);
+    defaultGrid->setContentsMargins(10, 10, 10, 10);
+
+    int columns = 4; // 可根据窗口宽度动态调整
+    for (int i = 0; i < defaultDictNames.size(); ++i) {
+        DictButton* btn = new DictButton(defaultDictNames[i]);
+        int row = i / columns;
+        int col = i % columns;
+        defaultGrid->addWidget(btn, row, col);
+        // 可连接信号
+        connect(btn, &QToolButton::clicked, this, &LearnWidget::on_dictButton_clicked);
     }
-    // customizeButtons.append(addDictButton);
-    addButtonsToGrid(ui->customizeLayout, customizeButtons+QList<DictButton*>(1, addDictButton), 4);
+    defaultContainer->setLayout(defaultGrid);
+    QScrollArea* defaultScroll = new QScrollArea;
+    defaultScroll->setWidgetResizable(true);
+    defaultScroll->setWidget(defaultContainer);
+    // 为defaultBox新建布局
+    QVBoxLayout* defaultBoxLayout = new QVBoxLayout();
+    defaultBoxLayout->addWidget(defaultScroll);
+    ui->defaultBox->setLayout(defaultBoxLayout);
+
+    QWidget* customContainer = new QWidget;
+    QGridLayout* customGrid = new QGridLayout(customContainer);
+    customGrid->setSpacing(10);
+    customGrid->setContentsMargins(10, 10, 10, 10);
+
+    for (int i = 0; i < customDictNames.size(); ++i) {
+        DictButton* btn = new DictButton(customDictNames[i]);
+        int row = i / columns;
+        int col = i % columns;
+        customGrid->addWidget(btn, row, col);
+        connect(btn, &QToolButton::clicked, this, &LearnWidget::on_dictButton_clicked);
+    }
+    // 添加“+”按钮
+    int addRow = customDictNames.size() / columns;
+    int addCol = customDictNames.size() % columns;
+    customGrid->addWidget(addDictButton, addRow, addCol);
+    connect(addDictButton, &QToolButton::clicked, this, &LearnWidget::on_addDictButton_clicked);
+
+    customContainer->setLayout(customGrid);
+    QScrollArea* customScroll = new QScrollArea;
+    customScroll->setWidgetResizable(true);
+    customScroll->setWidget(customContainer);
+    // 为customBox新建布局
+    QVBoxLayout* customBoxLayout = new QVBoxLayout();
+    customBoxLayout->addWidget(customScroll);
+    ui->customizeBox->setLayout(customBoxLayout);
 }
+
+
 void LearnWidget::connectSignals()
 {
     //点击词库跳转到词库信息界面
-    for (DictButton* dictButton : defaultButtons) {
+    for (DictButton* dictButton : std::as_const(defaultButtons)) {
         connect(dictButton, &QToolButton::clicked, this, &LearnWidget::on_dictButton_clicked);
     }
-    for (DictButton* dictButton : customizeButtons) {
+    for (DictButton* dictButton : std::as_const(customizeButtons)) {
         connect(dictButton, &QToolButton::clicked, this, &LearnWidget::on_dictButton_clicked);
     }
     //点击“+”添加自定义词库

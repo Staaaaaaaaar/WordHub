@@ -20,44 +20,6 @@ void WordDatabase::close() {
     m_db.close();
 }
 
-// bool WordDatabase::initDatabase(const QString &name) {
-//     m_connectionName = name;
-//     QString dbPath = QCoreApplication::applicationDirPath() + "/datas/" + name + ".db";
-//     if (!QFile::exists(dbPath)) {
-//         qInfo() << "数据库文件不存在:" << dbPath;
-//         return false;
-//     }
-//     Path = dbPath;
-//     return openDatabase(Path, false);
-// }
-
-// bool WordDatabase::NewDatabase(const QString &name) {
-//     m_connectionName = name;
-//     QString dbPath = QCoreApplication::applicationDirPath() + "/datas/" + name + ".db";
-//     Path = dbPath;
-//     insertSampleData();
-//     return openDatabase(Path, true);
-// }
-
-// bool WordDatabase::openDatabase(const QString &dbPath, bool isNew) {
-//     if (QSqlDatabase::contains(m_connectionName))
-//         QSqlDatabase::removeDatabase(m_connectionName);
-
-//     m_db = QSqlDatabase::addDatabase("QSQLITE", m_connectionName);
-//     m_db.setDatabaseName(dbPath);
-
-//     if (!m_db.open()) {
-//         qDebug() << "打开数据库失败:" << m_db.lastError().text();
-//         return false;
-//     }
-
-//     if (isNew && !createTables()) {
-//         m_db.close();
-//         return false;
-//     }
-//     return true;
-// }
-
 bool WordDatabase::initDatabase(const QString &name) // 创建链接，打开已有数据库
 {
     m_connectionName=name;
@@ -377,6 +339,25 @@ Word WordDatabase::getWordById(int id) {
     return word;
 }
 
+bool WordDatabase::ifWordinCategory(int wordid, int categoryid) {
+    QSqlQuery query(m_db);
+    query.prepare("SELECT COUNT(*) FROM WordCategories WHERE word_id = :wordid AND category_id = :categoryid");
+    query.bindValue(":wordid", wordid);
+    query.bindValue(":categoryid", categoryid);
+
+    if (!query.exec()) {
+        qWarning() << "SQL执行失败:" << query.lastError().text() << "\nSQL:" << query.lastQuery();
+        return false;
+    }
+
+    if (query.next()) {
+        int count = query.value(0).toInt();
+        return count > 0;
+    }
+
+    return false;
+}
+
 bool WordDatabase::loadPhonetics(int wordId, QVector<Phonetic> &phonetics) {
     QSqlQuery query(m_db);
     query.prepare("SELECT text, audio FROM Phonetics WHERE word_id = :word_id");
@@ -509,6 +490,223 @@ QVector<Word> WordDatabase::getWordsByName(const QString &wordName) {
         words.append(getWordById(id));
     }
     return words;
+}
+
+// 从指定分类中随机获取指定数量的单词
+QVector<Word> WordDatabase::getRandomWords(int count, int categoryId) {
+    QVector<Word> words;
+
+    if (count <= 0) {
+        return words;
+    }
+
+    QSqlQuery query(m_db);
+
+    if (categoryId == -1) {
+        // 获取所有单词中的随机单词
+        query.prepare("SELECT id FROM Words ORDER BY RANDOM() LIMIT :count");
+    } else {
+        // 获取指定分类中的随机单词
+        query.prepare("SELECT w.id FROM Words w "
+                      "JOIN WordCategories wc ON w.id = wc.word_id "
+                      "WHERE wc.category_id = :categoryId "
+                      "ORDER BY RANDOM() LIMIT :count");
+        query.bindValue(":categoryId", categoryId);
+    }
+
+    query.bindValue(":count", count);
+
+    if (!query.exec()) {
+        qWarning() << "获取随机单词失败:" << query.lastError().text();
+        return words;
+    }
+
+    QVector<int> wordIds;
+    while (query.next()) {
+        wordIds.append(query.value(0).toInt());
+    }
+
+    // 为每个ID获取完整的单词信息
+    for (int id : wordIds) {
+        Word word = getWordById(id);
+        if (!word.word.isEmpty()) {
+            words.append(word);
+        }
+    }
+
+    return words;
+}
+
+// 获取复习次数小于等于指定值的单词
+QVector<Word> WordDatabase::getWordsByReviewCount(int maxReviewCount, int count, int categoryId) {
+    QVector<Word> words;
+
+    // 构建SQL查询
+    QString sql = "SELECT id FROM Words WHERE review_count <= :maxReviewCount ";
+
+    // 如果指定了分类，添加分类筛选条件
+    if (categoryId != -1) {
+        sql += "AND id IN (SELECT word_id FROM WordCategories WHERE category_id = :categoryId) ";
+    }
+
+    // 如果指定了数量，添加LIMIT限制
+    if (count > 0) {
+        sql += "ORDER BY RANDOM() LIMIT :count";
+    }
+
+    QSqlQuery query(m_db);
+    query.prepare(sql);
+    query.bindValue(":maxReviewCount", maxReviewCount);
+
+    if (categoryId != -1) {
+        query.bindValue(":categoryId", categoryId);
+    }
+
+    if (count > 0) {
+        query.bindValue(":count", count);
+    }
+
+    if (!query.exec()) {
+        qWarning() << "获取低复习次数单词失败:" << query.lastError().text();
+        return words;
+    }
+
+    // 收集符合条件的单词ID
+    QVector<int> wordIds;
+    while (query.next()) {
+        wordIds.append(query.value(0).toInt());
+    }
+
+    // 为每个ID获取完整的单词信息
+    for (int id : wordIds) {
+        Word word = getWordById(id);
+        if (!word.word.isEmpty()) {
+            words.append(word);
+        }
+    }
+
+    return words;
+}
+
+// 更新单词学习信息并添加学习记录
+bool WordDatabase::updateWordLearningInfo(int wordId, bool correct, int difficultyChange, int userId) {
+    if (wordId <= 0 || userId <= 0) {
+        qWarning() << "无效的单词ID或用户ID";
+        return false;
+    }
+
+    // 开始事务确保数据一致性
+    m_db.transaction();
+
+    // 1. 获取当前单词信息
+    QSqlQuery query(m_db);
+    query.prepare("SELECT review_count, difficulty FROM Words WHERE id = :id");
+    query.bindValue(":id", wordId);
+
+    if (!query.exec() || !query.next()) {
+        qWarning() << "获取单词信息失败或单词不存在:" << query.lastError().text();
+        m_db.rollback();
+        return false;
+    }
+
+    int currentReviewCount = query.value(0).toInt();
+    int currentDifficulty = query.value(1).toInt();
+
+    // 2. 更新单词信息
+    // 更新复习次数
+    int newReviewCount = currentReviewCount + 1;
+
+    // 更新难度值（限制在1-5范围内）
+    int newDifficulty = currentDifficulty + difficultyChange;
+    newDifficulty = qBound(1, newDifficulty, 5); // 确保难度在1-5之间
+
+    // 更新数据库中的单词信息
+    query.prepare("UPDATE Words SET "
+                  "last_reviewed = CURRENT_TIMESTAMP, "
+                  "review_count = :review_count, "
+                  "difficulty = :difficulty "
+                  "WHERE id = :id");
+    query.bindValue(":review_count", newReviewCount);
+    query.bindValue(":difficulty", newDifficulty);
+    query.bindValue(":id", wordId);
+
+    if (!query.exec()) {
+        qWarning() << "更新单词信息失败:" << query.lastError().text();
+        m_db.rollback();
+        return false;
+    }
+
+    // 3. 添加学习记录
+    query.prepare("INSERT INTO LearningRecords (word_id, user_id, timestamp, correct, difficulty) "
+                  "VALUES (:word_id, :user_id, CURRENT_TIMESTAMP, :correct, :difficulty)");
+    query.bindValue(":word_id", wordId);
+    query.bindValue(":user_id", userId);
+    query.bindValue(":correct", correct);
+    query.bindValue(":difficulty", newDifficulty);
+
+    if (!query.exec()) {
+        qWarning() << "添加学习记录失败:" << query.lastError().text();
+        m_db.rollback();
+        return false;
+    }
+
+    // 提交事务
+    return m_db.commit();
+}
+
+// 获取数据库中单词的总数
+int WordDatabase::getTotalWordCount(int categoryId) {
+    QSqlQuery query(m_db);
+
+    if (categoryId == -1) {
+        // 查询所有单词的数量
+        query.exec("SELECT COUNT(*) FROM Words");
+    } else {
+        // 查询指定分类下的单词数量
+        query.prepare("SELECT COUNT(*) FROM WordCategories WHERE category_id = :categoryId");
+        query.bindValue(":categoryId", categoryId);
+        query.exec();
+    }
+
+    if (query.next()) {
+        return query.value(0).toInt();
+    }
+
+    return 0;
+}
+
+// 获取数据库中学习记录的总数
+int WordDatabase::getTotalLearningRecordCount(int days,int userId) {
+    QSqlQuery query(m_db);
+    QString sql = "SELECT COUNT(*) FROM LearningRecords";
+
+    // 根据用户ID和时间范围添加筛选条件
+    if (userId != -1 || days != -1) {
+        sql += " WHERE";
+        QStringList conditions;
+
+        if (userId != -1) {
+            conditions.append("user_id = :userId");
+        }
+
+        if (days > 0) {
+            conditions.append("timestamp >= DATE('now', '-" + QString::number(days) + " days')");
+        }
+
+        sql += " " + conditions.join(" AND ");
+    }
+
+    query.prepare(sql);
+
+    if (userId != -1) {
+        query.bindValue(":userId", userId);
+    }
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt();
+    }
+
+    return 0;
 }
 
 QVector<Word> WordDatabase::getWordsByCategory(int categoryId) {
@@ -757,7 +955,7 @@ bool WordDatabase::addLearningRecord(const LearningRecord &record) {
     return query.exec();
 }
 
-QVector<LearningRecord> WordDatabase::getUserLearningRecords(int userId, int days) {
+QVector<LearningRecord> WordDatabase::getUserLearningRecords(int days,int userId) {
     QVector<LearningRecord> records;
     QSqlQuery query(m_db);
 
@@ -798,7 +996,7 @@ QVector<LearningRecord> WordDatabase::getUserLearningRecords(int userId, int day
     return records;
 }
 
-double WordDatabase::getLearningAccuracy(int userId, int days) {
+double WordDatabase::getLearningAccuracy(int days,int userId) {
     QSqlQuery query(m_db);
 
     if (days > 0) {
@@ -943,3 +1141,21 @@ QVector<QString> WordDatabase::getlist() {
     return dbNames;
 }
 
+// 新增：重置所有学习记录信息
+bool WordDatabase::resetLearningRecords() {
+    m_db.transaction();
+
+    // 删除所有学习记录
+    if (!execSql("DELETE FROM LearningRecords")) {
+        m_db.rollback();
+        return false;
+    }
+
+    // 重置所有单词的复习信息
+    if (!execSql("UPDATE Words SET last_reviewed = NULL, review_count = 0, difficulty = 3")) {
+        m_db.rollback();
+        return false;
+    }
+
+    return m_db.commit();
+}

@@ -253,7 +253,7 @@ bool Wordloader::importWordFromTXT(const QString& TXTFilePath, const QString& db
                     Word newWord=search_word[0];
                     newWord.difficulty = 3; // 默认难度
                     newWord.reviewCount = 0; // 默认复习次数
-                    newWord.lastReviewed = QDateTime::currentDateTime(); // 当前时间
+                    // newWord.lastReviewed = QDateTime::currentDateTime(); // 当前时间
 
                     // 插入数据库
                     if (db.addWord(newWord)) {
@@ -272,7 +272,7 @@ bool Wordloader::importWordFromTXT(const QString& TXTFilePath, const QString& db
                 Word newWord=api.getWordInfo(word);
                 newWord.difficulty = 3; // 默认难度
                 newWord.reviewCount = 0; // 默认复习次数
-                newWord.lastReviewed = QDateTime::currentDateTime(); // 当前时间
+                //newWord.lastReviewed = QDateTime::currentDateTime(); // 当前时间
                 // 给本地也插入一份，避免总是调用网络api
                 if (search.addWord(newWord)) {
                     qDebug()<<"成功补充信息到本地数据库";
