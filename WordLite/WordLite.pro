@@ -15,7 +15,6 @@ SOURCES += \
     back_src\utils.cpp \
     gamewidget.cpp \
     guess_according_to_description/guess_word.cpp \
-    #guess_word.cpp \
     guess_word_widget.cpp \
     learnwidget.cpp \
     loginwidget.cpp \

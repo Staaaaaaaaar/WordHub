@@ -51,16 +51,16 @@ void MainWindow::connectSignals(){
         ui->stackedWidget->setCurrentIndex(2);
     });
     //复习界面
-    connect(ui->reviewButton, &QToolButton::clicked, this, [=](){
-        ui->stackedWidget->setCurrentIndex(3);
-    });
+    // connect(ui->reviewButton, &QToolButton::clicked, this, [=](){
+    //     ui->stackedWidget->setCurrentIndex(3);
+    // });
     //成就界面
     connect(ui->achievementButton, &QToolButton::clicked, this, [=](){
-        ui->stackedWidget->setCurrentIndex(4);
+        ui->stackedWidget->setCurrentIndex(3);
     });
     //游戏界面
     connect(ui->gameButton, &QToolButton::clicked, this, [=](){
-        ui->stackedWidget->setCurrentIndex(5);
+        ui->stackedWidget->setCurrentIndex(4);
     });
 
     connect(queryWidget, SIGNAL(sendMes(QString,int)), this, SLOT(showMes(QString,int)));
