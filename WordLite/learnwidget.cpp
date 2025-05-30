@@ -61,6 +61,23 @@ void LearnWidget::setupUI()
     ui->defaultBox->setLayout(defaultBoxLayout);
 
 
+
+    for (int i = 0; i < 4; ++i) {
+        QPushButton* btn = nullptr;
+        switch (i) {
+        case 0: btn = ui->pushButton_0; break;
+        case 1: btn = ui->pushButton_1; break;
+        case 2: btn = ui->pushButton_2; break;
+        case 3: btn = ui->pushButton_3; break;
+        }
+        btn->setStyleSheet("QPushButton {"
+                          "    text-align: left;"
+                          "    padding: 5px;"
+                          "    border: 1px solid gray;"
+                          "    border-radius: 3px;"
+                          "    word-wrap: break-word;"  // 这里控制文本的换行
+                          "}");
+    }
 }
 
 
@@ -90,7 +107,7 @@ void LearnWidget::connectSignals()
         initWordsWidget();
     });
 
-    connect(ui->refreshButton, &QToolButton::clicked, this, &LearnWidget::on_refreshButton_clicked);
+
 }
 
 void LearnWidget::addButtonsToGrid(QGridLayout *grid, const QList<DictButton*> &buttons, int columns)
@@ -141,10 +158,10 @@ void LearnWidget::initWordsWidget()
                     lastDef = def.definition;
                 }
             }
-            meaningLines << QString("%1 %2").arg(pos, defs.join("; "));
+            meaningLines << QString("%1\n%2").arg(pos, defs.join("; "));
         }
         QTableWidgetItem* defItem = new QTableWidgetItem(meaningLines.join("\n"));
-        defItem->setTextAlignment(Qt::AlignCenter);
+        defItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         ui->wordsListWidget->setItem(i, 1, defItem);
     }
     // 自动调整列宽和行高，使内容自适应
@@ -187,7 +204,7 @@ void LearnWidget::initCheckout()
                     lastDef = def.definition;
                 }
             }
-            meaningLines << QString("%1 %2").arg(pos, defs.join("; "));
+            meaningLines << QString("%1\n%2").arg(pos, defs.join("; "));
         }
         QTableWidgetItem* defItem = new QTableWidgetItem(meaningLines.join("\n"));
         defItem->setTextAlignment(Qt::AlignCenter);
@@ -236,7 +253,25 @@ void LearnWidget::initTestWidget()
         connect(btn, &QPushButton::clicked, this, [=]() {
             currentSelected = i;
             for (int j = 0; j < 4; ++j) {
-                optionButtons[j]->setStyleSheet(j == i ? "background-color: lightblue;" : "");
+                if (j==i){
+                    optionButtons[j]->setStyleSheet("QPushButton {"
+                          "    text-align: left;"
+                          "    padding: 5px;"
+                          "    border: 1px solid gray;"
+                          "    border-radius: 3px;"
+                          "    word-wrap: break-word;"  // 这里控制文本的换行
+                          "    background-color: lightblue;"
+                          "}");
+                }
+                else{
+                    optionButtons[j]->setStyleSheet("QPushButton {"
+                          "    text-align: left;"
+                          "    padding: 5px;"
+                          "    border: 1px solid gray;"
+                          "    border-radius: 3px;"
+                          "    word-wrap: break-word;"  // 这里控制文本的换行
+                          "}");
+                }
             }
         });
     }
@@ -248,16 +283,40 @@ void LearnWidget::initTestWidget()
         int wordId = wordsList[currentTestIndex].id;
         bool correct = (optionButtons[currentSelected]->text() == correctAnswer);
         testResults[currentTestIndex] = correct;
-        // DBptr->updateWordLearningInfo(wordId, correct);
+        DBptr->updateWordLearningInfo(wordId, correct, -int(correct));
 
         // 显示正误反馈
         for (int i = 0; i < 4; ++i) {
             if (optionButtons[i]->text() == correctAnswer) {
-                optionButtons[i]->setStyleSheet("background-color:lightgreen;");
+                optionButtons[i]->setStyleSheet(
+                    "QPushButton {"
+                    "    text-align: left;"
+                    "    padding: 5px;"
+                    "    border: 1px solid gray;"
+                    "    border-radius: 3px;"
+                    "    word-wrap: break-word;"  // 这里控制文本的换行
+                    "    background-color: lightgreen;"
+                    "}"
+                );
             } else if (i == currentSelected) {
-                optionButtons[i]->setStyleSheet("background-color:pink;");
+                optionButtons[i]->setStyleSheet("QPushButton {"
+                    "    text-align: left;"
+                    "    padding: 5px;"
+                    "    border: 1px solid gray;"
+                    "    border-radius: 3px;"
+                    "    word-wrap: break-word;"  // 这里控制文本的换行
+                    "    background-color: pink;"
+                    "}"
+                );
             } else {
-                optionButtons[i]->setStyleSheet("");
+                optionButtons[i]->setStyleSheet("QPushButton {"
+                    "    text-align: left;"
+                    "    padding: 5px;"
+                    "    border: 1px solid gray;"
+                    "    border-radius: 3px;"
+                    "    word-wrap: break-word;"  // 这里控制文本的换行
+                    "}"
+                );
             }
         }
 
@@ -280,15 +339,16 @@ void LearnWidget::showTestForWord(int idx)
     ui->testWordLabel->setText(wordsList[idx].word);
 
     // 获取四个释义选项
-    // options = FourmeaningtoChoice(wordsList[idx].id);
-    // if (options.size() < 4) {
-    //     // 补齐到4个选项，防止越界
-    //     while (options.size() < 4) options << "";
-    // }
-    //测试样例
-    options.clear();
-    options << "a fruit" << "a tech company" << "to move swiftly on foot" << "an act or spell of running";
+    options = DBptr->FourmeaningtoChoice(wordsList[idx].id);
+    if (options.size() < 4) {
+        // 补齐到4个选项，防止越界
+        while (options.size() < 4) options << "";
+    }
     correctAnswer = options[0];
+    //测试样例
+    // options.clear();
+    // options << "a fruit" << "a tech company" << "to move swiftly on foot" << "an act or spell of running";
+    // correctAnswer = options[0];
 
     // 随机打乱选项顺序
     QVector<QString> shuffledOptions = options;
@@ -300,7 +360,15 @@ void LearnWidget::showTestForWord(int idx)
     for (int i = 0; i < 4; ++i) {
         optionButtons[i]->setText(shuffledOptions[i]);
         optionButtons[i]->setChecked(false);
-        optionButtons[i]->setStyleSheet("");
+        optionButtons[i]->setStyleSheet(
+            "QPushButton {"
+            "    text-align: left;"
+            "    padding: 5px;"
+            "    border: 1px solid gray;"
+            "    border-radius: 3px;"
+            "    word-wrap: break-word;"  // 这里控制文本的换行
+            "}"
+        );
     }
 }
 
@@ -322,20 +390,12 @@ void LearnWidget::on_reviewButton_clicked()
     //跳转到words界面
     ui->stackedWidget->setCurrentIndex(2);
     ui->testButton->setText("开始测试");
-        // 生成一个测试用的 wordsList
-        wordsList.clear();
-        Word word1;
-        word1.word = "apple";
-        word1.meanings["n."].append(Definition{"a fruit"});
-        word1.meanings["n."].append(Definition{"a tech company"});
+    wordsList.clear();
+    wordsList = DBptr->getWordsToReview(20);
 
-        Word word2;
-        word2.word = "run";
-        word2.meanings["v."].append(Definition{"to move swiftly on foot"});
-        word2.meanings["n."].append(Definition{"an act or spell of running"});
-
-        wordsList.append(word1);
-        wordsList.append(word2);
+    disconnect(ui->refreshButton, nullptr, nullptr, nullptr);
+    // 重新连接刷新按钮
+    connect(ui->refreshButton, &QToolButton::clicked, this, &LearnWidget::on_refreshButton_clicked_2);
 
     // 初始化单词列表界面
     initWordsWidget();
@@ -347,20 +407,11 @@ void LearnWidget::on_learnButton_clicked()
     //跳转到words界面
     ui->stackedWidget->setCurrentIndex(2);
     ui->testButton->setText("开始测试");
-        // 生成一个测试用的 wordsList
-        wordsList.clear();
-        Word word1;
-        word1.word = "apple";
-        word1.meanings["n."].append(Definition{"a fruitaaaaaaaaaaaaaa"});
-        word1.meanings["n."].append(Definition{"a tech companyaaaaaaaaaaaa"});
+    wordsList.clear();
+    wordsList = DBptr->getRandomWords(20);
 
-        Word word2;
-        word2.word = "run";
-        word2.meanings["v."].append(Definition{"to move swiftly on footaaaaaaaaaaa"});
-        word2.meanings["n."].append(Definition{"an act or spell of runningaaaaaaaaaaaaa"});
-
-        wordsList.append(word1);
-        wordsList.append(word2);
+    disconnect(ui->refreshButton, nullptr, nullptr, nullptr);
+    connect(ui->refreshButton, &QToolButton::clicked, this, &LearnWidget::on_refreshButton_clicked_1);
 
     // 初始化单词列表界面
     initWordsWidget();
@@ -375,22 +426,21 @@ void LearnWidget::on_testButton_clicked()
     showTestForWord(0);
 }
 
-void LearnWidget::on_refreshButton_clicked()
+void LearnWidget::on_refreshButton_clicked_1()
 {
     ui->testButton->setText("开始测试");
     //重新获取wordsList
-        // 生成一个测试用的 wordsList
-        wordsList.clear();
-        Word word1;
-        word1.word = "apple";
-        word1.meanings["n."].append(Definition{"a fruit"});
-        word1.meanings["n."].append(Definition{"a tech company"});
-        Word word2;
-        word2.word = "run";
-        word2.meanings["v."].append(Definition{"to move swiftly on foot"});
-        word2.meanings["n."].append(Definition{"an act or spell of running"});
-        wordsList.append(word1);
-        wordsList.append(word2);
+    wordsList.clear();
+    wordsList = DBptr->getRandomWords(20);
+
+    initWordsWidget();
+}
+void LearnWidget::on_refreshButton_clicked_2()
+{
+    ui->testButton->setText("开始测试");
+    //重新获取wordsList
+    wordsList.clear();
+    wordsList = DBptr->getWordsToReview(20);
 
     initWordsWidget();
 }
