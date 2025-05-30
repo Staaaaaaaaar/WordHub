@@ -11,15 +11,6 @@ LearnWidget::LearnWidget(QWidget *parent)
     DBptr = new WordDatabase();
     //初始化defaultDictNames
     defaultDictNames = DBptr->getlist();
-    //初始化customizeButtons
-    customDictNames = {
-        "自定义词库1",
-        "自定义词库2",
-        "自定义词库3",
-        "自定义词库4",
-        "自定义词库5",
-        "自定义词库6"
-    };
     //设置UI和连接信号槽
     setupUI();
     connectSignals();
@@ -53,6 +44,12 @@ void LearnWidget::setupUI()
         // 可连接信号
         connect(btn, &QToolButton::clicked, this, &LearnWidget::on_dictButton_clicked);
     }
+    // 添加“+”按钮
+    int addRow = defaultDictNames.size() / columns;
+    int addCol = defaultDictNames.size() % columns;
+    defaultGrid->addWidget(addDictButton, addRow, addCol);
+    connect(addDictButton, &QToolButton::clicked, this, &LearnWidget::on_addDictButton_clicked);
+
     defaultContainer->setLayout(defaultGrid);
     QScrollArea* defaultScroll = new QScrollArea;
     defaultScroll->setWidgetResizable(true);
@@ -62,32 +59,7 @@ void LearnWidget::setupUI()
     defaultBoxLayout->addWidget(defaultScroll);
     ui->defaultBox->setLayout(defaultBoxLayout);
 
-    QWidget* customContainer = new QWidget;
-    QGridLayout* customGrid = new QGridLayout(customContainer);
-    customGrid->setSpacing(10);
-    customGrid->setContentsMargins(10, 10, 10, 10);
 
-    for (int i = 0; i < customDictNames.size(); ++i) {
-        DictButton* btn = new DictButton(customDictNames[i]);
-        int row = i / columns;
-        int col = i % columns;
-        customGrid->addWidget(btn, row, col);
-        connect(btn, &QToolButton::clicked, this, &LearnWidget::on_dictButton_clicked);
-    }
-    // 添加“+”按钮
-    int addRow = customDictNames.size() / columns;
-    int addCol = customDictNames.size() % columns;
-    customGrid->addWidget(addDictButton, addRow, addCol);
-    connect(addDictButton, &QToolButton::clicked, this, &LearnWidget::on_addDictButton_clicked);
-
-    customContainer->setLayout(customGrid);
-    QScrollArea* customScroll = new QScrollArea;
-    customScroll->setWidgetResizable(true);
-    customScroll->setWidget(customContainer);
-    // 为customBox新建布局
-    QVBoxLayout* customBoxLayout = new QVBoxLayout();
-    customBoxLayout->addWidget(customScroll);
-    ui->customizeBox->setLayout(customBoxLayout);
 }
 
 
@@ -102,6 +74,9 @@ void LearnWidget::connectSignals()
     }
     //点击“+”添加自定义词库
     connect(addDictButton, &QToolButton::clicked, this, &LearnWidget::on_addDictButton_clicked);
+    //跳转到words界面
+    connect(ui->learnButton, &QToolButton::clicked, this, &LearnWidget::on_learnButton_clicked);
+    connect(ui->reviewButton, &QToolButton::clicked, this, &LearnWidget::on_reviewButton_clicked);
     //跳转到测试界面
     connect(ui->testButton, &QToolButton::clicked, this, &LearnWidget::on_testButton_clicked);
     //返回
@@ -109,6 +84,8 @@ void LearnWidget::connectSignals()
         ui->stackedWidget->setCurrentIndex(0);});
     connect(ui->backButton_2, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(1);});
+    connect(ui->backButton_3, &QToolButton::clicked, this, [=](){
+        ui->stackedWidget->setCurrentIndex(2);});
 }
 
 void LearnWidget::addButtonsToGrid(QGridLayout *grid, const QList<DictButton*> &buttons, int columns)
@@ -121,6 +98,11 @@ void LearnWidget::addButtonsToGrid(QGridLayout *grid, const QList<DictButton*> &
 }
 void LearnWidget::initDictWidget()
 {
+    QString name = qobject_cast<DictButton*>(sender())->text();
+    ui->dictName->setText(name);
+}
+void LearnWidget::initWordsWidget()
+{
 
 }
 void LearnWidget::initTestWidget()
@@ -128,22 +110,35 @@ void LearnWidget::initTestWidget()
 
 }
 
-
-void LearnWidget::on_dictButton_clicked()
-{
-    //跳转到词库信息界面
-    ui->stackedWidget->setCurrentIndex(1);
-    //初始化界面
-    initDictWidget();
-}
 void LearnWidget::on_addDictButton_clicked()
 {
     //浏览文件
 }
+void LearnWidget::on_dictButton_clicked()
+{
+    //跳转到词库信息界面
+    ui->stackedWidget->setCurrentIndex(1);
+    QString name = qobject_cast<DictButton*>(sender())->text();
+    DBptr->initDatabase(name);
+    //初始化界面
+    initDictWidget();
+}
+void LearnWidget::on_reviewButton_clicked()
+{
+    //跳转到words界面
+    ui->stackedWidget->setCurrentIndex(2);
+}
+
+
+void LearnWidget::on_learnButton_clicked()
+{
+    //跳转到words界面
+    ui->stackedWidget->setCurrentIndex(2);
+}
 void LearnWidget::on_testButton_clicked()
 {
     //跳转到测试界面
-    ui->stackedWidget->setCurrentIndex(2);
+    ui->stackedWidget->setCurrentIndex(3);
     //初始化界面
     initTestWidget();
 }
@@ -163,4 +158,7 @@ DictButton::~DictButton()
 {
 
 }
+
+
+
 

@@ -38,11 +38,13 @@ public:
 
     WordDatabase* DBptr;
     QVector<QString> defaultDictNames;
-    QVector<QString> customDictNames;
+
+    Word* wordptr;
 
     void addButtonsToGrid(QGridLayout *grid, const QList<DictButton*> &buttons, int columns = 3);
     void initDictWidget();
     void initTestWidget();
+    void initWordsWidget();
 
     // 设置UI和连接信号槽
     void setupUI();

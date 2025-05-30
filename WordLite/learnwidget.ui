@@ -24,14 +24,7 @@
        <item>
         <widget class="QGroupBox" name="defaultBox">
          <property name="title">
-          <string>默认词库</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="customizeBox">
-         <property name="title">
-          <string>自定义词库</string>
+          <string>词库</string>
          </property>
         </widget>
        </item>
@@ -92,7 +85,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="dictName">
            <property name="font">
             <font>
              <pointsize>18</pointsize>
@@ -147,7 +140,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLabel" name="label_2">
+          <widget class="QLabel" name="learningProcess">
            <property name="font">
             <font>
              <pointsize>20</pointsize>
@@ -202,7 +195,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLabel" name="label_4">
+          <widget class="QLabel" name="learningRecord">
            <property name="font">
             <font>
              <pointsize>20</pointsize>
@@ -257,7 +250,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QToolButton" name="toolButton">
+          <widget class="QToolButton" name="reviewButton">
            <property name="text">
             <string>开始复习</string>
            </property>
@@ -277,7 +270,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QToolButton" name="testButton">
+          <widget class="QToolButton" name="learnButton">
            <property name="text">
             <string>开始学习</string>
            </property>
