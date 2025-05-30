@@ -8,6 +8,9 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QGridLayout>
+#include <vector>
+#include <QFont>
+using namespace std;
 
 namespace Ui {
 class Wordle;
@@ -24,30 +27,27 @@ public:
     static const int WORD_LENGTH=5;
 
     QString target_word;
-    int currentRow;
+    QString text;
     int currentCol;
     int attempts;
     bool game_over;
+    vector<vector<QLabel*> > letterGrid;
 
-    QVector<QVector<QLabel*> > letterGrid;
-    QVector<QPushButton*> keyBoardButtons;
-    QGridLayout *boardLayout;
-    QGridLayout *keyboardLayout;
+    vector<QString> wordbase;
+    QSet<QString> letters;
 
-    void initUI();
-    void initGameBoard();
     void selectRandomWord();
+    void loadWord();
+    void game();
+    void onExitButtonClicked();
+    void getText();
+    void setColor();
+    void restart();
+    void displayWord();
+    QFont *font;
 
-    void submitGuess();
-    void evaluateGuess();
-    void updateKeyBoardColors();
-    void endGame(bool isWin);
-
-    bool isValidWord(const QString & word);
-    void updateStatusMessage(const QString & message);
-    void setLetterColor(int row,int col,const QColor & color);
-
-
+signals:
+    void exitSignals();
 private:
     Ui::Wordle *ui;
 };

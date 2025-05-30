@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "guess_word_widget.h"
+#include "wordle.h"
 
 namespace Ui {
 class GameWidget;
@@ -28,6 +29,7 @@ private slots:
 private:
     Ui::GameWidget *ui;
     guess_word_widget *guessWordWidget;
+    Wordle *wordle;
 };
 
 #endif // GAMEWIDGET_H
