@@ -59,6 +59,19 @@ public:
     QVector<Word> getWordsWithDifficultyOne(int categoryId = -1);
     int learnednum();
 
+    // 静态方法：获取所有词库中总共学习的单词数量
+    static int getAllTotalWordCount();
+
+    // 静态方法：获取所有词库中指定天数内每天学习单词的数量
+    static QVector<int> getAllDailyLearningCountInDays(int days = 30, int userId = 1);
+
+    // 静态方法：获取所有词库中指定天数内每天学习的正确率
+    static QVector<double> getAllDailyLearningAccuracyInDays(int days = 30, int userId = 1);
+
+    // 静态方法：获取所有词库中指定天数内总的学习正确率
+    static double getAllLearningAccuracy(int days = 30, int userId = 1);
+
+
     // 分类管理
     bool addCategory(const Category &category); // 添加分类
     bool deleteCategory(int id); // 删除分类

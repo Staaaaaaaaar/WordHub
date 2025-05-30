@@ -1160,6 +1160,86 @@ QVector<double> WordDatabase::getDailyLearningAccuracyInDays(int days, int userI
     return dailyAccuracies;
 }
 
+// 静态方法：获取所有词库中总共学习的单词数量
+int WordDatabase::getAllTotalWordCount() {
+    int totalCount = 0;
+    QVector<QString> dbNames = getlist();
+    for (const QString& dbName : dbNames) {
+        WordDatabase db;
+        if (db.initDatabase(dbName)) {
+            totalCount += db.getTotalWordCount();
+        }
+    }
+    return totalCount;
+}
+
+// 静态方法：获取所有词库中指定天数内每天学习单词的数量
+QVector<int> WordDatabase::getAllDailyLearningCountInDays(int days, int userId) {
+    QVector<int> allDailyCounts(days, 0);
+    QVector<QString> dbNames = getlist();
+    for (const QString& dbName : dbNames) {
+        WordDatabase db;
+        if (db.initDatabase(dbName)) {
+            QVector<int> dailyCounts = db.getDailyLearningCountInDays(days, userId);
+            for (int i = 0; i < days; ++i) {
+                allDailyCounts[i] += dailyCounts[i];
+            }
+        }
+    }
+    return allDailyCounts;
+}
+
+// 静态方法：获取所有词库中指定天数内每天学习的正确率
+QVector<double> WordDatabase::getAllDailyLearningAccuracyInDays(int days, int userId) {
+    QVector<double> allDailyAccuracies(days, 0.0);
+    QVector<int> totalCounts(days, 0);
+    QVector<int> correctCounts(days, 0);
+
+    QVector<QString> dbNames = getlist();
+    for (const QString& dbName : dbNames) {
+        WordDatabase db;
+        if (db.initDatabase(dbName)) {
+            QVector<int> dailyCounts = db.getDailyLearningCountInDays(days, userId);
+            QVector<double> dailyAccuracies = db.getDailyLearningAccuracyInDays(days, userId);
+            for (int i = 0; i < days; ++i) {
+                totalCounts[i] += dailyCounts[i];
+                correctCounts[i] += static_cast<int>(dailyCounts[i] * dailyAccuracies[i]);
+            }
+        }
+    }
+
+    for (int i = 0; i < days; ++i) {
+        if (totalCounts[i] > 0) {
+            allDailyAccuracies[i] = static_cast<double>(correctCounts[i]) / totalCounts[i];
+        }
+    }
+
+    return allDailyAccuracies;
+}
+
+// 静态方法：获取所有词库中指定天数内总的学习正确率
+double WordDatabase::getAllLearningAccuracy(int days, int userId) {
+    int totalCount = 0;
+    int correctCount = 0;
+
+    QVector<QString> dbNames = getlist();
+    for (const QString& dbName : dbNames) {
+        WordDatabase db;
+        if (db.initDatabase(dbName)) {
+            int dbTotalCount = db.getTotalLearningRecordCount(days, userId);
+            double dbAccuracy = db.getLearningAccuracy(days, userId);
+            totalCount += dbTotalCount;
+            correctCount += static_cast<int>(dbTotalCount * dbAccuracy);
+        }
+    }
+
+    if (totalCount > 0) {
+        return static_cast<double>(correctCount) / totalCount;
+    }
+
+    return 0.0;
+}
+
 // -------------------- 数据库工具方法 --------------------
 bool WordDatabase::insertSampleData() {
     // 插入示例词性
