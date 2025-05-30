@@ -66,3 +66,22 @@ QDebug operator<<(QDebug o,const Category c)
     o<<"__________________"<<"\n";
     return o;
 }
+
+QString Word::getoneMeaning()
+{
+    for()
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -26,6 +26,7 @@ public:
     // 数据库状态管理
     bool isOpen() const;
     void close();
+    static void resetAll();
 
     // 数据库操作
     bool initDatabase(const QString &name); // 打开已有数据库
@@ -47,8 +48,13 @@ public:
     QVector<Word> getRandomWords(int count, int categoryId = -1);
     // 新增：获取复习次数小于等于指定值的单词
     QVector<Word> getWordsByReviewCount(int maxReviewCount, int count = -1, int categoryId = -1);
+
+    //learning 处理学习过程中的事件
+
     // 新增：更新单词学习信息并添加学习记录
     bool updateWordLearningInfo(int wordId, bool correct, int difficultyChange=0, int userId=1);
+    // 输入正在学习单词的id，返回该单词的正确释义和3个其他选项；返回列表第一项是输入单词的释义
+    QVector<QString> FourmeaningtoChoice(int wordid);
 
     // 分类管理
     bool addCategory(const Category &category); // 添加分类
