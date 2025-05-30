@@ -743,15 +743,16 @@ QVector<QString> WordDatabase::FourmeaningtoChoice(int wordid)
 {
     QVector<QString> res;
     Word w1=getWordById(wordid);
-    res.append("选择1");
-    res.append("选择2");
-    res.append("选择3");
-    res.append("选择4");
+    res.append(w1.getoneMeaning());
 
+    for(auto w:getRandomWords(4))
+    {
+        if(w.word==w1.word)continue;
+        res.append(w.getoneMeaning());
+    }
 
-    // res.append(w1.g_meanings());
-
-
+    if(res.size()==5)res.pop_back();
+    return res;
 }
 
 
