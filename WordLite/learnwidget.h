@@ -1,11 +1,12 @@
 #ifndef LEARNWIDGET_H
 #define LEARNWIDGET_H
 
-#include "qpushbutton.h"
 #include "qtoolbutton.h"
 #include <QWidget>
 #include <QGridLayout>
 #include <QList>
+#include <QLabel>
+#include <QPushButton>
 #include <QScrollArea>
 #include <QTimer>
 #include <back_head/database.h>
@@ -71,7 +72,8 @@ private slots:
 
     void on_learnButton_clicked();
 
-    void on_refreshButton_clicked();
+    void on_refreshButton_clicked_1();
+    void on_refreshButton_clicked_2();
 
 private:
     Ui::LearnWidget *ui;
