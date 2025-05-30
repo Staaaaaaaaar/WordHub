@@ -26,6 +26,7 @@ public:
     // 数据库状态管理
     bool isOpen() const;
     void close();
+    static void resetAll();
 
     // 数据库操作
     bool initDatabase(const QString &name); // 打开已有数据库
@@ -47,8 +48,29 @@ public:
     QVector<Word> getRandomWords(int count, int categoryId = -1);
     // 新增：获取复习次数小于等于指定值的单词
     QVector<Word> getWordsByReviewCount(int maxReviewCount, int count = -1, int categoryId = -1);
+
+    //learning 处理学习过程中的事件
+
     // 新增：更新单词学习信息并添加学习记录
     bool updateWordLearningInfo(int wordId, bool correct, int difficultyChange=0, int userId=1);
+    // 输入正在学习单词的id，返回该单词的正确释义和3个其他选项；返回列表第一项是输入单词的释义
+    QVector<QString> FourmeaningtoChoice(int wordid);
+    // difficult==1 认为是已经掌握
+    QVector<Word> getWordsWithDifficultyOne(int categoryId = -1);
+    int learnednum();
+
+    // 静态方法：获取所有词库中总共学习的单词数量
+    static int getAllTotalWordCount();
+
+    // 静态方法：获取所有词库中指定天数内每天学习单词的数量
+    static QVector<int> getAllDailyLearningCountInDays(int days = 30, int userId = 1);
+
+    // 静态方法：获取所有词库中指定天数内每天学习的正确率
+    static QVector<double> getAllDailyLearningAccuracyInDays(int days = 30, int userId = 1);
+
+    // 静态方法：获取所有词库中指定天数内总的学习正确率
+    static double getAllLearningAccuracy(int days = 30, int userId = 1);
+
 
     // 分类管理
     bool addCategory(const Category &category); // 添加分类
@@ -70,7 +92,10 @@ public:
     double getLearningAccuracy(int days = 30,int userId=1); // 计算学习准确率
     // 新增：获取数据库中学习记录的总数
     int getTotalLearningRecordCount(int days = -1,int userId =1);
-
+    // 在连续多少天内每一天的学习数目
+    QVector<int> getDailyLearningCountInDays(int days = 30, int userId = 1);
+    // 在连续多少天内每一天的学习正确率
+    QVector<double> getDailyLearningAccuracyInDays(int days = 30, int userId = 1);
     // 重置学习当前数据库的学习记录
     bool resetLearningRecords();
 
