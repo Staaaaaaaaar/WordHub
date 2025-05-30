@@ -983,6 +983,8 @@ bool WordDatabase::addLearningRecord(const LearningRecord &record) {
     return query.exec();
 }
 
+
+
 QVector<LearningRecord> WordDatabase::getUserLearningRecords(int days,int userId) {
     QVector<LearningRecord> records;
     QSqlQuery query(m_db);
@@ -1050,6 +1052,44 @@ double WordDatabase::getLearningAccuracy(int days,int userId) {
 
     return query.value("accuracy").toDouble() * 100.0; // 转换为百分比
 }
+
+// 实现获取 difficulty 等于 1 的单词的方法
+QVector<Word> WordDatabase::getWordsWithDifficultyOne(int categoryId) {
+    QVector<Word> words;
+    QSqlQuery query(m_db);
+
+    QString sql = "SELECT * FROM Words WHERE difficulty = 1";
+    if (categoryId != -1) {
+        sql += " AND id IN (SELECT word_id FROM WordCategory WHERE category_id = :categoryId)";
+    }
+
+    query.prepare(sql);
+    if (categoryId != -1) {
+        query.bindValue(":categoryId", categoryId);
+    }
+
+    if (query.exec()) {
+        while (query.next()) {
+            Word word;
+            word.id = query.value("id").toInt();
+            word.word = query.value("word").toString();
+            word.lastReviewed = query.value("last_reviewed").toDateTime();
+            word.reviewCount = query.value("review_count").toInt();
+            word.difficulty = query.value("difficulty").toInt();
+
+            // 加载音标和释义
+            loadPhonetics(word.id, word.phonetics);
+            loadDefinitions(word.id, word.meanings);
+
+            words.append(word);
+        }
+    } else {
+        qWarning() << "查询单词失败:" << query.lastError().text();
+    }
+
+    return words;
+}
+
 
 // -------------------- 数据库工具方法 --------------------
 bool WordDatabase::insertSampleData() {
