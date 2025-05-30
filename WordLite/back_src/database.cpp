@@ -93,6 +93,16 @@ bool WordDatabase::openDatabase(const QString &dbPath, bool isNew) {
     return true;
 }
 
+void WordDatabase::resetAll()
+{
+    for(auto name:WordDatabase::getlist())
+    {
+        WordDatabase db;
+        db.initDatabase(name);
+        db.resetLearningRecords();
+    }
+}
+
 bool WordDatabase::execSql(const QString &sql) {
     QSqlQuery query(m_db);
     if (!query.exec(sql)) {

@@ -26,6 +26,7 @@ public:
     // 数据库状态管理
     bool isOpen() const;
     void close();
+    static void resetAll();
 
     // 数据库操作
     bool initDatabase(const QString &name); // 打开已有数据库
