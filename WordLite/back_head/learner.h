@@ -58,6 +58,8 @@ public:
     void setName(const QString& newName);
     void setPassword(const QString& password);
     bool verifyPassword(const QString& password) const;
+    bool verifyPasswordU(const QString& username,const QString & password) const;
+    bool verifyUserName(const QString & username) const;
     void setHeadImage(const QString& name){m_headImage=name;};
     void setTotalLearned(int value){m_totalLearned=value;};
 

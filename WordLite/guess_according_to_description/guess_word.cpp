@@ -1,9 +1,22 @@
-#include "../guess_according_to_description_h/guess_word.h"
+//#include "../guess_according_to_description_h/guess_word.h"
 #include <QDebug>
 #include <QDir>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
+
+#include <QProcess>
+#include <map>
+using namespace std;
+
+class guess_word
+{
+private:
+    QProcess *pythonprocess;
+public:
+    guess_word();
+    map<QString,QString> processingPython();
+};
 
 guess_word::guess_word()
 {
