@@ -134,12 +134,12 @@ void WordWidget::setupUI(QVector<Word> wordList)
             bool ok = false;
             QString catName = QInputDialog::getText(this, "新建分类", "请输入分类名称：", QLineEdit::Normal, "", &ok);
             if (ok && !catName.trimmed().isEmpty() && DBptr) {
-            int newCatId = DBptr->addCategory(catName.trimmed());
-            if (newCatId >= 0) {
-                DBptr->assignWordToCategory(word.id, newCatId);
+            //int newCatId = DBptr->addCategory(catName.trimmed());
+            //if (newCatId >= 0) {
+               // DBptr->assignWordToCategory(word.id, newCatId);
                 // 刷新UI
-                this->setupUI(DBptr->getWordsByName(word.g_word()));
-            }
+               // this->setupUI(DBptr->getWordsByName(word.g_word()));
+           // }
             }
         });
 
