@@ -2,6 +2,8 @@
 #define GAMEWIDGET_H
 
 #include <QWidget>
+#include "guess_word_widget.h"
+#include "wordle.h"
 
 namespace Ui {
 class GameWidget;
@@ -19,8 +21,15 @@ public:
     void setupUI();
     void connectSignals();
 
+private slots:
+    void onGuessWordWidgetExit();
+    void onBeginSignalCome();
+    void onAnswerSignalCome();
+
 private:
     Ui::GameWidget *ui;
+    guess_word_widget *guessWordWidget;
+    Wordle *wordle;
 };
 
 #endif // GAMEWIDGET_H

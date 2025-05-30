@@ -24,14 +24,12 @@ void MainWindow::setupUI(){
     userWidget = new UserWidget(this);
     queryWidget = new QueryWidget(this);
     learnWidget = new LearnWidget(this);
-    reviewWidget = new ReviewWidget(this);
     achievementWidget = new AchievementWidget(this);
     gameWidget = new GameWidget(this);
 
     ui->stackedWidget->addWidget(userWidget);
     ui->stackedWidget->addWidget(queryWidget);
     ui->stackedWidget->addWidget(learnWidget);
-    ui->stackedWidget->addWidget(reviewWidget);
     ui->stackedWidget->addWidget(achievementWidget);
     ui->stackedWidget->addWidget(gameWidget);
 
@@ -52,21 +50,18 @@ void MainWindow::connectSignals(){
     connect(ui->learnButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(2);
     });
-    //复习界面
-    connect(ui->reviewButton, &QToolButton::clicked, this, [=](){
-        ui->stackedWidget->setCurrentIndex(3);
-    });
     //成就界面
     connect(ui->achievementButton, &QToolButton::clicked, this, [=](){
-        ui->stackedWidget->setCurrentIndex(4);
+        ui->stackedWidget->setCurrentIndex(3);
     });
     //游戏界面
     connect(ui->gameButton, &QToolButton::clicked, this, [=](){
-        ui->stackedWidget->setCurrentIndex(5);
+        ui->stackedWidget->setCurrentIndex(4);
     });
 
     connect(queryWidget, SIGNAL(sendMes(QString,int)), this, SLOT(showMes(QString,int)));
     connect(queryWidget, SIGNAL(clearMes()), this, SLOT(clearMes()));
+
 }
 
 void MainWindow::showMes(QString message, int timeout)

@@ -5,7 +5,6 @@
 #include <userwidget.h>
 #include <querywidget.h>
 #include <learnwidget.h>
-#include <reviewwidget.h>
 #include <achievementwidget.h>
 #include <gamewidget.h>
 
@@ -26,7 +25,6 @@ public:
     UserWidget* userWidget;
     QueryWidget* queryWidget;
     LearnWidget* learnWidget;
-    ReviewWidget* reviewWidget;
     AchievementWidget* achievementWidget;
     GameWidget* gameWidget;
 

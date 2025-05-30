@@ -115,24 +115,24 @@ void AchievementWidget::refreshAchievements()
         detailLabel->setWordWrap(true);
 
         // 仅为整体和图标添加边框，白底黑字
-        itemWidget->setStyleSheet(
-            "background:#fff;"
-            "border: 2px solid #222;" // 整体黑色边框
-            "border-radius: 18px;"
-            "margin-bottom: 8px;"
-        );
-        iconLabel->setStyleSheet(
-            "border: 2px solid #222;" // 图标黑色边框
-            "border-radius: 12px;"
-            "background:#fff;"
-        );
+        // itemWidget->setStyleSheet(
+        //     "background:#fff;"
+        //     "border: 2px solid #222;" // 整体黑色边框
+        //     "border-radius: 18px;"
+        //     "margin-bottom: 8px;"
+        // );
+        // iconLabel->setStyleSheet(
+        //     "border: 2px solid #222;" // 图标黑色边框
+        //     "border-radius: 12px;"
+        //     "background:#fff;"
+        // );
         // 取消文字label的边框，仅设置颜色和字体
-        titleLabel->setStyleSheet("color: #000; font-size: 16pt; padding-bottom: 4px;");
-        detailLabel->setStyleSheet(
-            achievement.unlocked
-            ? "color: #000; font-size: 12pt;"
-            : "color: #000; font-size: 12pt; font-style: italic;"
-        );
+        // titleLabel->setStyleSheet("color: #000; font-size: 16pt; padding-bottom: 4px;");
+        // detailLabel->setStyleSheet(
+        //     achievement.unlocked
+        //     ? "color: #000; font-size: 12pt;"
+        //     : "color: #000; font-size: 12pt; font-style: italic;"
+        // );
 
         textLayout->addWidget(titleLabel);
         textLayout->addWidget(detailLabel);

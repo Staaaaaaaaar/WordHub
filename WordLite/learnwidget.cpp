@@ -1,5 +1,6 @@
 #include "learnwidget.h"
 #include "ui_learnwidget.h"
+#include <random>
 
 
 LearnWidget::LearnWidget(QWidget *parent)
@@ -11,15 +12,6 @@ LearnWidget::LearnWidget(QWidget *parent)
     DBptr = new WordDatabase();
     //初始化defaultDictNames
     defaultDictNames = DBptr->getlist();
-    //初始化customizeButtons
-    customDictNames = {
-        "自定义词库1",
-        "自定义词库2",
-        "自定义词库3",
-        "自定义词库4",
-        "自定义词库5",
-        "自定义词库6"
-    };
     //设置UI和连接信号槽
     setupUI();
     connectSignals();
@@ -53,6 +45,12 @@ void LearnWidget::setupUI()
         // 可连接信号
         connect(btn, &QToolButton::clicked, this, &LearnWidget::on_dictButton_clicked);
     }
+    // 添加“+”按钮
+    int addRow = defaultDictNames.size() / columns;
+    int addCol = defaultDictNames.size() % columns;
+    defaultGrid->addWidget(addDictButton, addRow, addCol);
+    connect(addDictButton, &QToolButton::clicked, this, &LearnWidget::on_addDictButton_clicked);
+
     defaultContainer->setLayout(defaultGrid);
     QScrollArea* defaultScroll = new QScrollArea;
     defaultScroll->setWidgetResizable(true);
@@ -62,32 +60,7 @@ void LearnWidget::setupUI()
     defaultBoxLayout->addWidget(defaultScroll);
     ui->defaultBox->setLayout(defaultBoxLayout);
 
-    QWidget* customContainer = new QWidget;
-    QGridLayout* customGrid = new QGridLayout(customContainer);
-    customGrid->setSpacing(10);
-    customGrid->setContentsMargins(10, 10, 10, 10);
 
-    for (int i = 0; i < customDictNames.size(); ++i) {
-        DictButton* btn = new DictButton(customDictNames[i]);
-        int row = i / columns;
-        int col = i % columns;
-        customGrid->addWidget(btn, row, col);
-        connect(btn, &QToolButton::clicked, this, &LearnWidget::on_dictButton_clicked);
-    }
-    // 添加“+”按钮
-    int addRow = customDictNames.size() / columns;
-    int addCol = customDictNames.size() % columns;
-    customGrid->addWidget(addDictButton, addRow, addCol);
-    connect(addDictButton, &QToolButton::clicked, this, &LearnWidget::on_addDictButton_clicked);
-
-    customContainer->setLayout(customGrid);
-    QScrollArea* customScroll = new QScrollArea;
-    customScroll->setWidgetResizable(true);
-    customScroll->setWidget(customContainer);
-    // 为customBox新建布局
-    QVBoxLayout* customBoxLayout = new QVBoxLayout();
-    customBoxLayout->addWidget(customScroll);
-    ui->customizeBox->setLayout(customBoxLayout);
 }
 
 
@@ -102,6 +75,9 @@ void LearnWidget::connectSignals()
     }
     //点击“+”添加自定义词库
     connect(addDictButton, &QToolButton::clicked, this, &LearnWidget::on_addDictButton_clicked);
+    //跳转到words界面
+    connect(ui->learnButton, &QToolButton::clicked, this, &LearnWidget::on_learnButton_clicked);
+    connect(ui->reviewButton, &QToolButton::clicked, this, &LearnWidget::on_reviewButton_clicked);
     //跳转到测试界面
     connect(ui->testButton, &QToolButton::clicked, this, &LearnWidget::on_testButton_clicked);
     //返回
@@ -109,6 +85,12 @@ void LearnWidget::connectSignals()
         ui->stackedWidget->setCurrentIndex(0);});
     connect(ui->backButton_2, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(1);});
+    connect(ui->backButton_3, &QToolButton::clicked, this, [=](){
+        ui->stackedWidget->setCurrentIndex(2);
+        initWordsWidget();
+    });
+
+    connect(ui->refreshButton, &QToolButton::clicked, this, &LearnWidget::on_refreshButton_clicked);
 }
 
 void LearnWidget::addButtonsToGrid(QGridLayout *grid, const QList<DictButton*> &buttons, int columns)
@@ -121,34 +103,297 @@ void LearnWidget::addButtonsToGrid(QGridLayout *grid, const QList<DictButton*> &
 }
 void LearnWidget::initDictWidget()
 {
-
+    QString name = qobject_cast<DictButton*>(sender())->text();
+    ui->dictName->setText(name);
 }
+void LearnWidget::initWordsWidget()
+{
+    ui->wordsListWidget->clear();
+    ui->wordsListWidget->setColumnCount(2); // 强制只有两列
+    ui->wordsListWidget->setRowCount(wordsList.size());
+    QStringList headers;
+    headers << "单词" << "释义";
+    ui->wordsListWidget->setHorizontalHeaderLabels(headers);
+
+    ui->wordsListWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    ui->wordsListWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    ui->wordsListWidget->verticalHeader()->setVisible(false);
+    ui->wordsListWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->wordsListWidget->setSelectionMode(QAbstractItemView::NoSelection);
+
+    for (int i = 0; i < wordsList.size(); ++i) {
+        const Word& word = wordsList[i];
+        // 单词
+        QTableWidgetItem* wordItem = new QTableWidgetItem(word.word);
+        wordItem->setFont(QFont(wordItem->font().family(), wordItem->font().pointSize(), QFont::Bold));
+        wordItem->setTextAlignment(Qt::AlignCenter);
+        ui->wordsListWidget->setItem(i, 0, wordItem);
+
+        // 释义（多词性分段，分行显示）
+        QStringList meaningLines;
+        for (auto it = word.meanings.constBegin(); it != word.meanings.constEnd(); ++it) {
+            QString pos = it.key();
+            QStringList defs;
+            QString lastDef;
+            for (const Definition& def : it.value()) {
+                if (def.definition != lastDef) {
+                    defs << def.definition;
+                    lastDef = def.definition;
+                }
+            }
+            meaningLines << QString("%1 %2").arg(pos, defs.join("; "));
+        }
+        QTableWidgetItem* defItem = new QTableWidgetItem(meaningLines.join("\n"));
+        defItem->setTextAlignment(Qt::AlignCenter);
+        ui->wordsListWidget->setItem(i, 1, defItem);
+    }
+    // 自动调整列宽和行高，使内容自适应
+    ui->wordsListWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->wordsListWidget->horizontalHeader()->setStretchLastSection(true);
+    ui->wordsListWidget->resizeRowsToContents();
+}
+
+void LearnWidget::initCheckout()
+{
+    // 清空并设置表头
+    ui->wordsListWidget->clear();
+    ui->wordsListWidget->setColumnCount(2);
+    ui->wordsListWidget->setRowCount(wordsList.size());
+    QStringList headers;
+    headers << "单词" << "释义";
+    ui->wordsListWidget->setHorizontalHeaderLabels(headers);
+    ui->wordsListWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+    ui->wordsListWidget->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    ui->wordsListWidget->verticalHeader()->setVisible(false);
+    ui->wordsListWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->wordsListWidget->setSelectionMode(QAbstractItemView::NoSelection);
+
+    for (int i = 0; i < wordsList.size(); ++i) {
+        const Word& word = wordsList[i];
+        // 单词
+        QTableWidgetItem* wordItem = new QTableWidgetItem(word.word);
+        wordItem->setFont(QFont(wordItem->font().family(), wordItem->font().pointSize(), QFont::Bold));
+        wordItem->setTextAlignment(Qt::AlignCenter);
+
+        // 释义
+        QStringList meaningLines;
+        for (auto it = word.meanings.constBegin(); it != word.meanings.constEnd(); ++it) {
+            QString pos = it.key();
+            QStringList defs;
+            QString lastDef;
+            for (const Definition& def : it.value()) {
+                if (def.definition != lastDef) {
+                    defs << def.definition;
+                    lastDef = def.definition;
+                }
+            }
+            meaningLines << QString("%1 %2").arg(pos, defs.join("; "));
+        }
+        QTableWidgetItem* defItem = new QTableWidgetItem(meaningLines.join("\n"));
+        defItem->setTextAlignment(Qt::AlignCenter);
+
+        // 根据正误设置样式
+        if (i < testResults.size() && testResults[i]) {
+            wordItem->setBackground(QColor(200, 255, 200)); // 正确绿色
+            defItem->setBackground(QColor(200, 255, 200));
+        } else {
+            wordItem->setBackground(QColor(255, 200, 200)); // 错误红色
+            defItem->setBackground(QColor(255, 200, 200));
+        }
+
+        ui->wordsListWidget->setItem(i, 0, wordItem);
+        ui->wordsListWidget->setItem(i, 1, defItem);
+    }
+    ui->wordsListWidget->resizeRowsToContents();
+
+    // 设置按钮文本
+    ui->testButton->setText("重新测试");
+}
+
 void LearnWidget::initTestWidget()
 {
+    //初始化测试状态
+    currentTestIndex = 0;
+    testResults.clear();
+    testResults.resize(wordsList.size());
+    std::fill(testResults.begin(), testResults.end(), false);
+    currentSelected = -1;
 
+    // 确保 optionButtons 有 4 个元素且全部已初始化
+    optionButtons.resize(4);
+    for (int i = 0; i < 4; ++i)
+    {
+        QPushButton* btn = nullptr;
+        switch (i) {
+        case 0: btn = ui->pushButton_0; break;
+        case 1: btn = ui->pushButton_1; break;
+        case 2: btn = ui->pushButton_2; break;
+        case 3: btn = ui->pushButton_3; break;
+        }
+        optionButtons[i] = btn;
+        // 防止重复连接
+        btn->disconnect();
+        connect(btn, &QPushButton::clicked, this, [=]() {
+            currentSelected = i;
+            for (int j = 0; j < 4; ++j) {
+                optionButtons[j]->setStyleSheet(j == i ? "background-color: lightblue;" : "");
+            }
+        });
+    }
+
+    // 连接确定按钮
+    disconnect(ui->testConfirmButton, nullptr, nullptr, nullptr);
+    connect(ui->testConfirmButton, &QPushButton::clicked, this, [=]() {
+        if (currentSelected == -1) return; // 未选择
+        int wordId = wordsList[currentTestIndex].id;
+        bool correct = (optionButtons[currentSelected]->text() == correctAnswer);
+        testResults[currentTestIndex] = correct;
+        // DBptr->updateWordLearningInfo(wordId, correct);
+
+        // 显示正误反馈
+        for (int i = 0; i < 4; ++i) {
+            if (optionButtons[i]->text() == correctAnswer) {
+                optionButtons[i]->setStyleSheet("background-color:lightgreen;");
+            } else if (i == currentSelected) {
+                optionButtons[i]->setStyleSheet("background-color:pink;");
+            } else {
+                optionButtons[i]->setStyleSheet("");
+            }
+        }
+
+        QTimer::singleShot(700, this, [=]() {
+            currentTestIndex++;
+            if (currentTestIndex < wordsList.size()) {
+                showTestForWord(currentTestIndex);
+            } else {
+                ui->stackedWidget->setCurrentIndex(2);
+                initCheckout();
+            }
+        });
+    });
 }
 
-
-void LearnWidget::on_dictButton_clicked()
+void LearnWidget::showTestForWord(int idx)
 {
-    //跳转到词库信息界面
-    ui->stackedWidget->setCurrentIndex(1);
-    //初始化界面
-    initDictWidget();
+    if (idx < 0 || idx >= wordsList.size()) return;
+    currentSelected = -1;
+    ui->testWordLabel->setText(wordsList[idx].word);
+
+    // 获取四个释义选项
+    // options = FourmeaningtoChoice(wordsList[idx].id);
+    // if (options.size() < 4) {
+    //     // 补齐到4个选项，防止越界
+    //     while (options.size() < 4) options << "";
+    // }
+    //测试样例
+    options.clear();
+    options << "a fruit" << "a tech company" << "to move swiftly on foot" << "an act or spell of running";
+    correctAnswer = options[0];
+
+    // 随机打乱选项顺序
+    QVector<QString> shuffledOptions = options;
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(shuffledOptions.begin(), shuffledOptions.end(), g);
+
+    // 设置按钮文本和样式
+    for (int i = 0; i < 4; ++i) {
+        optionButtons[i]->setText(shuffledOptions[i]);
+        optionButtons[i]->setChecked(false);
+        optionButtons[i]->setStyleSheet("");
+    }
 }
+
 void LearnWidget::on_addDictButton_clicked()
 {
     //浏览文件
 }
-void LearnWidget::on_testButton_clicked()
+void LearnWidget::on_dictButton_clicked()
 {
-    //跳转到测试界面
-    ui->stackedWidget->setCurrentIndex(2);
+    //跳转到词库信息界面
+    ui->stackedWidget->setCurrentIndex(1);
+    QString name = qobject_cast<DictButton*>(sender())->text();
+    DBptr->initDatabase(name);
     //初始化界面
-    initTestWidget();
+    initDictWidget();
+}
+void LearnWidget::on_reviewButton_clicked()
+{
+    //跳转到words界面
+    ui->stackedWidget->setCurrentIndex(2);
+    ui->testButton->setText("开始测试");
+        // 生成一个测试用的 wordsList
+        wordsList.clear();
+        Word word1;
+        word1.word = "apple";
+        word1.meanings["n."].append(Definition{"a fruit"});
+        word1.meanings["n."].append(Definition{"a tech company"});
+
+        Word word2;
+        word2.word = "run";
+        word2.meanings["v."].append(Definition{"to move swiftly on foot"});
+        word2.meanings["n."].append(Definition{"an act or spell of running"});
+
+        wordsList.append(word1);
+        wordsList.append(word2);
+
+    // 初始化单词列表界面
+    initWordsWidget();
 }
 
 
+void LearnWidget::on_learnButton_clicked()
+{
+    //跳转到words界面
+    ui->stackedWidget->setCurrentIndex(2);
+    ui->testButton->setText("开始测试");
+        // 生成一个测试用的 wordsList
+        wordsList.clear();
+        Word word1;
+        word1.word = "apple";
+        word1.meanings["n."].append(Definition{"a fruitaaaaaaaaaaaaaa"});
+        word1.meanings["n."].append(Definition{"a tech companyaaaaaaaaaaaa"});
+
+        Word word2;
+        word2.word = "run";
+        word2.meanings["v."].append(Definition{"to move swiftly on footaaaaaaaaaaa"});
+        word2.meanings["n."].append(Definition{"an act or spell of runningaaaaaaaaaaaaa"});
+
+        wordsList.append(word1);
+        wordsList.append(word2);
+
+    // 初始化单词列表界面
+    initWordsWidget();
+}
+void LearnWidget::on_testButton_clicked()
+{
+    //跳转到测试界面
+    ui->stackedWidget->setCurrentIndex(3);
+    //初始化准备
+    initTestWidget();
+    //显示第一个单词
+    showTestForWord(0);
+}
+
+void LearnWidget::on_refreshButton_clicked()
+{
+    ui->testButton->setText("开始测试");
+    //重新获取wordsList
+        // 生成一个测试用的 wordsList
+        wordsList.clear();
+        Word word1;
+        word1.word = "apple";
+        word1.meanings["n."].append(Definition{"a fruit"});
+        word1.meanings["n."].append(Definition{"a tech company"});
+        Word word2;
+        word2.word = "run";
+        word2.meanings["v."].append(Definition{"to move swiftly on foot"});
+        word2.meanings["n."].append(Definition{"an act or spell of running"});
+        wordsList.append(word1);
+        wordsList.append(word2);
+
+    initWordsWidget();
+}
 
 
 
@@ -156,11 +401,13 @@ void LearnWidget::on_testButton_clicked()
 DictButton::DictButton(QString text) //传入字典指针
 {
     this->setText(text);
-    this->setFixedSize(60, 60); // 设置固定大小
+    this->setFixedSize(120, 80); // 设置固定大小
 }
 
 DictButton::~DictButton()
 {
 
 }
+
+
 

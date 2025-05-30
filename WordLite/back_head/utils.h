@@ -55,6 +55,8 @@ public:
     int g_reviewCount()const{return reviewCount;}
     int g_difficulty()const{return difficulty;}
 
+    QString getoneMeaning();
+
     bool isEmpty(){return word.isEmpty();}
 };
 
