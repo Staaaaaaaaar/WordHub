@@ -17,7 +17,6 @@ SOURCES += \
     querywidget.cpp \
     reviewwidget.cpp \
     userwidget.cpp \
-    wordwidget.cpp \
     # test/test.cpp \
     # test/learner_test.cpp \
     back_src/loadword.cpp \
@@ -34,7 +33,6 @@ HEADERS += \
     querywidget.h \
     reviewwidget.h \
     userwidget.h \
-    wordwidget.h \
     back_head/database.h \
     back_head/utils.h\
     back_head/loadword.h \
@@ -49,8 +47,7 @@ FORMS += \
     mainwindow.ui \
     querywidget.ui \
     reviewwidget.ui \
-    userwidget.ui \
-    wordwidget.ui
+    userwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

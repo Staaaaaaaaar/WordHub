@@ -13,26 +13,13 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>40</width>
-     <height>12</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>query</string>
-   </property>
-  </widget>
   <widget class="QLineEdit" name="searchEdit">
    <property name="geometry">
     <rect>
      <x>30</x>
      <y>40</y>
-     <width>113</width>
-     <height>20</height>
+     <width>131</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -49,7 +36,7 @@
     <enum>QTabWidget::TabShape::Rounded</enum>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>-1</number>
    </property>
    <property name="iconSize">
     <size>
@@ -72,23 +59,28 @@
    <property name="tabBarAutoHide">
     <bool>false</bool>
    </property>
-   <widget class="QWidget" name="tab">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <attribute name="title">
-     <string>welcome</string>
-    </attribute>
-   </widget>
   </widget>
   <widget class="QComboBox" name="comboBox">
    <property name="geometry">
     <rect>
-     <x>401</x>
+     <x>430</x>
      <y>40</y>
-     <width>141</width>
-     <height>22</height>
+     <width>131</width>
+     <height>21</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="useAPICheckBox">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>40</y>
+     <width>71</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>API</string>
    </property>
   </widget>
  </widget>
