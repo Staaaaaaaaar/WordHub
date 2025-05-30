@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>guess_word_widget</class>
+ <widget class="QWidget" name="guess_word_widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>559</width>
+    <height>445</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QPushButton" name="exitButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>163</y>
+     <width>93</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>退出游戏</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="answerButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>223</y>
+     <width>91</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>查看答案</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="displayTextEdit">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>70</y>
+     <width>291</width>
+     <height>221</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="beginButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>103</y>
+     <width>93</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>开始游戏</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>10</y>
+     <width>171</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:24pt; font-weight:700;&quot;&gt;猜词游戏&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="ruleButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>40</y>
+     <width>93</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>游戏规则</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>300</y>
+     <width>121</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:700;&quot;&gt;在此输入答案：&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="answerLineEdit">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>300</y>
+     <width>191</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="commitButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>280</y>
+     <width>93</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>确定答案</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

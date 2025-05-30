@@ -22,18 +22,34 @@
      <height>371</height>
     </rect>
    </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
    <widget class="QWidget" name="gameTable">
     <widget class="QToolButton" name="wordleButton">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>30</y>
-       <width>71</width>
+       <x>50</x>
+       <y>40</y>
+       <width>121</width>
        <height>61</height>
       </rect>
      </property>
      <property name="text">
       <string>Wordle</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="guessButton">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>230</y>
+       <width>121</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Guess</string>
      </property>
     </widget>
    </widget>
