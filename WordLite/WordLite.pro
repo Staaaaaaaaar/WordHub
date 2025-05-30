@@ -21,7 +21,6 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     querywidget.cpp \
-    reviewwidget.cpp \
     userwidget.cpp \
     wordle.cpp \
     back_src/database.cpp \
@@ -36,7 +35,6 @@ HEADERS += \
     learnwidget.h \
     mainwindow.h \
     querywidget.h \
-    reviewwidget.h \
     userwidget.h \
     wordle.h \
     back_head/database.h \
@@ -53,7 +51,6 @@ FORMS += \
     learnwidget.ui \
     mainwindow.ui \
     querywidget.ui \
-    reviewwidget.ui \
     wordle.ui \
     userwidget.ui
 
