@@ -10,17 +10,20 @@ CONFIG += c++17
 
 SOURCES += \
     achievementwidget.cpp \
+    #back_head/test.cpp \
+    back_src/loadword.cpp \
+    back_src\utils.cpp \
     gamewidget.cpp \
+    guess_according_to_description/guess_word.cpp \
+    #guess_word.cpp \
+    guess_word_widget.cpp \
     learnwidget.cpp \
     main.cpp \
     mainwindow.cpp \
     querywidget.cpp \
     reviewwidget.cpp \
     userwidget.cpp \
-    # test/test.cpp \
-    # test/learner_test.cpp \
-    back_src/loadword.cpp \
-    back_src/utils.cpp \
+    wordle.cpp \
     back_src/database.cpp \
     back_src/learner.cpp \
     API/dictionaryapi.cpp
@@ -28,11 +31,14 @@ SOURCES += \
 HEADERS += \
     achievementwidget.h \
     gamewidget.h \
+    guess_according_to_description_h/guess_word.h \
+    guess_word_widget.h \
     learnwidget.h \
     mainwindow.h \
     querywidget.h \
     reviewwidget.h \
     userwidget.h \
+    wordle.h \
     back_head/database.h \
     back_head/utils.h\
     back_head/loadword.h \
@@ -43,11 +49,14 @@ HEADERS += \
 FORMS += \
     achievementwidget.ui \
     gamewidget.ui \
+    guess_word_widget.ui \
     learnwidget.ui \
     mainwindow.ui \
     querywidget.ui \
     reviewwidget.ui \
+    wordle.ui \
     userwidget.ui
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
