@@ -743,15 +743,16 @@ QVector<QString> WordDatabase::FourmeaningtoChoice(int wordid)
 {
     QVector<QString> res;
     Word w1=getWordById(wordid);
-    res.append("选择1");
-    res.append("选择2");
-    res.append("选择3");
-    res.append("选择4");
+    res.append(w1.getoneMeaning());
 
+    for(auto w:getRandomWords(4))
+    {
+        if(w.word==w1.word)continue;
+        res.append(w.getoneMeaning());
+    }
 
-    // res.append(w1.g_meanings());
-
-
+    if(res.size()==5)res.pop_back();
+    return res;
 }
 
 
@@ -982,6 +983,8 @@ bool WordDatabase::addLearningRecord(const LearningRecord &record) {
     return query.exec();
 }
 
+
+
 QVector<LearningRecord> WordDatabase::getUserLearningRecords(int days,int userId) {
     QVector<LearningRecord> records;
     QSqlQuery query(m_db);
@@ -1048,6 +1051,193 @@ double WordDatabase::getLearningAccuracy(int days,int userId) {
     }
 
     return query.value("accuracy").toDouble() * 100.0; // 转换为百分比
+}
+
+// 实现获取 difficulty 等于 1 的单词的方法
+QVector<Word> WordDatabase::getWordsWithDifficultyOne(int categoryId) {
+    QVector<Word> words;
+    QSqlQuery query(m_db);
+
+    QString sql = "SELECT * FROM Words WHERE difficulty = 1";
+    if (categoryId != -1) {
+        sql += " AND id IN (SELECT word_id FROM WordCategory WHERE category_id = :categoryId)";
+    }
+
+    query.prepare(sql);
+    if (categoryId != -1) {
+        query.bindValue(":categoryId", categoryId);
+    }
+
+    if (query.exec()) {
+        while (query.next()) {
+            Word word;
+            word.id = query.value("id").toInt();
+            word.word = query.value("word").toString();
+            word.lastReviewed = query.value("last_reviewed").toDateTime();
+            word.reviewCount = query.value("review_count").toInt();
+            word.difficulty = query.value("difficulty").toInt();
+
+            // 加载音标和释义
+            loadPhonetics(word.id, word.phonetics);
+            loadDefinitions(word.id, word.meanings);
+
+            words.append(word);
+        }
+    } else {
+        qWarning() << "查询单词失败:" << query.lastError().text();
+    }
+
+    return words;
+}
+
+int WordDatabase::learnednum()
+{
+    return getWordsWithDifficultyOne().size();
+}
+
+
+
+// 实现获取指定天数内每一天学习数量的方法
+QVector<int> WordDatabase::getDailyLearningCountInDays(int days, int userId) {
+    QVector<int> dailyCounts(days, 0);
+    QDateTime endTime = QDateTime::currentDateTime();
+    QDateTime startTime = endTime.addDays(-days);
+
+    QSqlQuery query(m_db);
+    query.prepare("SELECT DATE(timestamp), COUNT(*) FROM LearningRecords WHERE userId = :userId AND timestamp BETWEEN :startTime AND :endTime GROUP BY DATE(timestamp)");
+    query.bindValue(":userId", userId);
+    query.bindValue(":startTime", startTime);
+    query.bindValue(":endTime", endTime);
+
+    if (query.exec()) {
+        while (query.next()) {
+            QDate date = query.value(0).toDate();
+            int count = query.value(1).toInt();
+            // 使用 QDateTime::fromDate 和 QTime(0, 0) 将 QDate 转换为 QDateTime
+            QDateTime dateTime = QDateTime(date, QTime(0, 0));
+            int daysDiff = startTime.daysTo(dateTime);
+            if (daysDiff >= 0 && daysDiff < days) {
+                dailyCounts[daysDiff] = count;
+            }
+        }
+    } else {
+        qWarning() << "查询学习记录数量失败:" << query.lastError().text();
+    }
+
+    return dailyCounts;
+}
+
+// 实现获取指定天数内每一天学习正确率的方法
+QVector<double> WordDatabase::getDailyLearningAccuracyInDays(int days, int userId) {
+    QVector<double> dailyAccuracies(days, 0.0);
+    QDateTime endTime = QDateTime::currentDateTime();
+    QDateTime startTime = endTime.addDays(-days);
+
+    QSqlQuery query(m_db);
+    query.prepare("SELECT DATE(timestamp), SUM(CASE WHEN correct THEN 1 ELSE 0 END), COUNT(*) FROM LearningRecords WHERE userId = :userId AND timestamp BETWEEN :startTime AND :endTime GROUP BY DATE(timestamp)");
+    query.bindValue(":userId", userId);
+    query.bindValue(":startTime", startTime);
+    query.bindValue(":endTime", endTime);
+
+    if (query.exec()) {
+        while (query.next()) {
+            QDate date = query.value(0).toDate();
+            int correctCount = query.value(1).toInt();
+            int totalCount = query.value(2).toInt();
+
+            double accuracy = totalCount > 0 ? static_cast<double>(correctCount) / totalCount : 0.0;
+
+            QDateTime dateTime = QDateTime(date, QTime(0, 0));
+            int daysDiff = startTime.daysTo(dateTime);
+            if (daysDiff >= 0 && daysDiff < days) {
+                dailyAccuracies[daysDiff] = accuracy;
+            }
+        }
+    } else {
+        qWarning() << "查询学习记录正确率失败:" << query.lastError().text();
+    }
+
+    return dailyAccuracies;
+}
+
+// 静态方法：获取所有词库中总共学习的单词数量
+int WordDatabase::getAllTotalWordCount() {
+    int totalCount = 0;
+    QVector<QString> dbNames = getlist();
+    for (const QString& dbName : dbNames) {
+        WordDatabase db;
+        if (db.initDatabase(dbName)) {
+            totalCount += db.getTotalWordCount();
+        }
+    }
+    return totalCount;
+}
+
+// 静态方法：获取所有词库中指定天数内每天学习单词的数量
+QVector<int> WordDatabase::getAllDailyLearningCountInDays(int days, int userId) {
+    QVector<int> allDailyCounts(days, 0);
+    QVector<QString> dbNames = getlist();
+    for (const QString& dbName : dbNames) {
+        WordDatabase db;
+        if (db.initDatabase(dbName)) {
+            QVector<int> dailyCounts = db.getDailyLearningCountInDays(days, userId);
+            for (int i = 0; i < days; ++i) {
+                allDailyCounts[i] += dailyCounts[i];
+            }
+        }
+    }
+    return allDailyCounts;
+}
+
+// 静态方法：获取所有词库中指定天数内每天学习的正确率
+QVector<double> WordDatabase::getAllDailyLearningAccuracyInDays(int days, int userId) {
+    QVector<double> allDailyAccuracies(days, 0.0);
+    QVector<int> totalCounts(days, 0);
+    QVector<int> correctCounts(days, 0);
+
+    QVector<QString> dbNames = getlist();
+    for (const QString& dbName : dbNames) {
+        WordDatabase db;
+        if (db.initDatabase(dbName)) {
+            QVector<int> dailyCounts = db.getDailyLearningCountInDays(days, userId);
+            QVector<double> dailyAccuracies = db.getDailyLearningAccuracyInDays(days, userId);
+            for (int i = 0; i < days; ++i) {
+                totalCounts[i] += dailyCounts[i];
+                correctCounts[i] += static_cast<int>(dailyCounts[i] * dailyAccuracies[i]);
+            }
+        }
+    }
+
+    for (int i = 0; i < days; ++i) {
+        if (totalCounts[i] > 0) {
+            allDailyAccuracies[i] = static_cast<double>(correctCounts[i]) / totalCounts[i];
+        }
+    }
+
+    return allDailyAccuracies;
+}
+
+// 静态方法：获取所有词库中指定天数内总的学习正确率
+double WordDatabase::getAllLearningAccuracy(int days, int userId) {
+    int totalCount = 0;
+    int correctCount = 0;
+
+    QVector<QString> dbNames = getlist();
+    for (const QString& dbName : dbNames) {
+        WordDatabase db;
+        if (db.initDatabase(dbName)) {
+            int dbTotalCount = db.getTotalLearningRecordCount(days, userId);
+            double dbAccuracy = db.getLearningAccuracy(days, userId);
+            totalCount += dbTotalCount;
+            correctCount += static_cast<int>(dbTotalCount * dbAccuracy);
+        }
+    }
+
+    if (totalCount > 0) {
+        return static_cast<double>(correctCount) / totalCount;
+    }
+
+    return 0.0;
 }
 
 // -------------------- 数据库工具方法 --------------------

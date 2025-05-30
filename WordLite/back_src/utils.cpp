@@ -69,7 +69,15 @@ QDebug operator<<(QDebug o,const Category c)
 
 QString Word::getoneMeaning()
 {
-    for()
+    QStringList res;
+    for (auto it = meanings.constBegin(); it != meanings.constEnd(); ++it) {
+        QString kind = it.key();
+        QString meaning= it.value()[0].definition;
+        res.append(kind+":"+meaning);
+    }
+    int total=res.size();
+    int index=rand()%total;
+    return res[index];
 }
 
 
