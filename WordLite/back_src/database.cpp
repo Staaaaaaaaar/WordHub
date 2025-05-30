@@ -739,6 +739,23 @@ QVector<Word> WordDatabase::getWordsByCategory(int categoryId) {
     return words;
 }
 
+QVector<QString> WordDatabase::FourmeaningtoChoice(int wordid)
+{
+    QVector<QString> res;
+    Word w1=getWordById(wordid);
+    res.append("选择1");
+    res.append("选择2");
+    res.append("选择3");
+    res.append("选择4");
+
+
+    // res.append(w1.g_meanings());
+
+
+}
+
+
+
 QVector<Word> WordDatabase::getWordsToReview(int userId, int count) {
     QVector<Word> words;
 
