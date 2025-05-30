@@ -24,14 +24,12 @@ void MainWindow::setupUI(){
     userWidget = new UserWidget(this);
     queryWidget = new QueryWidget(this);
     learnWidget = new LearnWidget(this);
-    reviewWidget = new ReviewWidget(this);
     achievementWidget = new AchievementWidget(this);
     gameWidget = new GameWidget(this);
 
     ui->stackedWidget->addWidget(userWidget);
     ui->stackedWidget->addWidget(queryWidget);
     ui->stackedWidget->addWidget(learnWidget);
-    ui->stackedWidget->addWidget(reviewWidget);
     ui->stackedWidget->addWidget(achievementWidget);
     ui->stackedWidget->addWidget(gameWidget);
 
