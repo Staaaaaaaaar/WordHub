@@ -9,7 +9,22 @@
 #include <QPushButton>
 #include <QScrollArea>
 #include <QTimer>
+#include <random>
+#include <QProgressBar>
+#include <QtCharts/QChartView>
+#include <QtCharts/QPieSeries>
+#include <QtCharts/QBarSet>
+#include <QtCharts/QBarSeries>
+#include <QtCharts/QBarCategoryAxis>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QValueAxis>
+#include <QtCharts/QPieSeries>
+#include <QtCharts/QPieSlice>
 #include <back_head/database.h>
+#include <QFileDialog>
+#include <QInputDialog>
+#include <QMessageBox>
+#include "back_head/loadword.h"
 
 namespace Ui {
 class LearnWidget;
@@ -48,6 +63,7 @@ public:
     QVector<QString> options;
     QVector<QPushButton*> optionButtons;
     QString correctAnswer;
+    QString dictName;
 
     int currentTestIndex;
     int currentSelected;
@@ -74,6 +90,8 @@ private slots:
 
     void on_refreshButton_clicked_1();
     void on_refreshButton_clicked_2();
+
+    void on_resetButton_clicked();
 
 private:
     Ui::LearnWidget *ui;

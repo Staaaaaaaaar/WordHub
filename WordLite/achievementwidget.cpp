@@ -11,7 +11,25 @@ AchievementWidget::AchievementWidget(QWidget *parent)
     ui->setupUi(this);
     setupUI();
     connectSignals();
-    refreshAchievements(); // 构造时刷新成就显示
+    testAchievements = {
+        {1, "初次相遇", "成功登录一次应用", false, QDateTime(), ":/icons/achievement_login.png"},
+        {2, "启程之星", "完成首次学习", false, QDateTime(), ":/icons/achievement1.png"},
+        {3, "探索之门", "首次查询单词释义", false, QDateTime(), ":/icons/achievement_query.png"},
+        {4, "游戏新手", "首次参与单词游戏", false, QDateTime(), ":/icons/achievement_game.png"},
+        {5, "七日之约", "连续学习7天", false, QDateTime(), ":/icons/locked.png"},
+        {6, "月度坚持", "连续学习30天", false, QDateTime(), ":/icons/locked.png"},
+        {7, "百日不辍", "连续学习100天", false, QDateTime(), ":/icons/locked.png"},
+        {8, "百日筑基", "累计学习100天", false, QDateTime(), ":/icons/locked.png"},
+        {9, "学海无涯", "累计学习365天", false, QDateTime(), ":/icons/locked.png"},
+        {10, "词汇大师", "掌握500个单词", false, QDateTime(), ":/icons/locked.png"},
+        {11, "词海遨游", "累计学习1000个单词", false, QDateTime(), ":/icons/locked.png"},
+        {12, "词霸精英", "掌握2000个单词", false, QDateTime(), ":/icons/locked.png"},
+        {13, "荣耀全开", "解锁所有成就", false, QDateTime(), ":/icons/locked.png"},
+        // 隐藏成就
+        {14, "？？？", "？？？", false, QDateTime(), ":/icons/hidden.png"},
+        {15, "？？？", "？？？", false, QDateTime(), ":/icons/hidden.png"}
+    };
+    refreshUI(); // 构造时刷新成就显示
 }
 
 AchievementWidget::~AchievementWidget()
@@ -49,28 +67,17 @@ void AchievementWidget::connectSignals()
     //         this, SLOT(refreshAchievements()));
 }
 
-QVector<Achievement> getAchievementsFromSource()
+
+QVector<Achievement> AchievementWidget::getAchievementsFromSource()
 {
-    return {
-        {1, "初出茅庐", "完成首次学习", true, QDateTime::currentDateTime(), ":/icons/achievement1.png"},
-        {2, "持之以恒", "连续学习7天", false, QDateTime(), ":/icons/locked.png"},
-        {3, "大师之路", "掌握500个单词", false, QDateTime(), ":/icons/locked.png"},
-        {4, "百尺竿头", "累计学习100天", false, QDateTime(), ":/icons/locked.png"},
-        {5, "词海无涯", "累计学习1000个单词", false, QDateTime(), ":/icons/locked.png"},
-        {6, "日积月累", "连续学习30天", false, QDateTime(), ":/icons/locked.png"},
-        {7, "坚持不懈", "连续学习100天", false, QDateTime(), ":/icons/locked.png"},
-        {8, "词霸达人", "掌握2000个单词", false, QDateTime(), ":/icons/locked.png"},
-        {9, "学无止境", "累计学习365天", false, QDateTime(), ":/icons/locked.png"},
-        {10, "全成就达成", "解锁所有成就", false, QDateTime(), ":/icons/locked.png"},
-        // 隐藏成就
-        {101, "？？？", "发现彩蛋", false, QDateTime(), ":/icons/hidden.png"},
-        {102, "？？？", "在凌晨4点学习", false, QDateTime(), ":/icons/hidden.png"},
-        {103, "？？？", "一天内学习超过10次", false, QDateTime(), ":/icons/hidden.png"},
-        {104, "？？？", "连续30天未中断", false, QDateTime(), ":/icons/hidden.png"}
-    };
+    return testAchievements;
 }
 
 void AchievementWidget::refreshAchievements()
+{
+
+}
+void AchievementWidget::refreshUI()
 {
     // 清空旧内容
     QLayoutItem* item;
@@ -82,6 +89,11 @@ void AchievementWidget::refreshAchievements()
     }
 
     QVector<Achievement> achievements = getAchievementsFromSource();
+    std::sort(achievements.begin(), achievements.end(), [](const Achievement &a, const Achievement &b) {
+        if (a.unlocked != b.unlocked)
+            return a.unlocked > b.unlocked; // 已达成的优先
+        return a.id < b.id; // 其余按id升序
+    });
 
     for (const Achievement &achievement : achievements) {
         QWidget *itemWidget = new QWidget();
@@ -114,25 +126,22 @@ void AchievementWidget::refreshAchievements()
         );
         detailLabel->setWordWrap(true);
 
-        // 仅为整体和图标添加边框，白底黑字
-        // itemWidget->setStyleSheet(
-        //     "background:#fff;"
-        //     "border: 2px solid #222;" // 整体黑色边框
-        //     "border-radius: 18px;"
-        //     "margin-bottom: 8px;"
-        // );
-        // iconLabel->setStyleSheet(
-        //     "border: 2px solid #222;" // 图标黑色边框
-        //     "border-radius: 12px;"
-        //     "background:#fff;"
-        // );
-        // 取消文字label的边框，仅设置颜色和字体
-        // titleLabel->setStyleSheet("color: #000; font-size: 16pt; padding-bottom: 4px;");
-        // detailLabel->setStyleSheet(
-        //     achievement.unlocked
-        //     ? "color: #000; font-size: 12pt;"
-        //     : "color: #000; font-size: 12pt; font-style: italic;"
-        // );
+        // 简约美化样式
+        itemWidget->setStyleSheet(
+            "background:rgb(142, 142, 142);"
+            "border-radius: 14px;"
+            // "border: 1px solidrgb(207, 207, 207);"
+            "box-shadow: 0 2px 8px rgba(0,0,0,0.03);"
+        );
+        titleLabel->setStyleSheet(
+            "color: #222;"
+            "font-weight: 600;"
+            "letter-spacing: 0.5px;"
+        );
+        detailLabel->setStyleSheet(
+            "color: #888;"
+            "font-size: 13px;"
+        );
 
         textLayout->addWidget(titleLabel);
         textLayout->addWidget(detailLabel);
