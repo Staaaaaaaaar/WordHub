@@ -15,12 +15,14 @@ SOURCES += \
     back_src\utils.cpp \
     gamewidget.cpp \
     guess_according_to_description/guess_word.cpp \
-    #guess_word.cpp \
     guess_word_widget.cpp \
     learnwidget.cpp \
+    loginwidget.cpp \
     main.cpp \
     mainwindow.cpp \
+    #painter.cpp \
     querywidget.cpp \
+    registerwidget.cpp \
     userwidget.cpp \
     wordle.cpp \
     back_src/database.cpp \
@@ -30,11 +32,14 @@ SOURCES += \
 HEADERS += \
     achievementwidget.h \
     gamewidget.h \
-    guess_according_to_description_h/guess_word.h \
+    # guess_according_to_description_h/guess_word.h \
     guess_word_widget.h \
     learnwidget.h \
+    loginwidget.h \
     mainwindow.h \
+    #painter.h \
     querywidget.h \
+    registerwidget.h \
     userwidget.h \
     wordle.h \
     back_head/database.h \
@@ -49,8 +54,10 @@ FORMS += \
     gamewidget.ui \
     guess_word_widget.ui \
     learnwidget.ui \
+    loginwidget.ui \
     mainwindow.ui \
     querywidget.ui \
+    registerwidget.ui \
     wordle.ui \
     userwidget.ui
 

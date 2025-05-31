@@ -109,6 +109,7 @@ bool Learner::createNewUser(const QString& username, const QString& password) {
     m_name = username;
     m_hashPassword = hashPassword(password);
     m_startLearningTime = QDateTime::currentDateTime();
+    qDebug()<<"创建用户"<<hashPassword(password)<<' '<<password;
     return saveUserData();
 }
 
@@ -158,5 +159,35 @@ bool Learner::isUserLoggedIn() const
     if (query.next()) {
         return query.value(0).toInt() > 0;
     }
+    return false;
+}
+
+bool Learner::verifyUserName(const QString & username)const
+{
+    QSqlQuery query(m_db);
+    query.prepare("SELECT * FROM users WHERE username = ?");
+    query.addBindValue(username);
+    if (query.exec() && query.next())
+    {
+        return true;
+    }
+    return false;
+}
+
+bool Learner::verifyPasswordU(const QString & username,const QString & password)const
+{
+    QSqlQuery query(m_db);
+    query.prepare("SELECT hash_password FROM users WHERE username = ?");
+    query.addBindValue(username);
+    if (query.exec() && query.next()) {
+        QString storedHash = query.value(0).toString();
+        QString inputHash = hashPassword(password);
+        //qDebug()<<storedHash<<' '<<inputHash;
+        qDebug()<<"密码比对"<<hashPassword(password)<<' '<<password;
+        bool result = inputHash == storedHash;
+        qDebug() << "密码验证结果: " << (result ? "成功" : "失败");
+        return result;
+    }
+    qDebug() << "未找到该用户名";
     return false;
 }

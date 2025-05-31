@@ -14,6 +14,21 @@ class UserWidget : public QWidget
 public:
     explicit UserWidget(QWidget *parent = nullptr);
     ~UserWidget();
+    void setUser();
+    void setDays();
+    void setAcc();
+    void setPic();
+    void setTotalAcc();
+    void refresh();
+    static const int MARGIN=5;
+    static const int WIDTH=30;
+    QVector<int> dailyLearningData;
+    QVector<double> dailyLearningAcc;
+    void clear();
+    QString getname();
+
+protected:
+    void paintEvent(QPaintEvent *event)override;
 
 private:
     Ui::UserWidget *ui;

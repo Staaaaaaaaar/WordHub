@@ -630,15 +630,17 @@ bool WordDatabase::updateWordLearningInfo(int wordId, bool correct, int difficul
     int newDifficulty = currentDifficulty + difficultyChange;
     newDifficulty = qBound(1, newDifficulty, 5); // 确保难度在1-5之间
 
+    QDateTime now=QDateTime::currentDateTime();
     // 更新数据库中的单词信息
     query.prepare("UPDATE Words SET "
-                  "last_reviewed = CURRENT_TIMESTAMP, "
+                  "last_reviewed = :now_time, "
                   "review_count = :review_count, "
                   "difficulty = :difficulty "
                   "WHERE id = :id");
     query.bindValue(":review_count", newReviewCount);
     query.bindValue(":difficulty", newDifficulty);
     query.bindValue(":id", wordId);
+    query.bindValue(":now_time", now);
 
     if (!query.exec()) {
         qWarning() << "更新单词信息失败:" << query.lastError().text();
@@ -648,9 +650,10 @@ bool WordDatabase::updateWordLearningInfo(int wordId, bool correct, int difficul
 
     // 3. 添加学习记录
     query.prepare("INSERT INTO LearningRecords (word_id, user_id, timestamp, correct, difficulty) "
-                  "VALUES (:word_id, :user_id, CURRENT_TIMESTAMP, :correct, :difficulty)");
+                  "VALUES (:word_id, :user_id, :now_time, :correct, :difficulty)");
     query.bindValue(":word_id", wordId);
     query.bindValue(":user_id", userId);
+    query.bindValue(":now_time", now);
     query.bindValue(":correct", correct);
     query.bindValue(":difficulty", newDifficulty);
 
@@ -1100,46 +1103,86 @@ int WordDatabase::learnednum()
 // 实现获取指定天数内每一天学习数量的方法
 QVector<int> WordDatabase::getDailyLearningCountInDays(int days, int userId) {
     QVector<int> dailyCounts(days, 0);
-    QDateTime endTime = QDateTime::currentDateTime();
-    QDateTime startTime = endTime.addDays(-days);
+
+    // 获取当前日期（本地时间）
+    QDate currentDate = QDate::currentDate();
+
+    // 计算开始日期（本地时间）
+    QDate startDate = currentDate.addDays(-days + 1);
 
     QSqlQuery query(m_db);
-    query.prepare("SELECT DATE(timestamp), COUNT(*) FROM LearningRecords WHERE userId = :userId AND timestamp BETWEEN :startTime AND :endTime GROUP BY DATE(timestamp)");
-    query.bindValue(":userId", userId);
-    query.bindValue(":startTime", startTime);
-    query.bindValue(":endTime", endTime);
+
+    // 修改为SQLite兼容的日期格式和参数名
+    query.prepare("SELECT strftime('%Y-%m-%d', timestamp), COUNT(*) "
+                  "FROM LearningRecords "
+                  "WHERE user_id = :user_id "
+                  "AND strftime('%Y-%m-%d', timestamp) BETWEEN :start_date AND :end_date "
+                  "GROUP BY strftime('%Y-%m-%d', timestamp)");
+
+    query.bindValue(":user_id", userId);
+    query.bindValue(":start_date", startDate.toString("yyyy-MM-dd"));
+    query.bindValue(":end_date", currentDate.toString("yyyy-MM-dd"));
+
+    // 调试输出：检查SQL语句和绑定值
+    qDebug() << "SQL Query:" << query.lastQuery();
+    qDebug() << "Bound Values:"
+             << ":user_id =" << userId
+             << ":start_date =" << startDate.toString("yyyy-MM-dd")
+             << ":end_date =" << currentDate.toString("yyyy-MM-dd");
 
     if (query.exec()) {
+        qDebug() << "Query executed successfully";
         while (query.next()) {
             QDate date = query.value(0).toDate();
             int count = query.value(1).toInt();
-            // 使用 QDateTime::fromDate 和 QTime(0, 0) 将 QDate 转换为 QDateTime
-            QDateTime dateTime = QDateTime(date, QTime(0, 0));
-            int daysDiff = startTime.daysTo(dateTime);
+
+            // 计算与开始日期的天数差
+            int daysDiff = startDate.daysTo(date);
             if (daysDiff >= 0 && daysDiff < days) {
                 dailyCounts[daysDiff] = count;
             }
         }
     } else {
-        qWarning() << "查询学习记录数量失败:" << query.lastError().text();
+        qWarning() << "查询执行失败:" << query.lastError().text();
     }
 
     return dailyCounts;
 }
 
-// 实现获取指定天数内每一天学习正确率的方法
+
 QVector<double> WordDatabase::getDailyLearningAccuracyInDays(int days, int userId) {
     QVector<double> dailyAccuracies(days, 0.0);
-    QDateTime endTime = QDateTime::currentDateTime();
-    QDateTime startTime = endTime.addDays(-days);
+
+    // 获取当前日期（本地时间）
+    QDate currentDate = QDate::currentDate();
+
+    // 计算开始日期（本地时间）
+    QDate startDate = currentDate.addDays(-days + 1);
 
     QSqlQuery query(m_db);
-    query.prepare("SELECT DATE(timestamp), SUM(CASE WHEN correct THEN 1 ELSE 0 END), COUNT(*) FROM LearningRecords WHERE userId = :userId AND timestamp BETWEEN :startTime AND :endTime GROUP BY DATE(timestamp)");
-    query.bindValue(":userId", userId);
-    query.bindValue(":startTime", startTime);
-    query.bindValue(":endTime", endTime);
+
+    // 修改为SQLite兼容的日期格式和参数名
+    query.prepare("SELECT strftime('%Y-%m-%d', timestamp), "
+                  "SUM(CASE WHEN correct = 1 THEN 1 ELSE 0 END), "
+                  "COUNT(*) "
+                  "FROM LearningRecords "
+                  "WHERE user_id = :user_id "
+                  "AND strftime('%Y-%m-%d', timestamp) BETWEEN :start_date AND :end_date "
+                  "GROUP BY strftime('%Y-%m-%d', timestamp)");
+
+    query.bindValue(":user_id", userId);
+    query.bindValue(":start_date", startDate.toString("yyyy-MM-dd"));
+    query.bindValue(":end_date", currentDate.toString("yyyy-MM-dd"));
+
+    // 调试输出：检查SQL语句和绑定值
+    qDebug() << "SQL Query:" << query.lastQuery();
+    qDebug() << "Bound Values:"
+             << ":user_id =" << userId
+             << ":start_date =" << startDate.toString("yyyy-MM-dd")
+             << ":end_date =" << currentDate.toString("yyyy-MM-dd");
 
     if (query.exec()) {
+        qDebug() << "Query executed successfully";
         while (query.next()) {
             QDate date = query.value(0).toDate();
             int correctCount = query.value(1).toInt();
@@ -1147,18 +1190,47 @@ QVector<double> WordDatabase::getDailyLearningAccuracyInDays(int days, int userI
 
             double accuracy = totalCount > 0 ? static_cast<double>(correctCount) / totalCount : 0.0;
 
-            QDateTime dateTime = QDateTime(date, QTime(0, 0));
-            int daysDiff = startTime.daysTo(dateTime);
+            int daysDiff = startDate.daysTo(date);
             if (daysDiff >= 0 && daysDiff < days) {
                 dailyAccuracies[daysDiff] = accuracy;
             }
         }
     } else {
-        qWarning() << "查询学习记录正确率失败:" << query.lastError().text();
+        qWarning() << "查询执行失败:" << query.lastError().text();
     }
 
     return dailyAccuracies;
 }
+
+bool WordDatabase::closeCurrentDatabase()
+{
+    // 检查当前对象的数据库连接是否有效
+    if (!m_db.isValid()) {
+        qDebug() << "当前对象没有有效的数据库连接";
+        return true; // 没有连接也算操作成功
+    }
+
+    // 获取当前连接名称
+    QString connectionName = m_db.connectionName();
+
+    // 关闭连接
+    if (m_db.isOpen()) {
+        m_db.close();
+        qDebug() << "已关闭数据库连接:" << connectionName;
+    }
+
+    // 从连接管理器中移除
+    if (QSqlDatabase::contains(connectionName)) {
+        QSqlDatabase::removeDatabase(connectionName);
+        qDebug() << "已移除数据库连接:" << connectionName;
+    }
+
+    // 重置为默认构造的无效连接
+    m_db = QSqlDatabase();
+
+    return true;
+}
+
 
 // 静态方法：获取所有词库中总共学习的单词数量
 int WordDatabase::getAllTotalWordCount() {
@@ -1168,6 +1240,7 @@ int WordDatabase::getAllTotalWordCount() {
         WordDatabase db;
         if (db.initDatabase(dbName)) {
             totalCount += db.getTotalWordCount();
+            db.closeCurrentDatabase();
         }
     }
     return totalCount;
@@ -1184,6 +1257,7 @@ QVector<int> WordDatabase::getAllDailyLearningCountInDays(int days, int userId) 
             for (int i = 0; i < days; ++i) {
                 allDailyCounts[i] += dailyCounts[i];
             }
+            db.closeCurrentDatabase();
         }
     }
     return allDailyCounts;
@@ -1200,11 +1274,13 @@ QVector<double> WordDatabase::getAllDailyLearningAccuracyInDays(int days, int us
         WordDatabase db;
         if (db.initDatabase(dbName)) {
             QVector<int> dailyCounts = db.getDailyLearningCountInDays(days, userId);
+            //qDebug()<<dbName<<' '<<dailyCounts;
             QVector<double> dailyAccuracies = db.getDailyLearningAccuracyInDays(days, userId);
             for (int i = 0; i < days; ++i) {
                 totalCounts[i] += dailyCounts[i];
                 correctCounts[i] += static_cast<int>(dailyCounts[i] * dailyAccuracies[i]);
             }
+            db.closeCurrentDatabase();
         }
     }
 
@@ -1230,6 +1306,7 @@ double WordDatabase::getAllLearningAccuracy(int days, int userId) {
             double dbAccuracy = db.getLearningAccuracy(days, userId);
             totalCount += dbTotalCount;
             correctCount += static_cast<int>(dbTotalCount * dbAccuracy);
+            db.closeCurrentDatabase();
         }
     }
 

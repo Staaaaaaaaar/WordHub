@@ -1,6 +1,6 @@
 #include "guess_word_widget.h"
 #include "ui_guess_word_widget.h"
-#include "guess_according_to_description_h/guess_word.h"
+#include "guess_according_to_description/guess_word.cpp"
 #include <map>
 #include <QMessageBox>
 using namespace std;

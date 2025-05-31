@@ -55,6 +55,12 @@ void MainWindow::connectSignals(){
         // learnWidget->setupUI();
         // emit learnWidgerInit();
     });
+
+    //复习界面
+    // connect(ui->reviewButton, &QToolButton::clicked, this, [=](){
+    //     ui->stackedWidget->setCurrentIndex(3);
+    // });
+
     //成就界面
     connect(ui->achievementButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(3);
@@ -67,6 +73,9 @@ void MainWindow::connectSignals(){
         gameWidget->setupUI();
         // emit gameWidgerInit();
     });
+
+    //退出
+    connect(ui->exitButton,&QToolButton::clicked,this,&MainWindow::exitSignal);
 
     connect(queryWidget, SIGNAL(sendMes(QString,int)), this, SLOT(showMes(QString,int)));
     connect(queryWidget, SIGNAL(clearMes()), this, SLOT(clearMes()));
@@ -85,3 +94,7 @@ void MainWindow::clearMes()
     ui->statusbar->clearMessage();
 }
 
+void MainWindow::exitSignal()
+{
+    this->close();
+}

@@ -210,6 +210,9 @@
          </spacer>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8"/>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
            <spacer name="horizontalSpacer_5">
@@ -409,7 +412,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>17</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

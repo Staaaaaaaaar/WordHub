@@ -13,43 +13,125 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QGraphicsView" name="graphicsView">
+  <widget class="QLabel" name="userLabel">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>70</y>
-     <width>431</width>
-     <height>201</height>
+     <x>40</x>
+     <y>30</y>
+     <width>141</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="accLabel">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>100</y>
+     <width>211</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QWidget" name="dayWidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>170</y>
+     <width>355</width>
+     <height>110</height>
+    </rect>
+   </property>
+   <widget class="QWidget" name="widget_2" native="true">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>40</y>
+      <width>451</width>
+      <height>80</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="accWidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>300</y>
+     <width>355</width>
+     <height>110</height>
     </rect>
    </property>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>60</x>
-     <y>20</y>
-     <width>71</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>学习概览</string>
-   </property>
-  </widget>
-  <widget class="QToolButton" name="toolButton">
-   <property name="geometry">
-    <rect>
-     <x>430</x>
-     <y>30</y>
-     <width>31</width>
+     <x>20</x>
+     <y>208</y>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>...</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:700;&quot;&gt;学习之路&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
-   <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::ViewRestore"/>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>340</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:700;&quot;&gt;进步之路&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="clearButton">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>70</y>
+     <width>121</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>清空学习记录</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="clearLabel">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>120</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="refreshButton">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>14</y>
+     <width>121</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>更新学习记录</string>
    </property>
   </widget>
  </widget>

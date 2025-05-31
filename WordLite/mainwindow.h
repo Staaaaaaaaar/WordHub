@@ -31,6 +31,7 @@ public:
     // 设置UI和连接信号槽
     void setupUI();
     void connectSignals();
+    void exitSignal();
 
 signals:
     void gameWidgerInit();
