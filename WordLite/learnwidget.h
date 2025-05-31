@@ -24,6 +24,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QProgressDialog>
 #include "back_head/loadword.h"
 
 namespace Ui {
@@ -94,6 +95,8 @@ private slots:
 
     void on_resetButton_clicked();
 
+signals:
+    void sendId(int id);
 private:
     Ui::LearnWidget *ui;
     QList<DictButton*> defaultButtons;

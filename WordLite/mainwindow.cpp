@@ -33,6 +33,8 @@ void MainWindow::setupUI(){
     ui->stackedWidget->addWidget(achievementWidget);
     ui->stackedWidget->addWidget(gameWidget);
 
+
+
 }
 
 void MainWindow::connectSignals(){
@@ -47,11 +49,15 @@ void MainWindow::connectSignals(){
     connect(ui->queryButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(1);
         queryWidget->setupUI();
+        // 断开learnWidget的数据库连接
+        learnWidget->DBptr->closeCurrentDatabase();
         // learnWidget->setupUI();
     });
     //学习界面
     connect(ui->learnButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(2);
+        // 断开queryWidget的数据库连接
+        queryWidget->wordDataBase->closeCurrentDatabase();
         // learnWidget->setupUI();
         // emit learnWidgerInit();
     });
@@ -72,6 +78,10 @@ void MainWindow::connectSignals(){
         // learnWidget->setupUI();
         gameWidget->setupUI();
         // emit gameWidgerInit();
+        // 断开queryWidget的数据库连接
+        queryWidget->wordDataBase->closeCurrentDatabase();
+        // 断开learnWidget的数据库连接
+        learnWidget->DBptr->closeCurrentDatabase();
     });
 
     //退出
@@ -80,8 +90,27 @@ void MainWindow::connectSignals(){
     connect(queryWidget, SIGNAL(sendMes(QString,int)), this, SLOT(showMes(QString,int)));
     connect(queryWidget, SIGNAL(clearMes()), this, SLOT(clearMes()));
 
-    // connect(this, SIGNAL(learnWidgerInit()), learnWidget, SLOT());
-    // connect(this, SIGNAL(gameWidgerInit()), gameWidget, SLOT());
+    connect(queryWidget, &QueryWidget::sendId, this, [=](int id){
+        if (!achievementWidget->testAchievements[id].unlocked) {
+            achievementWidget->refreshAchievements(id); // 标记为达成并更新UI
+            showMes("达成成就：" + achievementWidget->testAchievements[id].title, 2000);
+        }
+    });
+    connect(learnWidget, &LearnWidget::sendId, this, [=](int id){
+        if (!achievementWidget->testAchievements[id].unlocked) {
+            achievementWidget->refreshAchievements(id); // 标记为达成并更新UI
+            showMes("达成成就：" + achievementWidget->testAchievements[id].title, 2000);
+        }
+    });
+    connect(gameWidget, &GameWidget::sendId, this, [=](int id){
+        if (!achievementWidget->testAchievements[id].unlocked) {
+            achievementWidget->refreshAchievements(id); // 标记为达成并更新UI
+            showMes("达成成就：" + achievementWidget->testAchievements[id].title, 2000);
+        }
+    });
+
+    // connect(this, SIGNAL(ach_register(int)), achievementWidget, SLOT(refreshAchievements(int)));
+    
 
 }
 

@@ -1,6 +1,7 @@
 #include "learnwidget.h"
 #include "ui_learnwidget.h"
 
+
 LearnWidget::LearnWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::LearnWidget)
@@ -510,7 +511,6 @@ void LearnWidget::on_addDictButton_clicked()
     // 打开文件选择对话框，选择txt文件
     QString txtFilePath = QFileDialog::getOpenFileName(this, "选择TXT词库文件", "", "文本文件 (*.txt)");
     if (txtFilePath.isEmpty()) {
-        // 关闭后强制焦点到主窗口，避免回到按钮
         this->setFocus();
         return;
     }
@@ -528,17 +528,23 @@ void LearnWidget::on_addDictButton_clicked()
     // 选择本地牛津数据库名（可选，假设为"oxford"）
     QString search_dbname = "oxford_9";
 
-    // 导入txt到新词库
+    // 弹出导入中信息框
+    QProgressDialog progress("正在导入词库，请稍候...", QString(), 0, 0, this);
+    progress.setWindowModality(Qt::ApplicationModal);
+    progress.setCancelButton(nullptr);
+    progress.setMinimumDuration(0);
+    progress.show();
+    QApplication::processEvents();
+
     Wordloader loader;
-    bool success = loader.importWordFromTXT(txtFilePath, dbName, search_dbname, false);
+    bool success = loader.importWordFromTXT(txtFilePath, dbName, search_dbname, true);
+
+    progress.close();
 
     if (success) {
-        // 刷新词库列表
         defaultDictNames = DBptr->getlist();
-        // 重新设置UI（可根据实际情况优化刷新方式）
         setupUI();
         QMessageBox::information(this, "导入成功", "新词库已成功导入！", QMessageBox::Ok);
-        // 关闭弹窗后强制焦点到主窗口
         this->setFocus();
     } else {
         QMessageBox::warning(this, "导入失败", "导入词库失败，请检查文件格式或数据库权限。", QMessageBox::Ok);
@@ -550,6 +556,7 @@ void LearnWidget::on_dictButton_clicked()
     dictName = qobject_cast<DictButton*>(sender())->text();
     //跳转到词库信息界面
     ui->stackedWidget->setCurrentIndex(1);
+    DBptr->closeCurrentDatabase();
     DBptr->initDatabase(dictName);
     //初始化界面
     initDictWidget();
@@ -584,6 +591,9 @@ void LearnWidget::on_learnButton_clicked()
 
     // 初始化单词列表界面
     initWordsWidget();
+
+    // 成就
+    emit sendId(1);
 }
 void LearnWidget::on_testButton_clicked()
 {

@@ -42,7 +42,12 @@ void registerWidget::saveUser()
 
 void registerWidget::skip()
 {
-    MainWindow *w=new MainWindow();
+    MainWindow *w = new MainWindow();
+    if (!w->achievementWidget->testAchievements[0].unlocked) {
+        // 达成成就
+        w->showMes("达成成就：初次相遇", 2000);
+        w->achievementWidget->refreshAchievements(0);
+    }
     w->show();
     this->close();
 }

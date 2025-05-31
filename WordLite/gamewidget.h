@@ -25,7 +25,8 @@ private slots:
     void onGuessWordWidgetExit();
     void onBeginSignalCome();
     void onAnswerSignalCome();
-
+signals:
+    void sendId(int id);
 private:
     Ui::GameWidget *ui;
     guess_word_widget *guessWordWidget;

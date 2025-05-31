@@ -44,6 +44,7 @@ void guess_word_widget::connectSignals()
 void guess_word_widget::onExitButtonClicked()
 {
     emit exitRequested();
+
 }
 
 void guess_word_widget::onRuleButtonClicked()
@@ -61,6 +62,9 @@ void guess_word_widget::onBeginButtonClicked()
     translation=result["translation"];
     description=result["description"];
     ui->displayTextEdit->setText(description+"\n请在下方输入你的答案"+"\n提示：这是开头的两个字母"+word[0]+word[1]);
+
+    // 成就
+    emit sendId(3);
 }
 
 void guess_word_widget::onAnswerButtonClicked()

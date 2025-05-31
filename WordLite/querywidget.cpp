@@ -83,6 +83,7 @@ void QueryWidget::setupUI()
     {
         ui->comboBox->addItem(DBname);
     }
+    wordDataBase->closeCurrentDatabase(); // 关闭当前数据库连接
     //初始化连接
     if (!wordDBList.isEmpty()) wordDataBase->initDatabase(wordDBList.first());
 
@@ -149,6 +150,10 @@ void QueryWidget::on_searchEdit_returnPressed()
 
     // emit sendMes(cur_word + "查询完成", 3000);
     ui->searchEdit->clear();
+
+    // 成就部分
+    emit sendId(2);
+
 }
 
 
@@ -165,6 +170,7 @@ void QueryWidget::on_tabWidget_tabCloseRequested(int index)
 void QueryWidget::on_comboBox_currentTextChanged(const QString &DBname)
 {
     emit sendMes("正在连接数据库 "+DBname);
+    wordDataBase->closeCurrentDatabase(); // 关闭当前数据库连接
     if (wordDataBase->initDatabase(DBname))
     {
         emit sendMes("成功连接数据库 "+DBname, 1000);

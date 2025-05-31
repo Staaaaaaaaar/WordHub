@@ -36,8 +36,8 @@ public:
     void connectSignals();
     void refreshUI();
     QVector<Achievement> getAchievementsFromSource();
-public slots:
-    void refreshAchievements();
+
+    void refreshAchievements(int idx);
 
 private:
     Ui::AchievementWidget *ui;

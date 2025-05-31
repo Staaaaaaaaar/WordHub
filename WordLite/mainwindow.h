@@ -7,6 +7,8 @@
 #include <learnwidget.h>
 #include <achievementwidget.h>
 #include <gamewidget.h>
+#include <wordle.h>
+#include <guess_word_widget.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -36,8 +38,9 @@ public:
 signals:
     void gameWidgerInit();
     void learnWidgerInit();
+    void ach_register(int idx);
 
-private slots:
+public slots:
     void showMes(QString message, int timeout=0);
     void clearMes();
 

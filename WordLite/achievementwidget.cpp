@@ -13,7 +13,7 @@ AchievementWidget::AchievementWidget(QWidget *parent)
     connectSignals();
     testAchievements = {
         {1, "初次相遇", "成功登录一次应用", false, QDateTime(), ":/icons/achievement_login.png"},
-        {2, "启程之星", "完成首次学习", false, QDateTime(), ":/icons/achievement1.png"},
+        {2, "启程之星", "进行首次学习", false, QDateTime(), ":/icons/achievement1.png"},
         {3, "探索之门", "首次查询单词释义", false, QDateTime(), ":/icons/achievement_query.png"},
         {4, "游戏新手", "首次参与单词游戏", false, QDateTime(), ":/icons/achievement_game.png"},
         {5, "七日之约", "连续学习7天", false, QDateTime(), ":/icons/locked.png"},
@@ -73,9 +73,13 @@ QVector<Achievement> AchievementWidget::getAchievementsFromSource()
     return testAchievements;
 }
 
-void AchievementWidget::refreshAchievements()
+void AchievementWidget::refreshAchievements(int idx)
 {
-
+    if (idx >= 0 && idx < testAchievements.size()) {
+        testAchievements[idx].unlocked = true;
+        testAchievements[idx].unlockDate = QDateTime::currentDateTime();
+    }
+    refreshUI();
 }
 void AchievementWidget::refreshUI()
 {
@@ -102,12 +106,12 @@ void AchievementWidget::refreshUI()
         hLayout->setSpacing(28); // 更大间距
 
         // 图标
-        QLabel *iconLabel = new QLabel();
-        QPixmap pixmap(achievement.iconPath);
-        if (!achievement.unlocked)
-            pixmap = pixmap.scaled(56, 56, Qt::KeepAspectRatio, Qt::SmoothTransformation); // 更大图标
-        iconLabel->setPixmap(pixmap);
-        iconLabel->setFixedSize(68, 68); // 更大图标区域
+        // QLabel *iconLabel = new QLabel();
+        // QPixmap pixmap(achievement.iconPath);
+        // if (!achievement.unlocked)
+        //     pixmap = pixmap.scaled(56, 56, Qt::KeepAspectRatio, Qt::SmoothTransformation); // 更大图标
+        // iconLabel->setPixmap(pixmap);
+        // iconLabel->setFixedSize(68, 68); // 更大图标区域
 
         // 文字信息
         QVBoxLayout *textLayout = new QVBoxLayout();
@@ -134,18 +138,18 @@ void AchievementWidget::refreshUI()
             "box-shadow: 0 2px 8px rgba(0,0,0,0.03);"
         );
         titleLabel->setStyleSheet(
-            "color: #222;"
+            "color: rgb(53, 53, 53);"
             "font-weight: 600;"
             "letter-spacing: 0.5px;"
         );
         detailLabel->setStyleSheet(
-            "color: #888;"
+            "color: rgb(255, 255, 255);"
             "font-size: 13px;"
         );
 
         textLayout->addWidget(titleLabel);
         textLayout->addWidget(detailLabel);
-        hLayout->addWidget(iconLabel, 0, Qt::AlignTop);
+        // hLayout->addWidget(iconLabel, 0, Qt::AlignTop);
         hLayout->addLayout(textLayout);
         itemWidget->setLayout(hLayout);
 
