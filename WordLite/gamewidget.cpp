@@ -8,6 +8,10 @@ GameWidget::GameWidget(QWidget *parent)
     , ui(new Ui::GameWidget)
 {
     ui->setupUi(this);
+    guessWordWidget=new guess_word_widget(this);
+    wordle=new Wordle(this);
+    ui->stackedWidget->addWidget(guessWordWidget);
+    ui->stackedWidget->addWidget(wordle);
     setupUI();
     connectSignals();
 }
@@ -19,11 +23,6 @@ GameWidget::~GameWidget()
 
 void GameWidget::setupUI()
 {
-    guessWordWidget=new guess_word_widget(this);
-    wordle=new Wordle(this);
-    ui->stackedWidget->addWidget(guessWordWidget);
-    ui->stackedWidget->addWidget(wordle);
-
     // 设置按钮样式
     // QString btnStyle =
     //     "QToolButton {"
@@ -47,22 +46,7 @@ void GameWidget::setupUI()
     // ui->guessButton->setStyleSheet(btnStyle);
     // ui->wordleButton->setStyleSheet(btnStyle);
 
-    // 清空原有布局内容
-    QLayoutItem* item;
-    while ((item = ui->gameLayout->takeAt(0)) != nullptr) {
-        if (item->widget()) item->widget()->setParent(nullptr);
-        delete item;
-    }
-
-    // 设置按钮为三列排列，每行不延展
-    ui->gameLayout->setSpacing(30);
-    ui->gameLayout->setContentsMargins(40, 40, 40, 40);
-    ui->gameLayout->addWidget(ui->guessButton, 0, 0, 1, 1, Qt::AlignLeft | Qt::AlignTop);
-    ui->gameLayout->addWidget(ui->wordleButton, 0, 1, 1, 1, Qt::AlignLeft | Qt::AlignTop);
-    // 预留第三列位置
-    QWidget* placeholder = new QWidget(this);
-    placeholder->setFixedSize(1, 1);
-    ui->gameLayout->addWidget(placeholder, 0, 2, 1, 1);
+    ui->stackedWidget->setCurrentIndex(0);
 }
 
 void GameWidget::connectSignals()
@@ -75,6 +59,10 @@ void GameWidget::connectSignals()
     });
     connect(guessWordWidget, &guess_word_widget::exitRequested, this, &GameWidget::onGuessWordWidgetExit);
     connect(wordle,&Wordle::exitSignals,this,&GameWidget::onGuessWordWidgetExit);
+
+
+    connect(wordle, &Wordle::sendId, this, &GameWidget::sendId);
+    connect(guessWordWidget, &guess_word_widget::sendId, this, &GameWidget::sendId);
 }
 
 void GameWidget::onGuessWordWidgetExit()

@@ -48,6 +48,8 @@ Wordle::~Wordle()
 void Wordle::onExitButtonClicked()
 {
     emit exitSignals();
+
+
 }
 
 void Wordle::loadWord()
@@ -100,6 +102,9 @@ void Wordle::game()
     ui->commitButton->setEnabled(true);
     ui->beginButton->setEnabled(false);
     ui->checkButton->setEnabled(true);
+
+    // 成就
+    emit sendId(3);
 }
 
 void Wordle::getText()

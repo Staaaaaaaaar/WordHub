@@ -24,6 +24,7 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QProgressDialog>
 #include "back_head/loadword.h"
 
 namespace Ui {
@@ -74,6 +75,7 @@ public:
     void initWordsWidget();
     void initCheckout();
     void showTestForWord(int idx);
+    void tmp();
 
     // 设置UI和连接信号槽
     void setupUI();
@@ -93,6 +95,8 @@ private slots:
 
     void on_resetButton_clicked();
 
+signals:
+    void sendId(int id);
 private:
     Ui::LearnWidget *ui;
     QList<DictButton*> defaultButtons;

@@ -77,9 +77,12 @@ private slots:
     void clearMess();
 
 
+
 private: signals:
     void sendMes(QString message, int timeout=0);
     void clearMes();
+
+    void sendId(int id);
 
 
 private:

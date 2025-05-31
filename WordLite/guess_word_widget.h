@@ -34,6 +34,8 @@ signals:
     void answerRequested();
     void commitRequested();
 
+    void sendId(int id);
+
 private:
     Ui::guess_word_widget *ui;
 };

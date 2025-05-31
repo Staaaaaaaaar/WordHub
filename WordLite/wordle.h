@@ -48,6 +48,7 @@ public:
 
 signals:
     void exitSignals();
+    void sendId(int id);
 private:
     Ui::Wordle *ui;
 };

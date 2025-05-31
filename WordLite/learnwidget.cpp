@@ -1,6 +1,7 @@
 #include "learnwidget.h"
 #include "ui_learnwidget.h"
 
+
 LearnWidget::LearnWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::LearnWidget)
@@ -15,12 +16,33 @@ LearnWidget::LearnWidget(QWidget *parent)
     //设置UI和连接信号槽
     setupUI();
     connectSignals();
+
+    // 隐藏测试界面的pushButton，避免影响窗口缩放
+    tmp();
 }
 
 LearnWidget::~LearnWidget()
 {
     delete ui;
 }
+void LearnWidget::tmp()
+{
+    // 隐藏测试界面的pushButton，避免影响窗口缩放
+    for (int i = 0; i < 4; ++i) {
+        QPushButton* btn = nullptr;
+        switch (i) {
+        case 0: btn = ui->pushButton_0; break;
+        case 1: btn = ui->pushButton_1; break;
+        case 2: btn = ui->pushButton_2; break;
+        case 3: btn = ui->pushButton_3; break;
+        }
+        btn->hide(); // 用hide替换setVisible(false)
+        btn->setMinimumSize(0, 0);
+        btn->setMaximumSize(0, 0); // 强制最大最小都为0
+        btn->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    }
+}
+
 void LearnWidget::setupUI()
 {
     //设置初始界面
@@ -72,24 +94,7 @@ void LearnWidget::setupUI()
     ui->defaultBox->setLayout(defaultBoxLayout);
 
 
-    // 隐藏测试界面的pushButton，避免影响窗口缩放
-    for (int i = 0; i < 4; ++i) {
-        QPushButton* btn = nullptr;
-        switch (i) {
-        case 0: btn = ui->pushButton_0; break;
-        case 1: btn = ui->pushButton_1; break;
-        case 2: btn = ui->pushButton_2; break;
-        case 3: btn = ui->pushButton_3; break;
-        }
-        btn->setStyleSheet("QPushButton {"
-                          "    text-align: left;"
-                          "    padding: 5px;"
-                          "    border: 1px solid gray;"
-                          "    border-radius: 3px;"
-                          "    word-wrap: break-word;"
-                          "}");
-        btn->setVisible(false); // 新增：默认隐藏
-    }
+    
 }
 
 
@@ -112,26 +117,17 @@ void LearnWidget::connectSignals()
     //返回
     connect(ui->backButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(0);
-        // 隐藏测试界面的pushButton
-        for (QPushButton* btn : std::as_const(optionButtons)) {
-            btn->setVisible(false);
-        }
+        tmp();
     });
     connect(ui->backButton_2, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(1);
         initDictWidget();
-        // 隐藏测试界面的pushButton
-        for (QPushButton* btn : std::as_const(optionButtons)) {
-            btn->setVisible(false);
-        }
+        tmp();
     });
     connect(ui->backButton_3, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(2);
         initWordsWidget();
-        // 隐藏测试界面的pushButton
-        for (QPushButton* btn : std::as_const(optionButtons)) {
-            btn->setVisible(false);
-        }
+        tmp();
     });
 
 
@@ -147,11 +143,7 @@ void LearnWidget::addButtonsToGrid(QGridLayout *grid, const QList<DictButton*> &
 }
 void LearnWidget::initDictWidget()
 {
-    // 清空wordsWidget的文本
-    if (ui->wordsListWidget) {
-        ui->wordsListWidget->clear();
-        ui->wordsListWidget->setRowCount(0);
-    }
+    tmp();
     
 
     // 词库名
@@ -241,24 +233,7 @@ void LearnWidget::initDictWidget()
 
 void LearnWidget::initWordsWidget()
 {
-    // 清空testWidget的文本信息，主要是pushButton
-    if (ui->testWordLabel) {
-        ui->testWordLabel->clear();
-    }
-    // 清空optionButtons的文本和样式，并重置其大小策略，防止其大小对窗口大小产生影响
-    for (QPushButton* btn : std::as_const(optionButtons)) {
-        btn->setText("");
-        btn->setStyleSheet("QPushButton {"
-                          "    text-align: left;"
-                          "    padding: 5px;"
-                          "    border: 1px solid gray;"
-                          "    border-radius: 3px;"
-                          "    word-wrap: break-word;"  // 这里控制文本的换行
-                          "}");
-        btn->setMinimumSize(0, 0);
-        btn->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-        btn->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    }
+    tmp();
 
     // 清空并设置表头
     ui->wordsListWidget->clear();
@@ -314,6 +289,7 @@ void LearnWidget::initWordsWidget()
 
 void LearnWidget::initCheckout()
 {
+    tmp();
     // 清空并设置表头
     ui->wordsListWidget->clear();
     ui->wordsListWidget->setColumnCount(2);
@@ -395,6 +371,10 @@ void LearnWidget::initTestWidget()
         case 2: btn = ui->pushButton_2; break;
         case 3: btn = ui->pushButton_3; break;
         }
+        btn->show(); // 用show替换setVisible(true)
+        btn->setMinimumSize(0, 0);
+        btn->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX); // 恢复最大尺寸
+        btn->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         optionButtons[i] = btn;
         // 防止重复连接
         btn->disconnect();
@@ -424,7 +404,7 @@ void LearnWidget::initTestWidget()
         });
     }
 
-    // 显示测试界面的pushButton
+    // 只在测试界面显示pushButton
     for (QPushButton* btn : std::as_const(optionButtons)) {
         btn->setVisible(true);
     }
@@ -440,7 +420,7 @@ void LearnWidget::initTestWidget()
         DBptr->updateWordLearningInfo(wordId, correct, -int(correct));
 
         // 显示正误反馈
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; i++) {
             if (optionButtons[i]->text() == correctAnswer) {
                 optionButtons[i]->setStyleSheet(
                     "QPushButton {"
@@ -531,7 +511,6 @@ void LearnWidget::on_addDictButton_clicked()
     // 打开文件选择对话框，选择txt文件
     QString txtFilePath = QFileDialog::getOpenFileName(this, "选择TXT词库文件", "", "文本文件 (*.txt)");
     if (txtFilePath.isEmpty()) {
-        // 关闭后强制焦点到主窗口，避免回到按钮
         this->setFocus();
         return;
     }
@@ -549,17 +528,23 @@ void LearnWidget::on_addDictButton_clicked()
     // 选择本地牛津数据库名（可选，假设为"oxford"）
     QString search_dbname = "oxford_9";
 
-    // 导入txt到新词库
+    // 弹出导入中信息框
+    QProgressDialog progress("正在导入词库，请稍候...", QString(), 0, 0, this);
+    progress.setWindowModality(Qt::ApplicationModal);
+    progress.setCancelButton(nullptr);
+    progress.setMinimumDuration(0);
+    progress.show();
+    QApplication::processEvents();
+
     Wordloader loader;
-    bool success = loader.importWordFromTXT(txtFilePath, dbName, search_dbname, false);
+    bool success = loader.importWordFromTXT(txtFilePath, dbName, search_dbname, true);
+
+    progress.close();
 
     if (success) {
-        // 刷新词库列表
         defaultDictNames = DBptr->getlist();
-        // 重新设置UI（可根据实际情况优化刷新方式）
         setupUI();
         QMessageBox::information(this, "导入成功", "新词库已成功导入！", QMessageBox::Ok);
-        // 关闭弹窗后强制焦点到主窗口
         this->setFocus();
     } else {
         QMessageBox::warning(this, "导入失败", "导入词库失败，请检查文件格式或数据库权限。", QMessageBox::Ok);
@@ -571,6 +556,7 @@ void LearnWidget::on_dictButton_clicked()
     dictName = qobject_cast<DictButton*>(sender())->text();
     //跳转到词库信息界面
     ui->stackedWidget->setCurrentIndex(1);
+    DBptr->closeCurrentDatabase();
     DBptr->initDatabase(dictName);
     //初始化界面
     initDictWidget();
@@ -605,6 +591,9 @@ void LearnWidget::on_learnButton_clicked()
 
     // 初始化单词列表界面
     initWordsWidget();
+
+    // 成就
+    emit sendId(1);
 }
 void LearnWidget::on_testButton_clicked()
 {
