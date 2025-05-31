@@ -1,7 +1,5 @@
 #include "learnwidget.h"
 #include "ui_learnwidget.h"
-#include <random>
-
 
 LearnWidget::LearnWidget(QWidget *parent)
     : QWidget(parent)
@@ -12,10 +10,11 @@ LearnWidget::LearnWidget(QWidget *parent)
     DBptr = new WordDatabase();
     //初始化defaultDictNames
     defaultDictNames = DBptr->getlist();
+    // 只创建一次addDictButton
+    addDictButton = new DictButton("+");
     //设置UI和连接信号槽
     setupUI();
     connectSignals();
-
 }
 
 LearnWidget::~LearnWidget()
@@ -27,8 +26,19 @@ void LearnWidget::setupUI()
     //设置初始界面
     ui->stackedWidget->setCurrentIndex(0);
     //设置添加词库按钮
-    addDictButton = new DictButton("+");
+    // addDictButton = new DictButton("+"); // 删除此行
 
+
+    // 先清空defaultBox原有布局和控件
+    QLayout* oldLayout = ui->defaultBox->layout();
+    if (oldLayout) {
+        QLayoutItem* item;
+        while ((item = oldLayout->takeAt(0)) != nullptr) {
+            if (QWidget* w = item->widget()) w->deleteLater();
+            delete item;
+        }
+        delete oldLayout;
+    }
 
     // 响应式布局：用QScrollArea+QWidget+QGridLayout
     QWidget* defaultContainer = new QWidget;
@@ -49,7 +59,8 @@ void LearnWidget::setupUI()
     int addRow = defaultDictNames.size() / columns;
     int addCol = defaultDictNames.size() % columns;
     defaultGrid->addWidget(addDictButton, addRow, addCol);
-    connect(addDictButton, &QToolButton::clicked, this, &LearnWidget::on_addDictButton_clicked);
+    // 不再重复connect/disconnect addDictButton
+    // ...existing code...
 
     defaultContainer->setLayout(defaultGrid);
     QScrollArea* defaultScroll = new QScrollArea;
@@ -61,7 +72,7 @@ void LearnWidget::setupUI()
     ui->defaultBox->setLayout(defaultBoxLayout);
 
 
-
+    // 隐藏测试界面的pushButton，避免影响窗口缩放
     for (int i = 0; i < 4; ++i) {
         QPushButton* btn = nullptr;
         switch (i) {
@@ -75,8 +86,9 @@ void LearnWidget::setupUI()
                           "    padding: 5px;"
                           "    border: 1px solid gray;"
                           "    border-radius: 3px;"
-                          "    word-wrap: break-word;"  // 这里控制文本的换行
+                          "    word-wrap: break-word;"
                           "}");
+        btn->setVisible(false); // 新增：默认隐藏
     }
 }
 
@@ -99,12 +111,27 @@ void LearnWidget::connectSignals()
     connect(ui->testButton, &QToolButton::clicked, this, &LearnWidget::on_testButton_clicked);
     //返回
     connect(ui->backButton, &QToolButton::clicked, this, [=](){
-        ui->stackedWidget->setCurrentIndex(0);});
+        ui->stackedWidget->setCurrentIndex(0);
+        // 隐藏测试界面的pushButton
+        for (QPushButton* btn : std::as_const(optionButtons)) {
+            btn->setVisible(false);
+        }
+    });
     connect(ui->backButton_2, &QToolButton::clicked, this, [=](){
-        ui->stackedWidget->setCurrentIndex(1);});
+        ui->stackedWidget->setCurrentIndex(1);
+        initDictWidget();
+        // 隐藏测试界面的pushButton
+        for (QPushButton* btn : std::as_const(optionButtons)) {
+            btn->setVisible(false);
+        }
+    });
     connect(ui->backButton_3, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(2);
         initWordsWidget();
+        // 隐藏测试界面的pushButton
+        for (QPushButton* btn : std::as_const(optionButtons)) {
+            btn->setVisible(false);
+        }
     });
 
 
@@ -120,11 +147,120 @@ void LearnWidget::addButtonsToGrid(QGridLayout *grid, const QList<DictButton*> &
 }
 void LearnWidget::initDictWidget()
 {
-    QString name = qobject_cast<DictButton*>(sender())->text();
-    ui->dictName->setText(name);
+    // 清空wordsWidget的文本
+    if (ui->wordsListWidget) {
+        ui->wordsListWidget->clear();
+        ui->wordsListWidget->setRowCount(0);
+    }
+    
+
+    // 词库名
+    ui->dictName->setText(dictName);
+
+    // 清空showWidget布局
+    QLayout* oldLayout = ui->showWidget->layout();
+    if (oldLayout) {
+        QLayoutItem* item;
+        while ((item = oldLayout->takeAt(0)) != nullptr) {
+            if (QWidget* w = item->widget()) w->deleteLater();
+            delete item;
+        }
+        delete oldLayout;
+    }
+
+    // 简约化样式
+    QString chartStyle = "QChartView { background: transparent; border: none; }";
+
+    // --- 柱状图（学习数） ---
+    QVector<int> dailyCounts = DBptr->getDailyLearningCountInDays(14);
+    QBarSet* set = new QBarSet("学习数");
+    for (int v : dailyCounts) *set << v;
+    set->setLabelColor(Qt::black);
+    set->setColor(QColor("#f5f5f5"));
+    set->setBorderColor(QColor("#cccccc"));
+
+    QBarSeries* barSeries = new QBarSeries();
+    barSeries->append(set);
+    barSeries->setLabelsVisible(true);
+
+    QChart* barChart = new QChart();
+    barChart->addSeries(barSeries);
+    barChart->setTitle("");
+    barChart->setBackgroundVisible(false);
+    barChart->legend()->hide();
+    barChart->setMargins(QMargins(0,0,0,0));
+    barChart->setAnimationOptions(QChart::SeriesAnimations);
+
+    // 横坐标：近14天（含今天），从小到大
+    QStringList categories;
+    QDate today = QDate::currentDate();
+    for (int i = 0; i < dailyCounts.size(); ++i) {
+        QDate d = today.addDays(-(dailyCounts.size() - 1 - i));
+        categories << d.toString("M-d");
+    }
+    QBarCategoryAxis* axisX = new QBarCategoryAxis();
+    axisX->append(categories);
+    barChart->addAxis(axisX, Qt::AlignBottom);
+    barSeries->attachAxis(axisX);
+
+    // 取消纵坐标
+
+    QChartView* barChartView = new QChartView(barChart);
+    barChartView->setRenderHint(QPainter::Antialiasing);
+    barChartView->setMinimumHeight(140);
+    barChartView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    barChartView->setStyleSheet(chartStyle);
+
+    // --- 进度条 ---
+    int learned = DBptr->learnednum();
+    int total = DBptr->getTotalWordCount();
+    QProgressBar* progressBar = new QProgressBar(ui->showWidget);
+    progressBar->setMinimum(0);
+    progressBar->setMaximum(total > 0 ? total : 1);
+    progressBar->setValue(learned);
+    double percent = total > 0 ? (double)learned / total * 100.0 : 0.0;
+    progressBar->setFormat(QString("%1/%2 已学 (%3%)").arg(learned).arg(total).arg(QString::number(percent, 'f', 1)));
+    progressBar->setAlignment(Qt::AlignCenter);
+    progressBar->setMinimumHeight(28);
+    progressBar->setStyleSheet(
+        "QProgressBar {"
+        " border: 1px solid #bbb; border-radius: 8px; background: #f5f5f5; text-align: center; color:rgb(77, 77, 77); }"
+        "QProgressBar::chunk {"
+        " background-color:rgb(95, 211, 99); border-radius: 8px; }"
+    );
+    progressBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    // --- 纵向布局，宽度自适应 ---
+    QVBoxLayout* mainLayout = new QVBoxLayout();
+    mainLayout->addWidget(barChartView);
+    mainLayout->addWidget(progressBar);
+    mainLayout->setSpacing(12);
+    mainLayout->setContentsMargins(8, 8, 8, 8);
+    ui->showWidget->setLayout(mainLayout);
 }
+
 void LearnWidget::initWordsWidget()
 {
+    // 清空testWidget的文本信息，主要是pushButton
+    if (ui->testWordLabel) {
+        ui->testWordLabel->clear();
+    }
+    // 清空optionButtons的文本和样式，并重置其大小策略，防止其大小对窗口大小产生影响
+    for (QPushButton* btn : std::as_const(optionButtons)) {
+        btn->setText("");
+        btn->setStyleSheet("QPushButton {"
+                          "    text-align: left;"
+                          "    padding: 5px;"
+                          "    border: 1px solid gray;"
+                          "    border-radius: 3px;"
+                          "    word-wrap: break-word;"  // 这里控制文本的换行
+                          "}");
+        btn->setMinimumSize(0, 0);
+        btn->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+        btn->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    }
+
+    // 清空并设置表头
     ui->wordsListWidget->clear();
     ui->wordsListWidget->setColumnCount(2); // 强制只有两列
     ui->wordsListWidget->setRowCount(wordsList.size());
@@ -162,12 +298,18 @@ void LearnWidget::initWordsWidget()
         }
         QTableWidgetItem* defItem = new QTableWidgetItem(meaningLines.join("\n"));
         defItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        // 设置自动换行
+        defItem->setData(Qt::TextWrapAnywhere, true);
+        defItem->setFlags(defItem->flags() | Qt::ItemIsEditable); // 允许wrap属性生效
         ui->wordsListWidget->setItem(i, 1, defItem);
     }
     // 自动调整列宽和行高，使内容自适应
     ui->wordsListWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     ui->wordsListWidget->horizontalHeader()->setStretchLastSection(true);
     ui->wordsListWidget->resizeRowsToContents();
+
+    // 设置表格支持自动换行（全局）
+    ui->wordsListWidget->setWordWrap(true);
 }
 
 void LearnWidget::initCheckout()
@@ -221,7 +363,13 @@ void LearnWidget::initCheckout()
         ui->wordsListWidget->setItem(i, 0, wordItem);
         ui->wordsListWidget->setItem(i, 1, defItem);
     }
+    // 自动调整列宽和行高，使内容自适应
+    ui->wordsListWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui->wordsListWidget->horizontalHeader()->setStretchLastSection(true);
     ui->wordsListWidget->resizeRowsToContents();
+
+    // 设置表格支持自动换行（全局）
+    ui->wordsListWidget->setWordWrap(true);
 
     // 设置按钮文本
     ui->testButton->setText("重新测试");
@@ -276,6 +424,11 @@ void LearnWidget::initTestWidget()
         });
     }
 
+    // 显示测试界面的pushButton
+    for (QPushButton* btn : std::as_const(optionButtons)) {
+        btn->setVisible(true);
+    }
+
     // 连接确定按钮
     disconnect(ui->testConfirmButton, nullptr, nullptr, nullptr);
     connect(ui->testConfirmButton, &QPushButton::clicked, this, [=]() {
@@ -283,6 +436,7 @@ void LearnWidget::initTestWidget()
         int wordId = wordsList[currentTestIndex].id;
         bool correct = (optionButtons[currentSelected]->text() == correctAnswer);
         testResults[currentTestIndex] = correct;
+        // 更新学习数据
         DBptr->updateWordLearningInfo(wordId, correct, -int(correct));
 
         // 显示正误反馈
@@ -374,14 +528,50 @@ void LearnWidget::showTestForWord(int idx)
 
 void LearnWidget::on_addDictButton_clicked()
 {
-    //浏览文件
+    // 打开文件选择对话框，选择txt文件
+    QString txtFilePath = QFileDialog::getOpenFileName(this, "选择TXT词库文件", "", "文本文件 (*.txt)");
+    if (txtFilePath.isEmpty()) {
+        // 关闭后强制焦点到主窗口，避免回到按钮
+        this->setFocus();
+        return;
+    }
+
+    // 输入新词库名称，名称必填
+    bool ok = false;
+    QString dbName;
+    while (true) {
+        dbName = QInputDialog::getText(this, "新建词库", "请输入新词库名称（必填）：", QLineEdit::Normal, "", &ok);
+        if (!ok) return;
+        if (!dbName.trimmed().isEmpty()) break;
+        QMessageBox::warning(this, "提示", "词库名称不能为空，请输入名称。");
+    }
+
+    // 选择本地牛津数据库名（可选，假设为"oxford"）
+    QString search_dbname = "oxford_9";
+
+    // 导入txt到新词库
+    Wordloader loader;
+    bool success = loader.importWordFromTXT(txtFilePath, dbName, search_dbname, false);
+
+    if (success) {
+        // 刷新词库列表
+        defaultDictNames = DBptr->getlist();
+        // 重新设置UI（可根据实际情况优化刷新方式）
+        setupUI();
+        QMessageBox::information(this, "导入成功", "新词库已成功导入！", QMessageBox::Ok);
+        // 关闭弹窗后强制焦点到主窗口
+        this->setFocus();
+    } else {
+        QMessageBox::warning(this, "导入失败", "导入词库失败，请检查文件格式或数据库权限。", QMessageBox::Ok);
+        this->setFocus();
+    }
 }
 void LearnWidget::on_dictButton_clicked()
 {
+    dictName = qobject_cast<DictButton*>(sender())->text();
     //跳转到词库信息界面
     ui->stackedWidget->setCurrentIndex(1);
-    QString name = qobject_cast<DictButton*>(sender())->text();
-    DBptr->initDatabase(name);
+    DBptr->initDatabase(dictName);
     //初始化界面
     initDictWidget();
 }
@@ -391,7 +581,7 @@ void LearnWidget::on_reviewButton_clicked()
     ui->stackedWidget->setCurrentIndex(2);
     ui->testButton->setText("开始测试");
     wordsList.clear();
-    wordsList = DBptr->getWordsToReview(20);
+    wordsList = DBptr->getWordsToReview(10);
 
     disconnect(ui->refreshButton, nullptr, nullptr, nullptr);
     // 重新连接刷新按钮
@@ -408,7 +598,7 @@ void LearnWidget::on_learnButton_clicked()
     ui->stackedWidget->setCurrentIndex(2);
     ui->testButton->setText("开始测试");
     wordsList.clear();
-    wordsList = DBptr->getRandomWords(20);
+    wordsList = DBptr->getRandomWords(10);
 
     disconnect(ui->refreshButton, nullptr, nullptr, nullptr);
     connect(ui->refreshButton, &QToolButton::clicked, this, &LearnWidget::on_refreshButton_clicked_1);
@@ -431,7 +621,7 @@ void LearnWidget::on_refreshButton_clicked_1()
     ui->testButton->setText("开始测试");
     //重新获取wordsList
     wordsList.clear();
-    wordsList = DBptr->getRandomWords(20);
+    wordsList = DBptr->getRandomWords(10);
 
     initWordsWidget();
 }
@@ -440,7 +630,7 @@ void LearnWidget::on_refreshButton_clicked_2()
     ui->testButton->setText("开始测试");
     //重新获取wordsList
     wordsList.clear();
-    wordsList = DBptr->getWordsToReview(20);
+    wordsList = DBptr->getWordsToReview(10);
 
     initWordsWidget();
 }
@@ -460,4 +650,11 @@ DictButton::~DictButton()
 }
 
 
+
+
+void LearnWidget::on_resetButton_clicked()
+{
+    DBptr->resetLearningRecords();
+    initDictWidget();
+}
 
