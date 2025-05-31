@@ -29,9 +29,13 @@ public:
     explicit AchievementWidget(QWidget *parent = nullptr);
     ~AchievementWidget();
 
+    QVector<Achievement> testAchievements;
+
     // 设置UI和连接信号槽
     void setupUI();
     void connectSignals();
+    void refreshUI();
+    QVector<Achievement> getAchievementsFromSource();
 public slots:
     void refreshAchievements();
 

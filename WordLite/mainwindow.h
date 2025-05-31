@@ -33,6 +33,10 @@ public:
     void connectSignals();
     void exitSignal();
 
+signals:
+    void gameWidgerInit();
+    void learnWidgerInit();
+
 private slots:
     void showMes(QString message, int timeout=0);
     void clearMes();

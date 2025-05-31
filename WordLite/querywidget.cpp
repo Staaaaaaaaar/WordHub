@@ -79,6 +79,7 @@ void QueryWidget::setupUI()
 
 
     //设置comboBox
+    ui->comboBox->clear();
     for (const QString &DBname: std::as_const(wordDBList))
     {
         ui->comboBox->addItem(DBname);
