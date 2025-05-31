@@ -1,6 +1,6 @@
 def get_database(database):
     if database=="1":
-        return "D:\\vocabulary_learning\\词典\\CET_4+6.db"
+        return "F:\\vocabulary_learning\\词典\\CET_4+6.db"
     elif database=="2":
         return "D:\\vocabulary_learning\\WordLite\\python_reasoner\\CET4_edited.db"
     elif database=="3":
