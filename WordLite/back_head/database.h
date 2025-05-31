@@ -33,6 +33,7 @@ public:
     bool NewDatabase(const QString &name); // 创建新数据库
     // 新增：获取数据库中单词的总数
     int getTotalWordCount(int categoryId = -1);
+    bool closeCurrentDatabase();
 
 
     // 单词管理
