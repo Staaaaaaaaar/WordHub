@@ -20,6 +20,7 @@ SOURCES += \
     loginwidget.cpp \
     main.cpp \
     mainwindow.cpp \
+    #painter.cpp \
     querywidget.cpp \
     registerwidget.cpp \
     userwidget.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     learnwidget.h \
     loginwidget.h \
     mainwindow.h \
+    #painter.h \
     querywidget.h \
     registerwidget.h \
     userwidget.h \

@@ -1274,6 +1274,7 @@ QVector<double> WordDatabase::getAllDailyLearningAccuracyInDays(int days, int us
         WordDatabase db;
         if (db.initDatabase(dbName)) {
             QVector<int> dailyCounts = db.getDailyLearningCountInDays(days, userId);
+            //qDebug()<<dbName<<' '<<dailyCounts;
             QVector<double> dailyAccuracies = db.getDailyLearningAccuracyInDays(days, userId);
             for (int i = 0; i < days; ++i) {
                 totalCounts[i] += dailyCounts[i];

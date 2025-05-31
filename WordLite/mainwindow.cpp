@@ -65,6 +65,9 @@ void MainWindow::connectSignals(){
         ui->stackedWidget->setCurrentIndex(4);
     });
 
+    //退出
+    connect(ui->exitButton,&QToolButton::clicked,this,&MainWindow::exitSignal);
+
     connect(queryWidget, SIGNAL(sendMes(QString,int)), this, SLOT(showMes(QString,int)));
     connect(queryWidget, SIGNAL(clearMes()), this, SLOT(clearMes()));
 
@@ -79,3 +82,7 @@ void MainWindow::clearMes()
     ui->statusbar->clearMessage();
 }
 
+void MainWindow::exitSignal()
+{
+    this->close();
+}
