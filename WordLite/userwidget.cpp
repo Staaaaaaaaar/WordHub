@@ -12,6 +12,7 @@ UserWidget::UserWidget(QWidget *parent)
 {
     ui->setupUi(this);
     connect(ui->clearButton,&QToolButton::clicked,this,&UserWidget::clear);
+    connect(ui->refreshButton,&QToolButton::clicked,this,&UserWidget::refresh);
     setUser();
     setTotalAcc();
     setDays();
@@ -70,7 +71,7 @@ void UserWidget::paintEvent(QPaintEvent *event)
     QRect accRect=ui->accWidget->geometry();
     painter.save();
     painter.translate(dayRect.topLeft());
-    int max_count=50;
+    int max_count=100;
     for (int i=0;i<10;++i)
     {
         for (int j=0;j<3;++j)
@@ -95,7 +96,7 @@ void UserWidget::paintEvent(QPaintEvent *event)
         for (int j=0;j<3;++j)
         {
             double acc=dailyLearningAcc[j*10+i];
-            int colorValue=Min(255,static_cast<int>(acc*100*255));
+            int colorValue=Min(255,static_cast<int>(acc*255));
             QColor color(255,255-colorValue,255-colorValue);
             int x=MARGIN*(i+1)+WIDTH*i;
             int y=MARGIN*(j+1)+WIDTH*j;
@@ -108,12 +109,22 @@ void UserWidget::paintEvent(QPaintEvent *event)
 
 void UserWidget::clear()
 {
-    WordDatabase *w=new WordDatabase();
-    w->resetLearningRecords();
+    WordDatabase::resetAll();
     ui->clearLabel->setText("已清空");
     QFont *font=new QFont("黑体",16);
     font->setBold(true);
     ui->clearLabel->setFont(*font);
     ui->clearLabel->setAlignment(Qt::AlignCenter);
+    refresh();
     QTimer::singleShot(1000,this,[=](){ui->clearLabel->setText("");});
+}
+
+void UserWidget::refresh()
+{
+    setUser();
+    setTotalAcc();
+    setDays();
+    setAcc();
+    //setPic();
+    update();
 }

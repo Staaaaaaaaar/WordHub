@@ -19,6 +19,7 @@ public:
     void setAcc();
     void setPic();
     void setTotalAcc();
+    void refresh();
     static const int MARGIN=5;
     static const int WIDTH=30;
     QVector<int> dailyLearningData;
