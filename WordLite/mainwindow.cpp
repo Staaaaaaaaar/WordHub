@@ -41,23 +41,30 @@ void MainWindow::connectSignals(){
     //用户界面
     connect(ui->userButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(0);
+        // learnWidget->setupUI();
     });
     //查询界面
     connect(ui->queryButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(1);
+        queryWidget->setupUI();
+        // learnWidget->setupUI();
     });
     //学习界面
     connect(ui->learnButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(2);
+        // learnWidget->setupUI();
         // emit learnWidgerInit();
     });
     //成就界面
     connect(ui->achievementButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(3);
+        // learnWidget->setupUI();
     });
     //游戏界面
     connect(ui->gameButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(4);
+        // learnWidget->setupUI();
+        gameWidget->setupUI();
         // emit gameWidgerInit();
     });
 

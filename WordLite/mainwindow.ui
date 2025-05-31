@@ -108,6 +108,12 @@
           </item>
           <item>
            <widget class="QToolButton" name="queryButton">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="text">
              <string>查询</string>
             </property>
@@ -161,6 +167,12 @@
           </item>
           <item>
            <widget class="QToolButton" name="learnButton">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="text">
              <string>学习</string>
             </property>
@@ -214,6 +226,12 @@
           </item>
           <item>
            <widget class="QToolButton" name="achievementButton">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="text">
              <string>成就</string>
             </property>
@@ -267,6 +285,12 @@
           </item>
           <item>
            <widget class="QToolButton" name="gameButton">
+            <property name="minimumSize">
+             <size>
+              <width>60</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="text">
              <string>游戏</string>
             </property>
@@ -320,8 +344,17 @@
           </item>
           <item>
            <widget class="QToolButton" name="exitButton">
+            <property name="minimumSize">
+             <size>
+              <width>30</width>
+              <height>30</height>
+             </size>
+            </property>
             <property name="text">
              <string>退出</string>
+            </property>
+            <property name="icon">
+             <iconset theme="QIcon::ThemeIcon::SystemShutdown"/>
             </property>
            </widget>
           </item>

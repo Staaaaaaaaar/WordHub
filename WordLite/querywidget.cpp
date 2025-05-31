@@ -16,7 +16,6 @@ QueryWidget::QueryWidget(QWidget *parent)
     // 设置UI和连接信号槽
     setupUI();
     connectSignals();
-
 }
 
 QueryWidget::~QueryWidget()

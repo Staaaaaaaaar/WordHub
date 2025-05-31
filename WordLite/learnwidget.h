@@ -74,6 +74,7 @@ public:
     void initWordsWidget();
     void initCheckout();
     void showTestForWord(int idx);
+    void tmp();
 
     // 设置UI和连接信号槽
     void setupUI();
