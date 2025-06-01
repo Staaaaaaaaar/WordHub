@@ -62,7 +62,7 @@ public:
     QVector<Word> wordsList;
     QVector<bool> testResults;
     QVector<QString> options;
-    QVector<QPushButton*> optionButtons;
+    QVector<QLabel*> optionLabels; // 用于选择的四个label
     QString correctAnswer;
     QString dictName;
 
@@ -75,7 +75,7 @@ public:
     void initWordsWidget();
     void initCheckout();
     void showTestForWord(int idx);
-    void tmp();
+    bool eventFilter(QObject* watched, QEvent* event) override; // 事件过滤器声明
 
     // 设置UI和连接信号槽
     void setupUI();

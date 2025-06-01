@@ -394,6 +394,9 @@
              <property name="orientation">
               <enum>Qt::Orientation::Horizontal</enum>
              </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Policy::Minimum</enum>
+             </property>
              <property name="sizeHint" stdset="0">
               <size>
                <width>40</width>
@@ -405,66 +408,45 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <widget class="QPushButton" name="pushButton_0">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="styleSheet">
-                <string notr="true"/>
+              <widget class="QLabel" name="label_0">
+               <property name="mouseTracking">
+                <bool>false</bool>
                </property>
                <property name="text">
-                <string/>
+                <string>TextLabel</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_1">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="styleSheet">
-                <string notr="true"/>
-               </property>
+              <widget class="QLabel" name="label_1">
                <property name="text">
-                <string/>
+                <string>TextLabel</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_2">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="styleSheet">
-                <string notr="true"/>
-               </property>
+              <widget class="QLabel" name="label_2">
                <property name="text">
-                <string/>
+                <string>TextLabel</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_3">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="styleSheet">
-                <string notr="true"/>
-               </property>
+              <widget class="QLabel" name="label_3">
                <property name="text">
-                <string/>
+                <string>TextLabel</string>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -474,6 +456,9 @@
             <spacer name="horizontalSpacer_22">
              <property name="orientation">
               <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Policy::Minimum</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>

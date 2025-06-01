@@ -1,6 +1,47 @@
 #include "learnwidget.h"
 #include "ui_learnwidget.h"
 
+// 全局样式表定义（用于QLabel模拟按钮）
+static const char* kLabelNormalStyle =
+    "QLabel {"
+    "    padding: 5px;"
+    "    border: 1px solid gray;"
+    "    border-radius: 3px;"
+    // "    background: white;"
+    // "    color: black;"
+    // "    font-size: 15px;"
+    "}";
+
+static const char* kLabelSelectedStyle =
+    "QLabel {"
+    "    padding: 5px;"
+    "    border: 1px solid gray;"
+    "    border-radius: 3px;"
+    "    background: lightblue;"
+    // "    color: black;"
+    // "    font-size: 15px;"
+    "}";
+
+static const char* kLabelCorrectStyle =
+    "QLabel {"
+    "    padding: 5px;"
+    "    border: 1px solid gray;"
+    "    border-radius: 3px;"
+    "    background: lightgreen;"
+    // "    color: black;"
+    // "    font-size: 15px;"
+    "}";
+
+static const char* kLabelWrongStyle =
+    "QLabel {"
+    "    padding: 5px;"
+    "    border: 1px solid gray;"
+    "    border-radius: 3px;"
+    "    background: pink;"
+    // "    color: black;"
+    // "    font-size: 15px;"
+    "}";
+
 
 LearnWidget::LearnWidget(QWidget *parent)
     : QWidget(parent)
@@ -18,30 +59,30 @@ LearnWidget::LearnWidget(QWidget *parent)
     connectSignals();
 
     // 隐藏测试界面的pushButton，避免影响窗口缩放
-    tmp();
+    // tmp();
 }
 
 LearnWidget::~LearnWidget()
 {
     delete ui;
 }
-void LearnWidget::tmp()
-{
-    // 隐藏测试界面的pushButton，避免影响窗口缩放
-    for (int i = 0; i < 4; ++i) {
-        QPushButton* btn = nullptr;
-        switch (i) {
-        case 0: btn = ui->pushButton_0; break;
-        case 1: btn = ui->pushButton_1; break;
-        case 2: btn = ui->pushButton_2; break;
-        case 3: btn = ui->pushButton_3; break;
-        }
-        btn->hide(); // 用hide替换setVisible(false)
-        btn->setMinimumSize(0, 0);
-        btn->setMaximumSize(0, 0); // 强制最大最小都为0
-        btn->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    }
-}
+// void LearnWidget::tmp()
+// {
+//     // 隐藏测试界面的pushButton，避免影响窗口缩放
+//     for (int i = 0; i < 4; ++i) {
+//         QPushButton* btn = nullptr;
+//         switch (i) {
+//         case 0: btn = ui->pushButton_0; break;
+//         case 1: btn = ui->pushButton_1; break;
+//         case 2: btn = ui->pushButton_2; break;
+//         case 3: btn = ui->pushButton_3; break;
+//         }
+//         btn->hide(); // 用hide替换setVisible(false)
+//         btn->setMinimumSize(0, 0);
+//         btn->setMaximumSize(0, 0); // 强制最大最小都为0
+//         btn->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+//     }
+// }
 
 void LearnWidget::setupUI()
 {
@@ -117,17 +158,17 @@ void LearnWidget::connectSignals()
     //返回
     connect(ui->backButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(0);
-        tmp();
+        // tmp();
     });
     connect(ui->backButton_2, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(1);
         initDictWidget();
-        tmp();
+        // tmp();
     });
     connect(ui->backButton_3, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(2);
         initWordsWidget();
-        tmp();
+        // tmp();
     });
 
 
@@ -143,7 +184,7 @@ void LearnWidget::addButtonsToGrid(QGridLayout *grid, const QList<DictButton*> &
 }
 void LearnWidget::initDictWidget()
 {
-    tmp();
+    // tmp();
     
 
     // 词库名
@@ -233,7 +274,7 @@ void LearnWidget::initDictWidget()
 
 void LearnWidget::initWordsWidget()
 {
-    tmp();
+    // tmp();
 
     // 清空并设置表头
     ui->wordsListWidget->clear();
@@ -289,7 +330,7 @@ void LearnWidget::initWordsWidget()
 
 void LearnWidget::initCheckout()
 {
-    tmp();
+    // tmp();
     // 清空并设置表头
     ui->wordsListWidget->clear();
     ui->wordsListWidget->setColumnCount(2);
@@ -360,97 +401,44 @@ void LearnWidget::initTestWidget()
     std::fill(testResults.begin(), testResults.end(), false);
     currentSelected = -1;
 
-    // 确保 optionButtons 有 4 个元素且全部已初始化
-    optionButtons.resize(4);
+    // 确保 optionLabels 有 4 个元素且全部已初始化
+    optionLabels.resize(4);
     for (int i = 0; i < 4; ++i)
     {
-        QPushButton* btn = nullptr;
+        QLabel* lbl = nullptr;
         switch (i) {
-        case 0: btn = ui->pushButton_0; break;
-        case 1: btn = ui->pushButton_1; break;
-        case 2: btn = ui->pushButton_2; break;
-        case 3: btn = ui->pushButton_3; break;
+        case 0: lbl = ui->label_0; break;
+        case 1: lbl = ui->label_1; break;
+        case 2: lbl = ui->label_2; break;
+        case 3: lbl = ui->label_3; break;
         }
-        btn->show(); // 用show替换setVisible(true)
-        btn->setMinimumSize(0, 0);
-        btn->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX); // 恢复最大尺寸
-        btn->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        optionButtons[i] = btn;
-        // 防止重复连接
-        btn->disconnect();
-        connect(btn, &QPushButton::clicked, this, [=]() {
-            currentSelected = i;
-            for (int j = 0; j < 4; ++j) {
-                if (j==i){
-                    optionButtons[j]->setStyleSheet("QPushButton {"
-                          "    text-align: left;"
-                          "    padding: 5px;"
-                          "    border: 1px solid gray;"
-                          "    border-radius: 3px;"
-                          "    word-wrap: break-word;"  // 这里控制文本的换行
-                          "    background-color: lightblue;"
-                          "}");
-                }
-                else{
-                    optionButtons[j]->setStyleSheet("QPushButton {"
-                          "    text-align: left;"
-                          "    padding: 5px;"
-                          "    border: 1px solid gray;"
-                          "    border-radius: 3px;"
-                          "    word-wrap: break-word;"  // 这里控制文本的换行
-                          "}");
-                }
-            }
-        });
+        optionLabels[i] = lbl;
+        lbl->setStyleSheet(kLabelNormalStyle);
+        lbl->setCursor(Qt::PointingHandCursor);
+        lbl->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        lbl->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred); // 关键：自动延展
+        lbl->disconnect();
+        lbl->installEventFilter(this);
     }
 
-    // 只在测试界面显示pushButton
-    for (QPushButton* btn : std::as_const(optionButtons)) {
-        btn->setVisible(true);
-    }
 
     // 连接确定按钮
     disconnect(ui->testConfirmButton, nullptr, nullptr, nullptr);
-    connect(ui->testConfirmButton, &QPushButton::clicked, this, [=]() {
+    connect(ui->testConfirmButton, &QToolButton::clicked, this, [=]() {
         if (currentSelected == -1) return; // 未选择
         int wordId = wordsList[currentTestIndex].id;
-        bool correct = (optionButtons[currentSelected]->text() == correctAnswer);
+        bool correct = (optionLabels[currentSelected]->text() == correctAnswer);
         testResults[currentTestIndex] = correct;
-        // 更新学习数据
         DBptr->updateWordLearningInfo(wordId, correct, -int(correct));
 
         // 显示正误反馈
         for (int i = 0; i < 4; i++) {
-            if (optionButtons[i]->text() == correctAnswer) {
-                optionButtons[i]->setStyleSheet(
-                    "QPushButton {"
-                    "    text-align: left;"
-                    "    padding: 5px;"
-                    "    border: 1px solid gray;"
-                    "    border-radius: 3px;"
-                    "    word-wrap: break-word;"  // 这里控制文本的换行
-                    "    background-color: lightgreen;"
-                    "}"
-                );
+            if (optionLabels[i]->text() == correctAnswer) {
+                optionLabels[i]->setStyleSheet(kLabelCorrectStyle);
             } else if (i == currentSelected) {
-                optionButtons[i]->setStyleSheet("QPushButton {"
-                    "    text-align: left;"
-                    "    padding: 5px;"
-                    "    border: 1px solid gray;"
-                    "    border-radius: 3px;"
-                    "    word-wrap: break-word;"  // 这里控制文本的换行
-                    "    background-color: pink;"
-                    "}"
-                );
+                optionLabels[i]->setStyleSheet(kLabelWrongStyle);
             } else {
-                optionButtons[i]->setStyleSheet("QPushButton {"
-                    "    text-align: left;"
-                    "    padding: 5px;"
-                    "    border: 1px solid gray;"
-                    "    border-radius: 3px;"
-                    "    word-wrap: break-word;"  // 这里控制文本的换行
-                    "}"
-                );
+                optionLabels[i]->setStyleSheet(kLabelNormalStyle);
             }
         }
 
@@ -466,6 +454,25 @@ void LearnWidget::initTestWidget()
     });
 }
 
+// 事件过滤器实现label点击选择
+bool LearnWidget::eventFilter(QObject* watched, QEvent* event)
+{
+    for (int i = 0; i < 4; ++i) {
+        if (watched == optionLabels[i] && event->type() == QEvent::MouseButtonRelease) {
+            currentSelected = i;
+            for (int j = 0; j < 4; ++j) {
+                if (j == i) {
+                    optionLabels[j]->setStyleSheet(kLabelSelectedStyle);
+                } else {
+                    optionLabels[j]->setStyleSheet(kLabelNormalStyle);
+                }
+            }
+            return true;
+        }
+    }
+    return QWidget::eventFilter(watched, event);
+}
+
 void LearnWidget::showTestForWord(int idx)
 {
     if (idx < 0 || idx >= wordsList.size()) return;
@@ -475,34 +482,20 @@ void LearnWidget::showTestForWord(int idx)
     // 获取四个释义选项
     options = DBptr->FourmeaningtoChoice(wordsList[idx].id);
     if (options.size() < 4) {
-        // 补齐到4个选项，防止越界
         while (options.size() < 4) options << "";
     }
     correctAnswer = options[0];
-    //测试样例
-    // options.clear();
-    // options << "a fruit" << "a tech company" << "to move swiftly on foot" << "an act or spell of running";
-    // correctAnswer = options[0];
 
-    // 随机打乱选项顺序
     QVector<QString> shuffledOptions = options;
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(shuffledOptions.begin(), shuffledOptions.end(), g);
 
-    // 设置按钮文本和样式
     for (int i = 0; i < 4; ++i) {
-        optionButtons[i]->setText(shuffledOptions[i]);
-        optionButtons[i]->setChecked(false);
-        optionButtons[i]->setStyleSheet(
-            "QPushButton {"
-            "    text-align: left;"
-            "    padding: 5px;"
-            "    border: 1px solid gray;"
-            "    border-radius: 3px;"
-            "    word-wrap: break-word;"  // 这里控制文本的换行
-            "}"
-        );
+        optionLabels[i]->setText(shuffledOptions[i]);
+        optionLabels[i]->setStyleSheet(kLabelNormalStyle);
+        optionLabels[i]->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        optionLabels[i]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred); // 关键：自动延展
     }
 }
 
