@@ -9,6 +9,7 @@
 #include <gamewidget.h>
 #include <wordle.h>
 #include <guess_word_widget.h>
+#include <loginwidget.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -43,6 +44,8 @@ signals:
 public slots:
     void showMes(QString message, int timeout=0);
     void clearMes();
+
+private slots:
 
 private:
     Ui::MainWindow *ui;
