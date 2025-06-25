@@ -252,7 +252,16 @@ void WordWidget::setupUI(QVector<Word> wordList)
 
     // 分类颜色映射（可自定义更多颜色）
     QStringList colorList = {
-        " #f44336", " #2196f3", " #4caf50", " #ff9800", " #9c27b0", " #00bcd4", " #e91e63", " #8bc34a", " #ffc107", " #607d8b"
+        " #e57373", // 柔和红
+        " #64b5f6", // 柔和蓝
+        " #81c784", // 柔和绿
+        " #ffb74d", // 柔和橙
+        " #ba68c8", // 柔和紫
+        " #4dd0e1", // 柔和青
+        " #f06292", // 柔和粉
+        " #aed581", // 柔和浅绿
+        " #ffd54f", // 柔和黄
+        " #90a4ae"  // 柔和灰蓝
     };
 
     for (const Word& word : wordList)
@@ -286,23 +295,6 @@ void WordWidget::setupUI(QVector<Word> wordList)
             favButton = new QPushButton("收藏", topRowWidget);
             favButton->setCheckable(false);
             favMenu = new QMenu(favButton);
-            // favMenu->setStyleSheet(
-            //     "QMenu {"
-            //     "  background: #fff;"
-            //     "  border: 1px solid #ccc;"
-            //     "  border-radius: 6px;"
-            //     "  padding: 4px;"
-            //     "}"
-            //     "QMenu::item {"
-            //     "  padding: 5px 16px;"
-            //     "  border-radius: 4px;"
-            //     "  font-size: 10pt;"
-            //     "}"
-            //     "QMenu::item:selected {"
-            //     "  background:rgb(230, 165, 165);"
-            //     "  color: rgb(0, 0, 0);"
-            //     "}"
-            // );
 
             // 分类收藏项（多选）
             QList<QAction*> catActions;
@@ -384,6 +376,8 @@ void WordWidget::setupUI(QVector<Word> wordList)
             favMenu->addSeparator();
             QAction* newCatAction = favMenu->addAction("新建分类");
             favButton->setMenu(favMenu);
+            // 隐藏下拉箭头
+            favButton->setStyleSheet("QPushButton::menu-indicator { image: none; width: 0px; } QPushButton { min-width: 70px; }");
 
             connect(newCatAction, &QAction::triggered, this, [this, word]() {
                 bool ok = false;

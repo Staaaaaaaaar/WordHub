@@ -125,5 +125,9 @@ void MainWindow::clearMes()
 
 void MainWindow::exitSignal()
 {
-    this->close();
+    this->hide();
+    loginWidget *l = new loginWidget();
+    l->setAttribute(Qt::WA_DeleteOnClose);
+    l->show();
 }
+

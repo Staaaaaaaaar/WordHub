@@ -132,18 +132,18 @@ void AchievementWidget::refreshUI()
 
         // 简约美化样式
         itemWidget->setStyleSheet(
-            "background:rgb(142, 142, 142);"
+            "background:rgb(52, 52, 52);"
             "border-radius: 14px;"
             // "border: 1px solidrgb(207, 207, 207);"
             "box-shadow: 0 2px 8px rgba(0,0,0,0.03);"
         );
         titleLabel->setStyleSheet(
-            "color: rgb(53, 53, 53);"
+            // "color: rgb(53, 53, 53);"
             "font-weight: 600;"
             "letter-spacing: 0.5px;"
         );
         detailLabel->setStyleSheet(
-            "color: rgb(255, 255, 255);"
+            // "color: rgb(255, 255, 255);"
             "font-size: 13px;"
         );
 

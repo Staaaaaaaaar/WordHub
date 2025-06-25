@@ -18,7 +18,7 @@ static const char* kLabelSelectedStyle =
     "    border: 1px solid gray;"
     "    border-radius: 3px;"
     "    background: lightblue;"
-    // "    color: black;"
+    "    color: black;"
     // "    font-size: 15px;"
     "}";
 
@@ -28,7 +28,7 @@ static const char* kLabelCorrectStyle =
     "    border: 1px solid gray;"
     "    border-radius: 3px;"
     "    background: lightgreen;"
-    // "    color: black;"
+    "    color: black;"
     // "    font-size: 15px;"
     "}";
 
@@ -38,7 +38,7 @@ static const char* kLabelWrongStyle =
     "    border: 1px solid gray;"
     "    border-radius: 3px;"
     "    background: pink;"
-    // "    color: black;"
+    "    color: black;"
     // "    font-size: 15px;"
     "}";
 
@@ -376,6 +376,9 @@ void LearnWidget::initCheckout()
             wordItem->setBackground(QColor(255, 200, 200)); // 错误红色
             defItem->setBackground(QColor(255, 200, 200));
         }
+        // 设置文本颜色为黑色
+        wordItem->setForeground(QBrush(Qt::black));
+        defItem->setForeground(QBrush(Qt::black));
 
         ui->wordsListWidget->setItem(i, 0, wordItem);
         ui->wordsListWidget->setItem(i, 1, defItem);
