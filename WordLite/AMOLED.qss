@@ -6,16 +6,19 @@ Last updated: 01/10/2021, 15:49.
 Available at: https://github.com/GTRONICK/QSS/blob/master/AMOLED.qss
 */
 QMainWindow {
-        background-color:#000000;
+        background-color: #000000;
+}
+QWidget {
+        background-color: #000000;
 }
 QDialog {
-        background-color:#000000;
+        background-color: #000000;
 }
 QColorDialog {
-        background-color:#000000;
+        background-color: #000000;
 }
 QTextEdit {
-        background-color:#000000;
+        background-color: #000000;
         color: #a9b7c6;
 }
 QPlainTextEdit {
@@ -351,7 +354,7 @@ QToolBox::tab:selected {
         background-color:#000000;
 }
 QScrollArea {
-        color: #FFFFFF;
+        color:rgb(0, 0, 0);
         background-color:#000000;
 }
 QSlider::groove:horizontal {
