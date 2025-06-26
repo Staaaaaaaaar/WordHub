@@ -10,6 +10,7 @@
 #include <wordle.h>
 #include <guess_word_widget.h>
 #include <loginwidget.h>
+#include "achievementtoast.h" // 包含新的头文件
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

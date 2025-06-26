@@ -7,6 +7,8 @@
 #include <QScrollArea>
 #include <QGroupBox>
 #include <QLabel>
+#include <QMessageBox> // 新增
+#include "back_head/learner.h" // 新增
 
 namespace Ui {
 class AchievementWidget;
@@ -29,15 +31,19 @@ public:
     explicit AchievementWidget(QWidget *parent = nullptr);
     ~AchievementWidget();
 
-    QVector<Achievement> testAchievements;
+    // 移除 testAchievements 成员变量
 
     // 设置UI和连接信号槽
     void setupUI();
     void connectSignals();
     void refreshUI();
-    QVector<Achievement> getAchievementsFromSource();
+    QVector<Achievement> loadAchievements(); // 修改：从数据源加载成就
 
-    void refreshAchievements(int idx);
+public slots:
+    void unlockAchievement(int achievementId); // 新增：解锁成就并刷新UI
+
+signals:
+    void achievementUnlocked(const Achievement &achievement); // 新增信号
 
 private:
     Ui::AchievementWidget *ui;

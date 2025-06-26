@@ -56,7 +56,15 @@ bool Learner::initDatabase() {
         qCritical() << "Database error:" << m_db.lastError();
         return false;
     }
-    return createUserTable();
+    return createUserTable() && createAchievementTable(); // 修改：同时创建用户表和成就表
+}
+
+bool Learner::createAchievementTable() {
+    QSqlQuery query(m_db);
+    return query.exec(
+        "CREATE TABLE IF NOT EXISTS achievements ("
+        "id INTEGER PRIMARY KEY,"
+        "unlock_date DATETIME NOT NULL)");
 }
 
 bool Learner::createUserTable() {
@@ -116,6 +124,7 @@ bool Learner::createNewUser(const QString& username, const QString& password) {
 bool Learner::resetUser(bool confirm) {
     if (!confirm) return false;
     QSqlQuery("DELETE FROM users", m_db).exec();
+    QSqlQuery("DELETE FROM achievements", m_db).exec(); // 新增：重置时删除成就
     m_name.clear();
     m_hashPassword.clear();
     m_headImage.clear();
@@ -190,4 +199,36 @@ bool Learner::verifyPasswordU(const QString & username,const QString & password)
     }
     qDebug() << "未找到该用户名";
     return false;
+}
+
+// --- 新增成就管理函数 ---
+
+bool Learner::unlockAchievement(int achievementId) {
+    // 检查是否已解锁，避免重复插入
+    QSqlQuery checkQuery(m_db);
+    checkQuery.prepare("SELECT id FROM achievements WHERE id = ?");
+    checkQuery.addBindValue(achievementId);
+    if (checkQuery.exec() && checkQuery.next()) {
+        return false; // 已存在，非首次解锁
+    }
+
+    // 插入新成就记录
+    QSqlQuery insertQuery(m_db);
+    insertQuery.prepare("INSERT INTO achievements (id, unlock_date) VALUES (?, ?)");
+    insertQuery.addBindValue(achievementId);
+    insertQuery.addBindValue(QDateTime::currentDateTime());
+    if (insertQuery.exec()) {
+        return true; // 插入成功，是首次解锁
+    }
+    qWarning() << "Failed to unlock achievement" << achievementId << ":" << insertQuery.lastError();
+    return false;
+}
+
+QMap<int, QDateTime> Learner::getUnlockedAchievements() const {
+    QMap<int, QDateTime> unlocked;
+    QSqlQuery query("SELECT id, unlock_date FROM achievements", m_db);
+    while (query.next()) {
+        unlocked.insert(query.value(0).toInt(), query.value(1).toDateTime());
+    }
+    return unlocked;
 }

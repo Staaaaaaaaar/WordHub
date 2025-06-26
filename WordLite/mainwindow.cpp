@@ -1,12 +1,21 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "achievementtoast.h" // 确保包含了头文件
+#include "loginwidget.h"      // 确保包含了头文件
+#include "darktheme_win.h"    // 新增头文件
+#include <QIcon> // 新增头文件
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    // 新增：为MainWindow也设置图标和标题
+    setWindowTitle("WordHub");
+    setWindowIcon(QIcon(":/icons/favicon_logosc/logo.png"));
 
+    // 限制窗口大小
+    setMinimumSize(800, 600);
 
     // 设置UI和连接信号槽
     setupUI();
@@ -91,25 +100,20 @@ void MainWindow::connectSignals(){
     connect(queryWidget, SIGNAL(clearMes()), this, SLOT(clearMes()));
 
     connect(queryWidget, &QueryWidget::sendId, this, [=](int id){
-        if (!achievementWidget->testAchievements[id].unlocked) {
-            achievementWidget->refreshAchievements(id); // 标记为达成并更新UI
-            showMes("达成成就：" + achievementWidget->testAchievements[id].title, 2000);
-        }
+        achievementWidget->unlockAchievement(id);
     });
     connect(learnWidget, &LearnWidget::sendId, this, [=](int id){
-        if (!achievementWidget->testAchievements[id].unlocked) {
-            achievementWidget->refreshAchievements(id); // 标记为达成并更新UI
-            showMes("达成成就：" + achievementWidget->testAchievements[id].title, 2000);
-        }
+        achievementWidget->unlockAchievement(id);
     });
     connect(gameWidget, &GameWidget::sendId, this, [=](int id){
-        if (!achievementWidget->testAchievements[id].unlocked) {
-            achievementWidget->refreshAchievements(id); // 标记为达成并更新UI
-            showMes("达成成就：" + achievementWidget->testAchievements[id].title, 2000);
-        }
+        achievementWidget->unlockAchievement(id);
     });
 
-    // connect(this, SIGNAL(ach_register(int)), achievementWidget, SLOT(refreshAchievements(int)));
+    // 新增：连接成就解锁信号到槽函数
+    connect(achievementWidget, &AchievementWidget::achievementUnlocked, this, [this](const Achievement &ach){
+        AchievementToast *toast = new AchievementToast(this);
+        toast->showAchievement(ach);
+    });
     
 
 }
@@ -125,9 +129,11 @@ void MainWindow::clearMes()
 
 void MainWindow::exitSignal()
 {
-    this->hide();
+    this->close(); // 使用 close() 替代 hide()，确保主窗口被销毁
     loginWidget *l = new loginWidget();
     l->setAttribute(Qt::WA_DeleteOnClose);
     l->show();
+    // 为新创建的登录窗口应用深色标题栏
+    setDarkTitleBar(l->winId());
 }
 

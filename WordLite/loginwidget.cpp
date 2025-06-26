@@ -3,12 +3,27 @@
 #include "back_head/learner.h"
 #include "mainwindow.h"
 #include "registerwidget.h"
+#include "darktheme_win.h" // 新增头文件
+#include <QIcon> // 确保包含头文件
 
 loginWidget::loginWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::loginWidget)
 {
+    // 恢复为标准UI加载方式
     ui->setupUi(this);
+
+    // 设置窗口标题
+    setWindowTitle("login");
+
+    // 设置窗口图标（Logo）
+    // 请确保您有一个logo.png文件，并已将其添加到项目的资源文件(.qrc)中
+    // 路径以 :/ 开始表示从资源文件加载。
+    setWindowIcon(QIcon(":/icons/favicon_logosc/t_logo.png"));
+
+    setFixedSize(350, 300); // 设置固定大小
+
+    // 连接原有的信号槽
     connect(ui->loginButton,&QToolButton::clicked,this,&loginWidget::judgeLogin);
     connect(ui->registerButton,&QToolButton::clicked,this,&loginWidget::skipToRegister);
     ui->passwordLineEdit->setEchoMode(QLineEdit::Password);
@@ -18,6 +33,8 @@ loginWidget::~loginWidget()
 {
     delete ui;
 }
+
+
 
 bool loginWidget::readUser()
 {
@@ -45,6 +62,7 @@ void loginWidget::judgeLogin()
         {
             MainWindow * w=new MainWindow();
             w->show();
+            setDarkTitleBar(w->winId()); // 应用深色标题栏
             this->close();
         }
         else
@@ -68,5 +86,6 @@ void loginWidget::skipToRegister()
 {
     registerWidget *r=new registerWidget();
     r->show();
+    setDarkTitleBar(r->winId()); // 应用深色标题栏
     this->close();
 }

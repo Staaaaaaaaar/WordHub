@@ -2,12 +2,17 @@
 #include "ui_registerwidget.h"
 #include "back_head/learner.h"
 #include "MainWindow.h"
+#include "darktheme_win.h" // 新增头文件
+#include <QIcon> 
 
 registerWidget::registerWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::registerWidget)
 {
     ui->setupUi(this);
+    setWindowTitle("register");
+    setWindowIcon(QIcon(":/icons/favicon_logosc/t_logo.png"));
+    setFixedSize(350, 350);
     connect(ui->registerButton,&QToolButton::clicked,this,&registerWidget::saveUser);
     ui->passwordLineEdit->setEchoMode(QLineEdit::Password);
     ui->verifyLineEdit->setEchoMode(QLineEdit::Password);
@@ -43,11 +48,11 @@ void registerWidget::saveUser()
 void registerWidget::skip()
 {
     MainWindow *w = new MainWindow();
-    if (!w->achievementWidget->testAchievements[0].unlocked) {
-        // 达成成就
-        w->showMes("达成成就：初次相遇", 2000);
-        w->achievementWidget->refreshAchievements(0);
-    }
     w->show();
+    setDarkTitleBar(w->winId()); // 应用深色标题栏
+
+    // 使用新的方法解锁“初次相遇”成就
+    w->achievementWidget->unlockAchievement(1);
+
     this->close();
 }
