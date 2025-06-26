@@ -42,6 +42,7 @@ private:
     // 数据库操作
     bool initDatabase();
     bool createUserTable();
+    bool createAchievementTable(); // 新增：创建成就表
     QString hashPassword(const QString& password) const;
     bool loadUserData();
     bool saveUserData();
@@ -62,6 +63,10 @@ public:
     bool verifyUserName(const QString & username) const;
     void setHeadImage(const QString& name){m_headImage=name;};
     void setTotalLearned(int value){m_totalLearned=value;};
+
+    // 新增：成就管理
+    bool unlockAchievement(int achievementId); // 解锁成就，如果首次解锁返回true
+    QMap<int, QDateTime> getUnlockedAchievements() const; // 获取所有已解锁成就
 
     // 用户状态操作
     bool createNewUser(const QString& username, const QString& password);

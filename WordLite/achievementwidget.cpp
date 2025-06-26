@@ -11,25 +11,8 @@ AchievementWidget::AchievementWidget(QWidget *parent)
     ui->setupUi(this);
     setupUI();
     connectSignals();
-    testAchievements = {
-        {1, "初次相遇", "成功登录一次应用", false, QDateTime(), ":/icons/achievement_login.png"},
-        {2, "启程之星", "进行首次学习", false, QDateTime(), ":/icons/achievement1.png"},
-        {3, "探索之门", "首次查询单词释义", false, QDateTime(), ":/icons/achievement_query.png"},
-        {4, "游戏新手", "首次参与单词游戏", false, QDateTime(), ":/icons/achievement_game.png"},
-        {5, "七日之约", "连续学习7天", false, QDateTime(), ":/icons/locked.png"},
-        {6, "月度坚持", "连续学习30天", false, QDateTime(), ":/icons/locked.png"},
-        {7, "百日不辍", "连续学习100天", false, QDateTime(), ":/icons/locked.png"},
-        {8, "百日筑基", "累计学习100天", false, QDateTime(), ":/icons/locked.png"},
-        {9, "学海无涯", "累计学习365天", false, QDateTime(), ":/icons/locked.png"},
-        {10, "词汇大师", "掌握500个单词", false, QDateTime(), ":/icons/locked.png"},
-        {11, "词海遨游", "累计学习1000个单词", false, QDateTime(), ":/icons/locked.png"},
-        {12, "词霸精英", "掌握2000个单词", false, QDateTime(), ":/icons/locked.png"},
-        {13, "荣耀全开", "解锁所有成就", false, QDateTime(), ":/icons/locked.png"},
-        // 隐藏成就
-        {14, "？？？", "？？？", false, QDateTime(), ":/icons/hidden.png"},
-        {15, "？？？", "？？？", false, QDateTime(), ":/icons/hidden.png"}
-    };
-    refreshUI(); // 构造时刷新成就显示
+    // 构造时刷新成就显示，将从数据库加载
+    refreshUI();
 }
 
 AchievementWidget::~AchievementWidget()
@@ -63,24 +46,69 @@ void AchievementWidget::setupUI()
 void AchievementWidget::connectSignals()
 {
     // 连接外部信号示例（需要与实际信号源连接）
-    // connect(externalObject, SIGNAL(achievementUnlocked(int)),
-    //         this, SLOT(refreshAchievements()));
+    // 比如，当用户登录成功后，可以发送一个信号来解锁“初次相遇”成就
+    // connect(someLoginManager, &LoginManager::loginSuccess, this, [=]() {
+    //     unlockAchievement(1); // 1 是“初次相遇”的ID
+    // });
 }
 
 
-QVector<Achievement> AchievementWidget::getAchievementsFromSource()
+QVector<Achievement> AchievementWidget::loadAchievements()
 {
-    return testAchievements;
-}
+    // 定义所有可能的成就（作为模板）
+    QVector<Achievement> allAchievements = {
+        {1, "初次相遇", "成功登录一次应用", false, QDateTime(), ":/icons/achievement_login.png"},
+        {2, "启程之星", "进行首次学习", false, QDateTime(), ":/icons/achievement1.png"},
+        {3, "探索之门", "首次查询单词释义", false, QDateTime(), ":/icons/achievement_query.png"},
+        {4, "游戏新手", "首次参与单词游戏", false, QDateTime(), ":/icons/achievement_game.png"},
+        {5, "七日之约", "连续学习7天", false, QDateTime(), ":/icons/locked.png"},
+        {6, "月度坚持", "连续学习30天", false, QDateTime(), ":/icons/locked.png"},
+        {7, "百日不辍", "连续学习100天", false, QDateTime(), ":/icons/locked.png"},
+        {8, "百日筑基", "累计学习100天", false, QDateTime(), ":/icons/locked.png"},
+        {9, "学海无涯", "累计学习365天", false, QDateTime(), ":/icons/locked.png"},
+        {10, "词汇大师", "掌握500个单词", false, QDateTime(), ":/icons/locked.png"},
+        {11, "词海遨游", "累计学习1000个单词", false, QDateTime(), ":/icons/locked.png"},
+        {12, "词霸精英", "掌握2000个单词", false, QDateTime(), ":/icons/locked.png"},
+        {13, "荣耀全开", "解锁所有成就", false, QDateTime(), ":/icons/locked.png"},
+        // 隐藏成就
+        {14, "？？？", "？？？", false, QDateTime(), ":/icons/hidden.png"},
+        {15, "？？？", "？？？", false, QDateTime(), ":/icons/hidden.png"}
+    };
 
-void AchievementWidget::refreshAchievements(int idx)
-{
-    if (idx >= 0 && idx < testAchievements.size()) {
-        testAchievements[idx].unlocked = true;
-        testAchievements[idx].unlockDate = QDateTime::currentDateTime();
+    // 从数据库获取已解锁的成就信息
+    QMap<int, QDateTime> unlockedData = Learner::getInstance()->getUnlockedAchievements();
+
+    // 合并数据：更新成就的解锁状态和时间
+    for (Achievement &ach : allAchievements) {
+        if (unlockedData.contains(ach.id)) {
+            ach.unlocked = true;
+            ach.unlockDate = unlockedData.value(ach.id);
+        }
     }
+
+    return allAchievements;
+}
+
+void AchievementWidget::unlockAchievement(int achievementId)
+{
+    bool isNewlyUnlocked = Learner::getInstance()->unlockAchievement(achievementId);
+
+    // 如果是首次解锁，则发出信号
+    if (isNewlyUnlocked) {
+        // 查找完整的成就信息
+        QVector<Achievement> allAchievements = loadAchievements();
+        for(const auto& ach : allAchievements) {
+            if (ach.id == achievementId) {
+                emit achievementUnlocked(ach); // 发出信号，而不是显示QMessageBox
+                break;
+            }
+        }
+    }
+
+    // 无论是否新解锁，都刷新界面以显示最新状态
     refreshUI();
 }
+
 void AchievementWidget::refreshUI()
 {
     // 清空旧内容
@@ -92,7 +120,7 @@ void AchievementWidget::refreshUI()
         delete item;
     }
 
-    QVector<Achievement> achievements = getAchievementsFromSource();
+    QVector<Achievement> achievements = loadAchievements(); // 修改：从新方法加载数据
     std::sort(achievements.begin(), achievements.end(), [](const Achievement &a, const Achievement &b) {
         if (a.unlocked != b.unlocked)
             return a.unlocked > b.unlocked; // 已达成的优先

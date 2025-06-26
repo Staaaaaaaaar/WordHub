@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "achievementtoast.h" // 确保包含了头文件
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -91,25 +92,20 @@ void MainWindow::connectSignals(){
     connect(queryWidget, SIGNAL(clearMes()), this, SLOT(clearMes()));
 
     connect(queryWidget, &QueryWidget::sendId, this, [=](int id){
-        if (!achievementWidget->testAchievements[id].unlocked) {
-            achievementWidget->refreshAchievements(id); // 标记为达成并更新UI
-            showMes("达成成就：" + achievementWidget->testAchievements[id].title, 2000);
-        }
+        achievementWidget->unlockAchievement(id);
     });
     connect(learnWidget, &LearnWidget::sendId, this, [=](int id){
-        if (!achievementWidget->testAchievements[id].unlocked) {
-            achievementWidget->refreshAchievements(id); // 标记为达成并更新UI
-            showMes("达成成就：" + achievementWidget->testAchievements[id].title, 2000);
-        }
+        achievementWidget->unlockAchievement(id);
     });
     connect(gameWidget, &GameWidget::sendId, this, [=](int id){
-        if (!achievementWidget->testAchievements[id].unlocked) {
-            achievementWidget->refreshAchievements(id); // 标记为达成并更新UI
-            showMes("达成成就：" + achievementWidget->testAchievements[id].title, 2000);
-        }
+        achievementWidget->unlockAchievement(id);
     });
 
-    // connect(this, SIGNAL(ach_register(int)), achievementWidget, SLOT(refreshAchievements(int)));
+    // 新增：连接成就解锁信号到槽函数
+    connect(achievementWidget, &AchievementWidget::achievementUnlocked, this, [this](const Achievement &ach){
+        AchievementToast *toast = new AchievementToast(this);
+        toast->showAchievement(ach);
+    });
     
 
 }

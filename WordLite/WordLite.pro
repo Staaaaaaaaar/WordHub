@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     achievementwidget.cpp \
+    achievementtoast.cpp \
     #back_head/test.cpp \
     back_src/loadword.cpp \
     back_src\utils.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
 
 HEADERS += \
     achievementwidget.h \
+    achievementtoast.h \ 
     gamewidget.h \
     # guess_according_to_description_h/guess_word.h \
     guess_word_widget.h \
