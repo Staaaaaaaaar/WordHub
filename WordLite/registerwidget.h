@@ -15,8 +15,10 @@ public:
     explicit registerWidget(QWidget *parent = nullptr);
     ~registerWidget();
     void saveUser();
-    void savePassword();
     void skip();
+
+private slots:
+    void goBackToLogin(); // 新增槽函数
 
 private:
     Ui::registerWidget *ui;
