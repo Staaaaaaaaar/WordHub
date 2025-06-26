@@ -589,7 +589,7 @@ void LearnWidget::on_learnButton_clicked()
     initWordsWidget();
 
     // 成就
-    emit sendId(1);
+    emit sendId(2);
 }
 void LearnWidget::on_testButton_clicked()
 {
