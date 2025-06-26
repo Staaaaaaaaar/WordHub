@@ -2,20 +2,17 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <userwidget.h>
-#include <querywidget.h>
-#include <learnwidget.h>
-#include <achievementwidget.h>
-#include <gamewidget.h>
-#include <wordle.h>
-#include <guess_word_widget.h>
-#include <loginwidget.h>
-#include "achievementtoast.h" // 包含新的头文件
+
+// Forward-declare classes to improve compile times and avoid circular includes
+class UserWidget;
+class QueryWidget;
+class LearnWidget;
+class AchievementWidget;
+class GameWidget;
+struct Achievement;
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
-class MainWindow;
-}
+namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -26,29 +23,30 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    // Public pointers to child widgets
     UserWidget* userWidget;
     QueryWidget* queryWidget;
     LearnWidget* learnWidget;
     AchievementWidget* achievementWidget;
     GameWidget* gameWidget;
 
-    // 设置UI和连接信号槽
+    // Public methods for setup and signals
     void setupUI();
     void connectSignals();
     void exitSignal();
 
 signals:
     void gameWidgerInit();
-    void learnWidgerInit();
-    void ach_register(int idx);
 
 public slots:
-    void showMes(QString message, int timeout=0);
+    // Slots for status messages and achievement popups
+    void showMes(QString message, int timeout);
     void clearMes();
-
-private slots:
+    void showAchievementToast(const Achievement &achievement);
 
 private:
+    // The UI pointer, which was missing
     Ui::MainWindow *ui;
 };
+
 #endif // MAINWINDOW_H

@@ -1,9 +1,15 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "achievementtoast.h" // 确保包含了头文件
-#include "loginwidget.h"      // 确保包含了头文件
-#include "darktheme_win.h"    // 新增头文件
-#include <QIcon> // 新增头文件
+#include "loginwidget.h"
+#include "achievementtoast.h"
+#include "darktheme_win.h"
+
+// 新增：包含所有子窗口部件的头文件
+#include "userwidget.h"
+#include "querywidget.h"
+#include "learnwidget.h"
+#include "achievementwidget.h"
+#include "gamewidget.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -47,50 +53,52 @@ void MainWindow::setupUI(){
 }
 
 void MainWindow::connectSignals(){
-    //设置默认定位
+    // 设置默认定位
     ui->stackedWidget->setCurrentIndex(0);
-    //用户界面
+
+    // 核心思路：在激活任何新界面前，先统一关闭其他可能占用数据库的界面。
+    // 这样可以确保任何时候只有一个界面持有数据库连接。
+
+    // 用户界面
     connect(ui->userButton, &QToolButton::clicked, this, [=](){
+        queryWidget->wordDataBase->closeCurrentDatabase();
+        learnWidget->DBptr->closeCurrentDatabase();
         ui->stackedWidget->setCurrentIndex(0);
-        // learnWidget->setupUI();
+        // userWidget->setupUI(); // 如果用户界面也需要初始化，取消此行注释
     });
-    //查询界面
+
+    // 查询界面
     connect(ui->queryButton, &QToolButton::clicked, this, [=](){
+        // 先关闭其他界面的数据库
+        learnWidget->DBptr->closeCurrentDatabase();
+        // 再激活自己
         ui->stackedWidget->setCurrentIndex(1);
-        queryWidget->setupUI();
-        // 断开learnWidget的数据库连接
-        learnWidget->DBptr->closeCurrentDatabase();
-        // learnWidget->setupUI();
+        queryWidget->setupUI(); // queryWidget的setupUI会打开它自己的数据库
     });
-    //学习界面
+
+    // 学习界面
     connect(ui->learnButton, &QToolButton::clicked, this, [=](){
+        // 先关闭其他界面的数据库
+        queryWidget->wordDataBase->closeCurrentDatabase();
+        // 再激活自己
         ui->stackedWidget->setCurrentIndex(2);
-        // 断开queryWidget的数据库连接
-        queryWidget->wordDataBase->closeCurrentDatabase();
-        // learnWidget->setupUI();
-        // emit learnWidgerInit();
+        learnWidget->setupUI(); // learnWidget的setupUI会打开它自己的数据库
     });
 
-    //复习界面
-    // connect(ui->reviewButton, &QToolButton::clicked, this, [=](){
-    //     ui->stackedWidget->setCurrentIndex(3);
-    // });
-
-    //成就界面
+    // 成就界面
     connect(ui->achievementButton, &QToolButton::clicked, this, [=](){
-        ui->stackedWidget->setCurrentIndex(3);
-        // learnWidget->setupUI();
-    });
-    //游戏界面
-    connect(ui->gameButton, &QToolButton::clicked, this, [=](){
-        ui->stackedWidget->setCurrentIndex(4);
-        // learnWidget->setupUI();
-        gameWidget->setupUI();
-        // emit gameWidgerInit();
-        // 断开queryWidget的数据库连接
         queryWidget->wordDataBase->closeCurrentDatabase();
-        // 断开learnWidget的数据库连接
         learnWidget->DBptr->closeCurrentDatabase();
+        ui->stackedWidget->setCurrentIndex(3);
+        achievementWidget->refreshUI(); // 刷新成就界面
+    });
+
+    // 游戏界面
+    connect(ui->gameButton, &QToolButton::clicked, this, [=](){
+        queryWidget->wordDataBase->closeCurrentDatabase();
+        learnWidget->DBptr->closeCurrentDatabase();
+        ui->stackedWidget->setCurrentIndex(4);
+        gameWidget->setupUI();
     });
 
     //退出
@@ -99,23 +107,11 @@ void MainWindow::connectSignals(){
     connect(queryWidget, SIGNAL(sendMes(QString,int)), this, SLOT(showMes(QString,int)));
     connect(queryWidget, SIGNAL(clearMes()), this, SLOT(clearMes()));
 
-    connect(queryWidget, &QueryWidget::sendId, this, [=](int id){
-        achievementWidget->unlockAchievement(id);
-    });
-    connect(learnWidget, &LearnWidget::sendId, this, [=](int id){
-        achievementWidget->unlockAchievement(id);
-    });
-    connect(gameWidget, &GameWidget::sendId, this, [=](int id){
-        achievementWidget->unlockAchievement(id);
-    });
+    connect(queryWidget, &QueryWidget::sendId, achievementWidget, &AchievementWidget::unlockAchievement);
+    connect(learnWidget, &LearnWidget::sendId, achievementWidget, &AchievementWidget::unlockAchievement);
+    connect(gameWidget, &GameWidget::sendId, achievementWidget, &AchievementWidget::unlockAchievement);
 
-    // 新增：连接成就解锁信号到槽函数
-    connect(achievementWidget, &AchievementWidget::achievementUnlocked, this, [this](const Achievement &ach){
-        AchievementToast *toast = new AchievementToast(this);
-        toast->showAchievement(ach);
-    });
-    
-
+    connect(achievementWidget, &AchievementWidget::achievementUnlocked, this, &MainWindow::showAchievementToast);
 }
 
 void MainWindow::showMes(QString message, int timeout)
@@ -135,5 +131,12 @@ void MainWindow::exitSignal()
     l->show();
     // 为新创建的登录窗口应用深色标题栏
     setDarkTitleBar(l->winId());
+}
+
+// 新增：实现成就弹窗的槽函数
+void MainWindow::showAchievementToast(const Achievement &achievement)
+{
+    AchievementToast *toast = new AchievementToast(this);
+    toast->showAchievement(achievement);
 }
 

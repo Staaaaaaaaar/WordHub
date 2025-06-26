@@ -2,8 +2,9 @@
 #include "ui_registerwidget.h"
 #include "back_head/learner.h"
 #include "MainWindow.h"
-#include "loginwidget.h" // 新增头文件
+#include "loginwidget.h"
 #include "darktheme_win.h"
+#include "achievementwidget.h" // 新增：包含 AchievementWidget 的完整定义
 #include <QIcon>
 #include <QTimer>
 #include <QFont>
@@ -83,7 +84,7 @@ void registerWidget::skip()
     w->show();
     setDarkTitleBar(w->winId()); // 应用深色标题栏
 
-    // 修复：直接访问 MainWindow 的公有成员 achievementWidget
+    // 现在编译器知道 unlockAchievement 是什么了
     w->achievementWidget->unlockAchievement(1);
 
     this->close();
