@@ -1,96 +1,62 @@
 #include "guess_word_widget.h"
 #include "ui_guess_word_widget.h"
-#include "guess_according_to_description/guess_word.cpp"
-#include <map>
-#include <QMessageBox>
-using namespace std;
+#include <QtConcurrent> // 引入 Qt 并发框架
 
 guess_word_widget::guess_word_widget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::guess_word_widget)
 {
     ui->setupUi(this);
-    connectSignals();
-    word="";
-    translation="";
-    description="";
-    ui->displayTextEdit->setStyleSheet(
-        "QTextEdit {"
-        "   font-family: '微软雅黑';"
-        "   font-size: 10pt;"
-        "}"
-        );
-    // 设置按窗口宽度自动换行（默认模式）
-    ui->displayTextEdit->setLineWrapMode(QTextEdit::WidgetWidth);
-    // 单词边界换行
-    ui->displayTextEdit->setWordWrapMode(QTextOption::WordWrap);
-    dialog=new QMessageBox();
+    // 注意：m_guesser 不能有父对象，因为它将被移动到另一个线程
+    m_guesser = new guess_word();
+    m_watcher = new QFutureWatcher<std::map<QString, QString>>(this);
+
+    // 当监视器发现任务完成时，调用 handleProcessingFinished 槽函数
+    connect(m_watcher, &QFutureWatcher<std::map<QString, QString>>::finished, this, &guess_word_widget::handleProcessingFinished);
+
+    // 假设您的UI里有一个名为 "startButton" 的按钮
+    // connect(ui->startButton, &QPushButton::clicked, this, &guess_word_widget::onStartButtonClicked);
+    // 您需要将上面这行代码中的 startButton 替换为您UI中实际的按钮名称
 }
 
 guess_word_widget::~guess_word_widget()
 {
+    // m_guesser 会在后台任务结束后自动被 QtConcurrent 清理
     delete ui;
 }
 
-void guess_word_widget::connectSignals()
+// 当点击开始按钮时
+void guess_word_widget::onStartButtonClicked()
 {
-    connect(ui->exitButton, &QPushButton::clicked, this, &guess_word_widget::onExitButtonClicked);
-    connect(ui->ruleButton,&QPushButton::clicked,this,&guess_word_widget::onRuleButtonClicked);
-    connect(ui->beginButton, &QPushButton::clicked, this, &guess_word_widget::onBeginButtonClicked);
-    connect(ui->answerButton,&QPushButton::clicked,this,&guess_word_widget::onAnswerButtonClicked);
-    connect(ui->commitButton,&QPushButton::clicked,this,&guess_word_widget::onCommitButtonClicked);
+    // 可以在这里禁用按钮，防止用户重复点击
+    // ui->startButton->setEnabled(false);
+    // ui->descriptionLabel->setText("正在向AI请求题目，请稍候..."); // 给用户一个提示
+
+    // 使用 QtConcurrent::run 在后台线程执行耗时的 processingPython 函数
+    // 这行代码会立即返回，不会阻塞UI
+    QFuture<std::map<QString, QString>> future = QtConcurrent::run([this]() -> std::map<QString, QString> {
+        return m_guesser->processingPython();
+    });
+
+    m_watcher->setFuture(future);
 }
 
-void guess_word_widget::onExitButtonClicked()
+// 当后台任务完成时，此函数会被自动调用
+void guess_word_widget::handleProcessingFinished()
 {
-    emit exitRequested();
+    // 可以在这里恢复按钮
+    // ui->startButton->setEnabled(true);
 
-}
+    // 从监视器获取后台函数的返回结果
+    std::map<QString, QString> result = m_watcher->result();
 
-void guess_word_widget::onRuleButtonClicked()
-{
-    QString rule="本游戏由DEEPSEEK-V3对从词库中随机抽取的单词生成描述，请你根据描述猜出是哪个词，如果查看答案会显示英文单词，deepseek生成解释的翻译以及里面重点词的意思，有以下文件夹可供选择："
-                   "四六级词汇合集，四级词汇，六级词汇，GRE词汇，牛津词典词汇，小学英语词汇，中考英语词汇";
-    ui->displayTextEdit->setText(rule);
-}
-
-void guess_word_widget::onBeginButtonClicked()
-{
-    guess_word *g=new guess_word();
-    map<QString,QString> result=g->processingPython();
-    word=result["word"];
-    translation=result["translation"];
-    description=result["description"];
-    ui->displayTextEdit->setText(description+"\n请在下方输入你的答案"+"\n提示：这是开头的两个字母"+word[0]+word[1]);
-
-    // 成就
-    emit sendId(3);
-}
-
-void guess_word_widget::onAnswerButtonClicked()
-{
-    ui->displayTextEdit->setText(word+"\n"+translation);
-}
-
-void guess_word_widget::onCommitButtonClicked()
-{
-    QString text=ui->answerLineEdit->text();
-    if (text=="" || word=="")
-    {
-        dialog->setWindowTitle("错误信息");
-        dialog->setText("后端未运行或用户未输入");
-    }
-    else
-    {
-        if (text==word)
-        {
-            ui->displayTextEdit->setText("You Win!");
-            text="";
-        }
-        else
-        {
-            ui->displayTextEdit->setText("I am sorry.Please try again.");
-            text="";
-        }
+    if (result.count("error")) {
+        // 如果结果中包含 "error" 键，说明出错了
+        // ui->descriptionLabel->setText("获取题目失败: " + result["error"]);
+    } else {
+        // 成功获取数据，更新UI
+        // ui->descriptionLabel->setText(result["description"]);
+        // ui->translationLabel->setText(result["translation"]);
+        m_correctWord = result["word"]; // 保存正确答案
     }
 }

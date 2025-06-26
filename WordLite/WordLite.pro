@@ -1,5 +1,5 @@
-QT       += core gui sql network testlib
-QT       += charts
+QT       += core gui charts openglwidgets concurrent sql network
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
@@ -35,7 +35,7 @@ HEADERS += \
     achievementwidget.h \
     achievementtoast.h \ 
     gamewidget.h \
-    # guess_according_to_description_h/guess_word.h \
+    guess_according_to_description/guess_word.h \
     guess_word_widget.h \
     learnwidget.h \
     loginwidget.h \

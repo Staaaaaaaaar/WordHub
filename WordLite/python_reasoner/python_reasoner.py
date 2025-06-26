@@ -1,9 +1,30 @@
 from openai import OpenAI
-from get_word import get_word
 import sys
 import json
 import argparse
 import re
+import sqlite3
+import random
+import os
+
+def get_database(database):
+    # 获取脚本所在目录的上一级目录(可执行文件目录)
+    exe_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
+    if database=="1":
+        # 指向可执行文件目录下的datas文件夹
+        return os.path.join(exe_dir, "datas", "CET_4+6.db")
+    # 可以根据需要添加其他数据库选项
+
+def get_word(database):
+    conn=sqlite3.connect(get_database(database))
+    cursor=conn.cursor()
+
+    cursor.execute("SELECT word FROM words")
+    all_records=cursor.fetchall()
+    random_record=random.choice(all_records) if all_records else None
+    conn.close()
+    return random_record[0] if random_record else "word"
 
 database=""
 word=""
