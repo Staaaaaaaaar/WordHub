@@ -54,7 +54,7 @@ void Wordle::onExitButtonClicked()
 
 void Wordle::loadWord()
 {
-    QFile file("F:\\vocabulary_learning\\WordLite\\wordle_base.txt"); // 如果放在资源文件中
+    QFile file(QCoreApplication::applicationDirPath() + "/codes/wordle_base.txt");
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "无法打开单词文件：" << file.errorString();
