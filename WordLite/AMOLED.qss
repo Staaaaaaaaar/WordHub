@@ -11,6 +11,29 @@ QMainWindow {
 QWidget {
         background-color: #000000;
 }
+QTableWidget {
+        background-color: #000000;
+        color: #a9b7c6;
+        gridline-color: #222222;
+        border: 1px solid #222222;
+}
+
+QHeaderView::section {
+        background-color: #111111;
+        color: #e67e22;
+        border: 1px solid #222222;
+        padding: 4px;
+}
+
+QTableWidget::item:selected {
+        background-color: #222222;
+        color: #ffffff;
+}
+
+QTableCornerButton::section {
+        background-color: #111111;
+        border: 1px solid #222222;
+}
 QDialog {
         background-color: #000000;
 }
