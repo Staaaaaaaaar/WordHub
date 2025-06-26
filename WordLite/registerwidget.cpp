@@ -12,6 +12,7 @@ registerWidget::registerWidget(QWidget *parent)
     ui->setupUi(this);
     setWindowTitle("register");
     setWindowIcon(QIcon(":/icons/favicon_logosc/t_logo.png"));
+    setFixedSize(350, 350);
     connect(ui->registerButton,&QToolButton::clicked,this,&registerWidget::saveUser);
     ui->passwordLineEdit->setEchoMode(QLineEdit::Password);
     ui->verifyLineEdit->setEchoMode(QLineEdit::Password);

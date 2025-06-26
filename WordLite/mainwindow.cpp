@@ -11,8 +11,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     // 新增：为MainWindow也设置图标和标题
-    setWindowTitle("WordLite");
+    setWindowTitle("WordHub");
     setWindowIcon(QIcon(":/icons/favicon_logosc/logo.png"));
+
+    // 限制窗口大小
+    setMinimumSize(800, 600);
 
     // 设置UI和连接信号槽
     setupUI();

@@ -21,6 +21,8 @@ loginWidget::loginWidget(QWidget *parent)
     // 路径以 :/ 开始表示从资源文件加载。
     setWindowIcon(QIcon(":/icons/favicon_logosc/t_logo.png"));
 
+    setFixedSize(350, 300); // 设置固定大小
+
     // 连接原有的信号槽
     connect(ui->loginButton,&QToolButton::clicked,this,&loginWidget::judgeLogin);
     connect(ui->registerButton,&QToolButton::clicked,this,&loginWidget::skipToRegister);
