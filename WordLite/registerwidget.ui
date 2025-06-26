@@ -43,9 +43,43 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QToolButton" name="toolButton">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QToolButton {
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: transparent;
+        border-style: solid;
+        color: #a9b7c6;
+        padding: 2px;
+        background-color: #000000;
+}
+QToolButton:hover{
+}</string>
+       </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:700;&quot;&gt;欢迎您注册成为新用户&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="logos.qrc">
+         <normaloff>:/icons/favicon_logosc/logo_a.png</normaloff>:/icons/favicon_logosc/logo_a.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>200</width>
+         <height>80</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <property name="autoRaise">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -226,6 +260,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="logos.qrc"/>
+ </resources>
  <connections/>
 </ui>

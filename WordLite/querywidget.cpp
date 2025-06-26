@@ -152,7 +152,7 @@ void QueryWidget::on_searchEdit_returnPressed()
     ui->searchEdit->clear();
 
     // 成就部分
-    emit sendId(2);
+    emit sendId(3);
 
 }
 

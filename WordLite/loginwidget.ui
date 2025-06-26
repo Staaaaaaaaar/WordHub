@@ -43,24 +43,40 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="label">
-       <property name="maximumSize">
-        <size>
-         <width>200</width>
-         <height>100</height>
-        </size>
+      <widget class="QToolButton" name="toolButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QToolButton {
+        border-style: solid;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-bottom-color: transparent;
+        border-style: solid;
+        color: #a9b7c6;
+        padding: 2px;
+        background-color: #000000;
+}
+QToolButton:hover{
+}</string>
        </property>
        <property name="text">
         <string/>
        </property>
-       <property name="textFormat">
-        <enum>Qt::TextFormat::AutoText</enum>
+       <property name="icon">
+        <iconset resource="logos.qrc">
+         <normaloff>:/icons/favicon_logosc/logo_a.png</normaloff>:/icons/favicon_logosc/logo_a.png</iconset>
        </property>
-       <property name="pixmap">
-        <pixmap resource="logos.qrc">:/icons/favicon_logosc/logo_a.png</pixmap>
-       </property>
-       <property name="scaledContents">
-        <bool>true</bool>
+       <property name="iconSize">
+        <size>
+         <width>200</width>
+         <height>80</height>
+        </size>
        </property>
       </widget>
      </item>
