@@ -6,6 +6,9 @@
 #include <QTimer>
 #define Min(x,y) x>y?y : x
 
+// 添加MARGIN常量定义
+constexpr int MARGIN = 4;
+
 UserWidget::UserWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::UserWidget)
@@ -20,6 +23,12 @@ UserWidget::UserWidget(QWidget *parent)
     //setPic();
     update();
     qDebug()<<ui->accWidget->height()<<' '<<ui->accWidget->width();
+
+    // 关键：设置小方格控件为透明背景
+    ui->dayWidget->setAttribute(Qt::WA_TranslucentBackground, true);
+    ui->accWidget->setAttribute(Qt::WA_TranslucentBackground, true);
+    ui->dayWidget->setAutoFillBackground(false);
+    ui->accWidget->setAutoFillBackground(false);
 }
 
 UserWidget::~UserWidget()
@@ -72,14 +81,22 @@ void UserWidget::paintEvent(QPaintEvent *event)
     const int ROWS = 3;
     const int COLS = 10;
     const int max_count = 100;
-    const int RADIUS = 6; // 圆角半径
+    const int RADIUS = 10;
     const int BORDER_WIDTH = 1;
-    const QColor BORDER_COLOR(220, 220, 220);
-    const QColor EMPTY_COLOR(235, 237, 240); // github灰色
+    const QColor BORDER_COLOR(230, 103, 34); // #e67e22
+    const QColor EMPTY_COLOR(34, 34, 34);    // #222222 深灰
 
     // 获取控件区域
     QRect dayRect = ui->dayWidget->geometry();
     QRect accRect = ui->accWidget->geometry();
+
+    // 关键：先填充小方格区域为黑色，避免透明导致底色异常
+    painter.save();
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(Qt::black);
+    painter.drawRect(dayRect);
+    painter.drawRect(accRect);
+    painter.restore();
 
     // 计算格子尺寸，使内容物在控件内居中并尽可能延展
     int gridWidth = (dayRect.width() - (COLS + 1) * MARGIN) / COLS;
@@ -100,17 +117,17 @@ void UserWidget::paintEvent(QPaintEvent *event)
             int idx = j * COLS + i;
             int count = (idx < dailyLearningData.size()) ? dailyLearningData[idx] : 0;
             QColor color;
-            // 仿github贡献色阶
+            // 色阶更明显的橙色系
             if (count == 0) {
                 color = EMPTY_COLOR;
             } else if (count < max_count * 0.25) {
-                color = QColor(155, 233, 168);
+                color = QColor(80, 40, 0);      // 极深橙（接近黑）
             } else if (count < max_count * 0.5) {
-                color = QColor(64, 196, 99);
+                color = QColor(204, 102, 0);    // 深橙
             } else if (count < max_count * 0.75) {
-                color = QColor(48, 161, 78);
+                color = QColor(230, 126, 34);   // #e67e22
             } else {
-                color = QColor(33, 110, 57);
+                color = QColor(255, 220, 120);  // 亮橙（接近白）
             }
             int x = MARGIN * (i + 1) + cellSize * i;
             int y = MARGIN * (j + 1) + cellSize * j;
@@ -120,7 +137,6 @@ void UserWidget::paintEvent(QPaintEvent *event)
             painter.setBrush(color);
             painter.drawRoundedRect(rect, RADIUS, RADIUS);
 
-            // 画边框
             painter.setPen(QPen(BORDER_COLOR, BORDER_WIDTH));
             painter.setBrush(Qt::NoBrush);
             painter.drawRoundedRect(rect, RADIUS, RADIUS);
@@ -145,17 +161,17 @@ void UserWidget::paintEvent(QPaintEvent *event)
             int idx = j * COLS + i;
             double acc = (idx < dailyLearningAcc.size()) ? dailyLearningAcc[idx] : 0.0;
             QColor color;
-            // 仿github贡献色阶
+            // 色阶更明显的橙色系
             if (acc == 0.0) {
                 color = EMPTY_COLOR;
             } else if (acc < 0.25) {
-                color = QColor(255, 223, 186);
+                color = QColor(80, 40, 0);      // 极深橙
             } else if (acc < 0.5) {
-                color = QColor(255, 179, 71);
+                color = QColor(204, 102, 0);    // 深橙
             } else if (acc < 0.75) {
-                color = QColor(255, 140, 0);
+                color = QColor(230, 126, 34);   // #e67e22
             } else {
-                color = QColor(204, 102, 0);
+                color = QColor(255, 220, 120);  // 亮橙
             }
             int x = MARGIN * (i + 1) + cellSize * i;
             int y = MARGIN * (j + 1) + cellSize * j;
@@ -165,7 +181,6 @@ void UserWidget::paintEvent(QPaintEvent *event)
             painter.setBrush(color);
             painter.drawRoundedRect(rect, RADIUS, RADIUS);
 
-            // 画边框
             painter.setPen(QPen(BORDER_COLOR, BORDER_WIDTH));
             painter.setBrush(Qt::NoBrush);
             painter.drawRoundedRect(rect, RADIUS, RADIUS);

@@ -122,7 +122,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QWidget" name="dayWidget" native="true"/>
+      <widget class="QWidget" name="dayWidget" native="true">
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
