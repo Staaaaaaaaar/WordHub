@@ -28,7 +28,8 @@ SOURCES += \
     wordle.cpp \
     back_src/database.cpp \
     back_src/learner.cpp \
-    API/dictionaryapi.cpp
+    API/dictionaryapi.cpp \
+    darktheme_win.cpp
 
 HEADERS += \
     achievementwidget.h \
@@ -49,6 +50,7 @@ HEADERS += \
     back_head/loadword.h \
     back_head/learner.h \
     API/dictionaryapi.h \
+    darktheme_win.h
 
 
 FORMS += \
@@ -70,5 +72,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    Resource.qrc
+    Resource.qrc \
+    logo.qrc
+
+# 新增：为Windows平台链接dwmapi库
+win32: LIBS += -ldwmapi
 

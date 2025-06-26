@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "achievementtoast.h" // 确保包含了头文件
+#include "loginwidget.h"      // 确保包含了头文件
+#include "darktheme_win.h"    // 新增头文件
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -121,9 +123,11 @@ void MainWindow::clearMes()
 
 void MainWindow::exitSignal()
 {
-    this->hide();
+    this->close(); // 使用 close() 替代 hide()，确保主窗口被销毁
     loginWidget *l = new loginWidget();
     l->setAttribute(Qt::WA_DeleteOnClose);
     l->show();
+    // 为新创建的登录窗口应用深色标题栏
+    setDarkTitleBar(l->winId());
 }
 

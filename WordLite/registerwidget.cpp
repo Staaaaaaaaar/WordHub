@@ -2,6 +2,7 @@
 #include "ui_registerwidget.h"
 #include "back_head/learner.h"
 #include "MainWindow.h"
+#include "darktheme_win.h" // 新增头文件
 
 registerWidget::registerWidget(QWidget *parent)
     : QWidget(parent)
@@ -43,8 +44,11 @@ void registerWidget::saveUser()
 void registerWidget::skip()
 {
     MainWindow *w = new MainWindow();
-    w->show(); // 先显示主窗口
-    // 再解锁成就，确保主窗口已经有有效的屏幕位置和大小
+    w->show();
+    setDarkTitleBar(w->winId()); // 应用深色标题栏
+
+    // 使用新的方法解锁“初次相遇”成就
     w->achievementWidget->unlockAchievement(1);
+
     this->close();
 }

@@ -18,6 +18,7 @@ public:
     bool comparePassword(const QString & username);
     void judgeLogin();
     void skipToRegister();
+
 signals:
     void loginClicked();
     void registerClicked();
