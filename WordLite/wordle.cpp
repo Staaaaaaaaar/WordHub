@@ -147,7 +147,16 @@ void Wordle::setColor()
     if (all_right==5 || attempts==6)
     {
         game_over=true;
-        ui->winLabel->setText("WIN!!");
+        /*ui->winLabel->setText("WIN!!");*/
+        /*修改了乱win的问题*/
+        if (attempts!=6)
+        {
+            ui->winLabel->setText("WIN!!");
+        }
+        else
+        {
+            ui->winLabel->setText("GAME OVER!!");
+        }
         ui->winLabel->setFont(*font);
         ui->getWord->setEnabled(false);
     }
