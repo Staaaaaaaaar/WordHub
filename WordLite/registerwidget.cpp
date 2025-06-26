@@ -3,12 +3,15 @@
 #include "back_head/learner.h"
 #include "MainWindow.h"
 #include "darktheme_win.h" // 新增头文件
+#include <QIcon> 
 
 registerWidget::registerWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::registerWidget)
 {
     ui->setupUi(this);
+    setWindowTitle("register");
+    setWindowIcon(QIcon(":/icons/favicon_logosc/t_logo.png"));
     connect(ui->registerButton,&QToolButton::clicked,this,&registerWidget::saveUser);
     ui->passwordLineEdit->setEchoMode(QLineEdit::Password);
     ui->verifyLineEdit->setEchoMode(QLineEdit::Password);

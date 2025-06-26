@@ -4,6 +4,7 @@
 #include "mainwindow.h"
 #include "registerwidget.h"
 #include "darktheme_win.h" // 新增头文件
+#include <QIcon> // 确保包含头文件
 
 loginWidget::loginWidget(QWidget *parent)
     : QWidget(parent)
@@ -13,12 +14,12 @@ loginWidget::loginWidget(QWidget *parent)
     ui->setupUi(this);
 
     // 设置窗口标题
-    setWindowTitle("英语单词学习软件");
+    setWindowTitle("login");
 
     // 设置窗口图标（Logo）
     // 请确保您有一个logo.png文件，并已将其添加到项目的资源文件(.qrc)中
     // 路径以 :/ 开始表示从资源文件加载。
-    setWindowIcon(QIcon(":/icons/logo.png"));
+    setWindowIcon(QIcon(":/icons/favicon_logosc/t_logo.png"));
 
     // 连接原有的信号槽
     connect(ui->loginButton,&QToolButton::clicked,this,&loginWidget::judgeLogin);
@@ -31,18 +32,7 @@ loginWidget::~loginWidget()
     delete ui;
 }
 
-// 移除不再需要的鼠标事件函数
-/*
-void loginWidget::mousePressEvent(QMouseEvent *event)
-{
-    // ...
-}
 
-void loginWidget::mouseMoveEvent(QMouseEvent *event)
-{
-    // ...
-}
-*/
 
 bool loginWidget::readUser()
 {

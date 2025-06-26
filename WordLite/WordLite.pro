@@ -73,7 +73,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Resource.qrc \
-    logo.qrc
+    logos.qrc
 
 # 新增：为Windows平台链接dwmapi库
 win32: LIBS += -ldwmapi

@@ -3,13 +3,16 @@
 #include "achievementtoast.h" // 确保包含了头文件
 #include "loginwidget.h"      // 确保包含了头文件
 #include "darktheme_win.h"    // 新增头文件
+#include <QIcon> // 新增头文件
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    // 新增：为MainWindow也设置图标和标题
+    setWindowTitle("WordLite");
+    setWindowIcon(QIcon(":/icons/favicon_logosc/logo.png"));
 
     // 设置UI和连接信号槽
     setupUI();
