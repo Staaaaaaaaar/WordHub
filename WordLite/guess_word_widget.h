@@ -2,10 +2,13 @@
 #define GUESS_WORD_WIDGET_H
 
 #include <QWidget>
-#include "guess_according_to_description/guess_word.h" // 引入逻辑处理类
-#include <QFutureWatcher> // 引入并发监视器
-#include <map> // 引入 map
-#include <QString> // 引入 QString
+#include "guess_according_to_description/guess_word.h"
+#include <QFutureWatcher>
+#include <map>
+#include <QString>
+
+// Forward declaration for pointer members to reduce header dependencies
+class QMessageBox;
 
 namespace Ui {
 class guess_word_widget;
@@ -20,23 +23,33 @@ public:
     ~guess_word_widget();
 
 private slots:
-    // 当点击“开始游戏”按钮时触发
-    void onStartButtonClicked();
-    // 当后台任务完成时，由监视器调用
+    // 异步流程的槽
+    void onBeginButtonClicked();
     void handleProcessingFinished();
 
+    // 其他UI按钮的槽
     void on_exitButton_clicked();
+    void onRuleButtonClicked();
+    void onAnswerButtonClicked();
+    void onCommitButtonClicked();
 
 signals:
     void exitRequested();
-    void sendId(int id);
+    // 如果 sendId 信号不再需要，可以删除
+    // void sendId(int id); 
 
 private:
     Ui::guess_word_widget *ui;
-    guess_word* m_guesser; // 耗时操作的逻辑对象
-    // 监视后台任务的 QFutureWatcher
+    
+    // 异步处理相关
+    guess_word* m_guesser;
     QFutureWatcher<std::map<QString, QString>> *m_watcher;
-    QString m_correctWord; // 用于存储正确的单词答案
+    
+    // 状态变量 (来自旧代码)
+    QString m_word;
+    QString m_translation;
+    QString m_description;
+    QMessageBox* m_dialog;
 };
 
 #endif // GUESS_WORD_WIDGET_H

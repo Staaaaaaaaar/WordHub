@@ -62,7 +62,6 @@ void GameWidget::connectSignals()
 
 
     connect(wordle, &Wordle::sendId, this, &GameWidget::sendId);
-    connect(guessWordWidget, &guess_word_widget::sendId, this, &GameWidget::sendId);
 }
 
 void GameWidget::onGuessWordWidgetExit()

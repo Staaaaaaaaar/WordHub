@@ -89,16 +89,16 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="exitButton">
+            <widget class="QPushButton" name="answerButton">
              <property name="text">
-              <string>退出游戏</string>
+              <string>查看答案</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="answerButton">
+            <widget class="QPushButton" name="exitButton">
              <property name="text">
-              <string>查看答案</string>
+              <string>退出游戏</string>
              </property>
             </widget>
            </item>
