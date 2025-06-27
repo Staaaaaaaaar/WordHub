@@ -18,6 +18,7 @@ Wordle::Wordle(QWidget *parent)
     connect(ui->commitButton,&QPushButton::clicked,this,&Wordle::getText);
     connect(ui->restartButton,&QPushButton::clicked,this,&Wordle::restart);
     connect(ui->checkButton,&QPushButton::clicked,this,&Wordle::displayWord);
+    connect(ui->getWord, &QLineEdit::returnPressed, this, &Wordle::getText);
     loadWord();
     letterGrid.resize(6);
     letterGrid[0]={ui->a11,ui->a12,ui->a13,ui->a14,ui->a15};
@@ -48,8 +49,6 @@ Wordle::~Wordle()
 void Wordle::onExitButtonClicked()
 {
     emit exitSignals();
-
-
 }
 
 void Wordle::loadWord()
@@ -130,18 +129,22 @@ void Wordle::setColor()
     int all_right=0;
     for (int i=0;i<5;++i)
     {
-        if (letterGrid[currentCol][i]->text()==target_word[i])
+        QString letter = letterGrid[currentCol][i]->text();
+        if (letter == target_word[i])
         {
-            letterGrid[currentCol][i]->setStyleSheet("background-color: green; color: red;");
+            // 位置正确：主题橙色底，白色字
+            letterGrid[currentCol][i]->setStyleSheet("background-color: #e67e22; color: #ffffff;");
             all_right+=1;
         }
-        else if (letters.contains(letterGrid[currentCol][i]->text()))
+        else if (target_word.contains(letter))
         {
-            letterGrid[currentCol][i]->setStyleSheet("background-color: yellow; color: purple;");
+            // 单词中有但位置不对：深灰底，主题橙色字
+            letterGrid[currentCol][i]->setStyleSheet("background-color: #222222; color: #e67e22;");
         }
         else
         {
-            letterGrid[currentCol][i]->setStyleSheet("background-color: white; color: black;");
+            // 单词中没有：黑底，灰字
+            letterGrid[currentCol][i]->setStyleSheet("background-color: #000000; color: #808086;");
         }
     }
     if (all_right==5 || attempts==6)
@@ -190,3 +193,5 @@ void Wordle::displayWord()
     ui->winLabel->setText(target_word);
     ui->winLabel->setFont(*font);
 }
+
+

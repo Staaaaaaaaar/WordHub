@@ -15,7 +15,7 @@ guess_word_widget::guess_word_widget(QWidget *parent)
     connect(m_watcher, &QFutureWatcher<std::map<QString, QString>>::finished, this, &guess_word_widget::handleProcessingFinished);
 
     // 假设您的UI里有一个名为 "startButton" 的按钮
-    // connect(ui->startButton, &QPushButton::clicked, this, &guess_word_widget::onStartButtonClicked);
+    connect(ui->startButton, &QPushButton::clicked, this, &guess_word_widget::onStartButtonClicked);
     // 您需要将上面这行代码中的 startButton 替换为您UI中实际的按钮名称
 }
 
@@ -30,7 +30,7 @@ void guess_word_widget::onStartButtonClicked()
 {
     // 可以在这里禁用按钮，防止用户重复点击
     // ui->startButton->setEnabled(false);
-    // ui->descriptionLabel->setText("正在向AI请求题目，请稍候..."); // 给用户一个提示
+    // ui->displayTextEdit->setText("正在向AI请求题目，请稍候..."); // 给用户一个提示
 
     // 使用 QtConcurrent::run 在后台线程执行耗时的 processingPython 函数
     // 这行代码会立即返回，不会阻塞UI
@@ -60,3 +60,9 @@ void guess_word_widget::handleProcessingFinished()
         m_correctWord = result["word"]; // 保存正确答案
     }
 }
+
+void guess_word_widget::on_exitButton_clicked()
+{
+    emit exitRequested();
+}
+

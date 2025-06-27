@@ -49,6 +49,8 @@ public:
 signals:
     void exitSignals();
     void sendId(int id);
+private slots:
+
 private:
     Ui::Wordle *ui;
 };
