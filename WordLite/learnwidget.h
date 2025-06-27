@@ -94,6 +94,7 @@ private slots:
     void on_refreshButton_clicked_2();
 
     void on_resetButton_clicked();
+    void on_viewAllWordsButton_clicked(); // <--- 新增槽函数声明
 
 signals:
     void sendId(int id);

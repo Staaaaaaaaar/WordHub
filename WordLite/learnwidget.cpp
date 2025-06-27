@@ -155,6 +155,8 @@ void LearnWidget::connectSignals()
     connect(ui->reviewButton, &QToolButton::clicked, this, &LearnWidget::on_reviewButton_clicked);
     //跳转到测试界面
     connect(ui->testButton, &QToolButton::clicked, this, &LearnWidget::on_testButton_clicked);
+    // --- 新增连接 ---
+    connect(ui->viewAllWordsButton, &QToolButton::clicked, this, &LearnWidget::on_viewAllWordsButton_clicked);
     //返回
     connect(ui->backButton, &QToolButton::clicked, this, [=](){
         ui->stackedWidget->setCurrentIndex(0);
@@ -563,14 +565,12 @@ void LearnWidget::on_reviewButton_clicked()
     //跳转到words界面
     ui->stackedWidget->setCurrentIndex(2);
     ui->testButton->setText("开始测试");
+    // --- 修改：确保按钮是可见的 ---
+    ui->testButton->show();
+    ui->refreshButton->show();
+
     wordsList.clear();
     wordsList = DBptr->getWordsToReview(10);
-
-    disconnect(ui->refreshButton, nullptr, nullptr, nullptr);
-    // 重新连接刷新按钮
-    connect(ui->refreshButton, &QToolButton::clicked, this, &LearnWidget::on_refreshButton_clicked_2);
-
-    // 初始化单词列表界面
     initWordsWidget();
 }
 
@@ -580,18 +580,15 @@ void LearnWidget::on_learnButton_clicked()
     //跳转到words界面
     ui->stackedWidget->setCurrentIndex(2);
     ui->testButton->setText("开始测试");
+    // --- 修改：确保按钮是可见的 ---
+    ui->testButton->show();
+    ui->refreshButton->show();
+    
     wordsList.clear();
     wordsList = DBptr->getRandomWords(10);
-
-    disconnect(ui->refreshButton, nullptr, nullptr, nullptr);
-    connect(ui->refreshButton, &QToolButton::clicked, this, &LearnWidget::on_refreshButton_clicked_1);
-
-    // 初始化单词列表界面
     initWordsWidget();
-
-    // 成就
-    emit sendId(2);
 }
+
 void LearnWidget::on_testButton_clicked()
 {
     //跳转到测试界面
@@ -618,6 +615,23 @@ void LearnWidget::on_refreshButton_clicked_2()
     wordsList.clear();
     wordsList = DBptr->getWordsToReview(10);
 
+    initWordsWidget();
+}
+// --- 新增槽函数的完整实现 ---
+void LearnWidget::on_viewAllWordsButton_clicked()
+{
+    // 1. 使用您已有的函数获取当前词库的所有单词
+    wordsList.clear();
+    wordsList = DBptr->getAllWords();
+
+    // 2. 切换到单词列表界面
+    ui->stackedWidget->setCurrentIndex(2);
+
+    // 3. 更新界面状态：在“查看所有”模式下，隐藏测试和刷新按钮
+    ui->testButton->hide();
+    ui->refreshButton->hide();
+
+    // 4. 初始化单词列表界面，显示所有单词
     initWordsWidget();
 }
 
