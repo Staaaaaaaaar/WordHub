@@ -1,10 +1,6 @@
 <RCC>
     <qresource prefix="/QSS">
-        <file>macOS.qss</file>
-        <file>psblack.qss</file>
-        <file>MaterialDark.qss</file>
         <file>AMOLED.qss</file>
-        <file>Aqua.qss</file>
     </qresource>
     <qresource prefix="/images">
         <file>exit.svg</file>
