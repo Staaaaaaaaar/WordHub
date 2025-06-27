@@ -18,6 +18,7 @@ Wordle::Wordle(QWidget *parent)
     connect(ui->commitButton,&QPushButton::clicked,this,&Wordle::getText);
     connect(ui->restartButton,&QPushButton::clicked,this,&Wordle::restart);
     connect(ui->checkButton,&QPushButton::clicked,this,&Wordle::displayWord);
+    connect(ui->getWord, &QLineEdit::returnPressed, this, &Wordle::getText);
     loadWord();
     letterGrid.resize(6);
     letterGrid[0]={ui->a11,ui->a12,ui->a13,ui->a14,ui->a15};
@@ -192,3 +193,5 @@ void Wordle::displayWord()
     ui->winLabel->setText(target_word);
     ui->winLabel->setFont(*font);
 }
+
+
