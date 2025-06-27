@@ -3,6 +3,7 @@
 #include <QtConcurrent> // 引入 Qt 并发框架
 #include <QMessageBox>
 #include <QTextOption>
+#include <QTimer> // <--- 新增头文件包含
 
 guess_word_widget::guess_word_widget(QWidget *parent)
     : QWidget(parent)
@@ -32,6 +33,11 @@ guess_word_widget::guess_word_widget(QWidget *parent)
     ui->displayTextEdit->setLineWrapMode(QTextEdit::WidgetWidth);
     ui->displayTextEdit->setWordWrapMode(QTextOption::WordWrap);
 
+    // --- 新增代码：在游戏开始前，默认禁用相关控件 ---
+    ui->answerLineEdit->setEnabled(false);
+    ui->commitButton->setEnabled(false);
+    ui->answerButton->setEnabled(false);
+
     // --- 信号与槽连接 (来自旧代码) ---
     // 注意：这里假设您的UI文件中按钮的 objectName 分别是：
     // exitButton, ruleButton, beginButton, answerButton, commitButton
@@ -40,6 +46,9 @@ guess_word_widget::guess_word_widget(QWidget *parent)
     connect(ui->startButton, &QPushButton::clicked, this, &guess_word_widget::onBeginButtonClicked);
     connect(ui->answerButton, &QPushButton::clicked, this, &guess_word_widget::onAnswerButtonClicked);
     connect(ui->commitButton, &QPushButton::clicked, this, &guess_word_widget::onCommitButtonClicked);
+    
+    // --- 新增代码：将回车键的信号连接到提交按钮的槽函数 ---
+    connect(ui->answerLineEdit, &QLineEdit::returnPressed, this, &guess_word_widget::onCommitButtonClicked);
 }
 
 guess_word_widget::~guess_word_widget()
@@ -70,7 +79,7 @@ void guess_word_widget::onBeginButtonClicked()
 // 当后台任务完成时，此函数会被自动调用 (替换了旧的 onBeginButtonClicked 的后半部分)
 void guess_word_widget::handleProcessingFinished()
 {
-    // 恢复按钮
+    // 恢复“开始”按钮
     ui->startButton->setEnabled(true);
 
     // 从监视器获取后台函数的返回结果
@@ -85,6 +94,12 @@ void guess_word_widget::handleProcessingFinished()
         m_word = result["word"];
         m_translation = result["translation"];
         m_description = result["description"];
+
+        // --- 新增代码：成功获取题目后，恢复所有游戏控件 ---
+        ui->answerLineEdit->clear();          // 清空上次的输入
+        ui->answerLineEdit->setEnabled(true); // 启用输入框
+        ui->commitButton->setEnabled(true);   // 启用提交按钮
+        ui->answerButton->setEnabled(true);   // 启用查看答案按钮
 
         // 更新UI，显示题目和提示
         if (!m_word.isEmpty() && m_word.length() >= 2) {
@@ -105,9 +120,39 @@ void guess_word_widget::on_exitButton_clicked()
 
 void guess_word_widget::onRuleButtonClicked()
 {
-    QString rule = "本游戏由DEEPSEEK-V3对从词库中随机抽取的单词生成描述，请你根据描述猜出是哪个词，如果查看答案会显示英文单词，deepseek生成解释的翻译以及里面重点词的意思，有以下文件夹可供选择："
-                   "四六级词汇合集，四级词汇，六级词汇，GRE词汇，牛津词典词汇，小学英语词汇，中考英语词汇";
-    ui->displayTextEdit->setText(rule);
+    QString rule = "本游戏由DEEPSEEK-V3对从词库中随机抽取的单词生成描述，请你根据描述猜出是哪个词，如果查看答案会显示英文单词，deepseek生成解释的翻译以及里面重点词的意思。\n\n"
+                   "游戏规则：\n"
+                   "1. 点击“开始游戏”按钮获取题目。\n"
+                   "2. 在下方输入框中输入你的答案。\n"
+                   "3. 点击“提交”按钮提交答案。\n"
+                   "4. 如果需要查看答案，可以点击“查看答案”按钮。\n"
+                   "5. 游戏结束后可以重新开始。\n\n";
+
+    // 检查游戏是否正在进行中 (通过 m_word 是否为空来判断)
+    if (!m_word.isEmpty()) {
+        // --- 游戏进行中：显示规则，3秒后恢复题目 ---
+
+        // 1. 立即显示规则
+        ui->displayTextEdit->setText(rule);
+
+        // 2. 捕获当前游戏状态，用于3秒后检查
+        QString wordWhenClicked = m_word;
+        QString descriptionWhenClicked = m_description;
+
+        // 3. 启动一个3000毫秒（3秒）后执行的单次定时器
+        QTimer::singleShot(3000, this, [this, wordWhenClicked, descriptionWhenClicked]() {
+            // 4. 定时器触发时，检查当前游戏是否还是刚才那一局
+            //    这是为了防止在3秒内用户开始了新游戏，导致新题目被覆盖
+            if (m_word == wordWhenClicked && !m_word.isEmpty()) {
+                // 5. 恢复原来的题目描述和提示
+                QString originalQuestion = descriptionWhenClicked + "\n\n请在下方输入你的答案" + "\n提示：这是开头的两个字母: " + m_word.left(2);
+                ui->displayTextEdit->setText(originalQuestion);
+            }
+        });
+    } else {
+        // --- 游戏未开始：直接显示规则 ---
+        ui->displayTextEdit->setText(rule);
+    }
 }
 
 void guess_word_widget::onAnswerButtonClicked()
@@ -117,6 +162,11 @@ void guess_word_widget::onAnswerButtonClicked()
         return;
     }
     ui->displayTextEdit->setText(m_word + "\n\n" + m_translation);
+
+    // --- 新增代码：查看答案后禁用输入和提交 ---
+    ui->answerLineEdit->setEnabled(false);
+    ui->commitButton->setEnabled(false);
+    ui->answerButton->setEnabled(false); // 禁用“查看答案”按钮自身
 }
 
 void guess_word_widget::onCommitButtonClicked()
@@ -130,10 +180,32 @@ void guess_word_widget::onCommitButtonClicked()
         if (text.toLower() == m_word.toLower()) { // 比较时忽略大小写
             ui->displayTextEdit->setText("You Win!");
             m_word = ""; // 猜对后清空，防止重复提交
+            
+            // --- 新增代码：猜对后也禁用控件，结束本轮游戏 ---
+            ui->answerLineEdit->setEnabled(false);
+            ui->commitButton->setEnabled(false);
+            ui->answerButton->setEnabled(false);
         } else {
+            // --- 核心修改：显示错误信息并设置定时器 ---
+            
+            // 1. 立即显示错误信息
             ui->displayTextEdit->setText("I am sorry. Please try again.");
+            
+            // 2. 捕获当前单词，用于3秒后检查游戏状态是否已改变
+            QString wordWhenErrorOccurred = m_word;
+
+            // 3. 启动一个3000毫秒（3秒）后执行的单次定时器
+            QTimer::singleShot(3000, this, [this, wordWhenErrorOccurred]() {
+                // 4. 定时器触发时，检查当前游戏是否还是刚才答错的那一局
+                //    这是为了防止在3秒内用户开始了新游戏，导致新题目被覆盖
+                if (m_word == wordWhenErrorOccurred && !m_word.isEmpty()) {
+                    // 5. 恢复原来的题目描述和提示
+                    QString originalQuestion = m_description + "\n\n请在下方输入你的答案" + "\n提示：这是开头的两个字母: " + m_word.left(2);
+                    ui->displayTextEdit->setText(originalQuestion);
+                }
+            });
         }
-        ui->answerLineEdit->clear(); // 提交后清空输入框
+        ui->answerLineEdit->clear(); // 提交后立即清空输入框
     }
 }
 

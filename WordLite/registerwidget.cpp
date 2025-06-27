@@ -21,6 +21,20 @@ registerWidget::registerWidget(QWidget *parent)
     connect(ui->backButton, &QToolButton::clicked, this, &registerWidget::goBackToLogin); // 新增连接
     ui->passwordLineEdit->setEchoMode(QLineEdit::Password);
     ui->verifyLineEdit->setEchoMode(QLineEdit::Password);
+
+    // --- 新增代码：设置回车键导航 ---
+    // 在用户名输入框按回车，焦点移至密码框
+    // 使用 lambda 解决 setFocus 的重载问题
+    connect(ui->userLineEdit, &QLineEdit::returnPressed, this, [=](){
+        ui->passwordLineEdit->setFocus();
+    });
+    // 在密码输入框按回车，焦点移至确认密码框
+    // 使用 lambda 解决 setFocus 的重载问题
+    connect(ui->passwordLineEdit, &QLineEdit::returnPressed, this, [=](){
+        ui->verifyLineEdit->setFocus();
+    });
+    // 在确认密码输入框按回车，触发注册
+    connect(ui->verifyLineEdit, &QLineEdit::returnPressed, this, &registerWidget::saveUser);
 }
 
 registerWidget::~registerWidget()
