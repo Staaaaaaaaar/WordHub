@@ -15,19 +15,19 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,0,4,1">
      <item>
       <spacer name="verticalSpacer_5">
        <property name="orientation">
         <enum>Qt::Orientation::Vertical</enum>
        </property>
        <property name="sizeType">
-        <enum>QSizePolicy::Policy::Expanding</enum>
+        <enum>QSizePolicy::Policy::Preferred</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>20</height>
+         <height>60</height>
         </size>
        </property>
       </spacer>
@@ -43,6 +43,9 @@
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Orientation::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Policy::Preferred</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -102,6 +105,19 @@
           </layout>
          </item>
          <item>
+          <widget class="QTextEdit" name="displayTextEdit">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>1</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="readOnly">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="verticalSpacer_2">
            <property name="orientation">
             <enum>Qt::Orientation::Vertical</enum>
@@ -113,22 +129,6 @@
             <size>
              <width>20</width>
              <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QTextEdit" name="displayTextEdit"/>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Orientation::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
             </size>
            </property>
           </spacer>
@@ -192,6 +192,9 @@
       <spacer name="verticalSpacer_4">
        <property name="orientation">
         <enum>Qt::Orientation::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Policy::Preferred</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
