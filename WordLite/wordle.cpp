@@ -13,11 +13,17 @@ Wordle::Wordle(QWidget *parent)
     , ui(new Ui::Wordle)
 {
     ui->setupUi(this);
-    connect(ui->exitButton,&QPushButton::clicked,this,&Wordle::onExitButtonClicked);
-    connect(ui->beginButton,&QPushButton::clicked,this,&Wordle::game);
-    connect(ui->commitButton,&QPushButton::clicked,this,&Wordle::getText);
-    connect(ui->restartButton,&QPushButton::clicked,this,&Wordle::restart);
-    connect(ui->checkButton,&QPushButton::clicked,this,&Wordle::displayWord);
+    connect(ui->exitButton, &QPushButton::clicked, this, &Wordle::onExitButtonClicked);
+
+    // 错误：删除合并按钮的连接
+    // connect(ui->gameControlButton, &QPushButton::clicked, this, &Wordle::onGameControlButtonClicked);
+
+    // 正确：恢复对两个独立按钮的连接
+    connect(ui->beginButton, &QPushButton::clicked, this, &Wordle::game);
+    connect(ui->restartButton, &QPushButton::clicked, this, &Wordle::restart);
+
+    connect(ui->commitButton, &QPushButton::clicked, this, &Wordle::getText);
+    connect(ui->checkButton, &QPushButton::clicked, this, &Wordle::displayWord);
     connect(ui->getWord, &QLineEdit::returnPressed, this, &Wordle::getText);
     loadWord();
     letterGrid.resize(6);
@@ -99,11 +105,11 @@ void Wordle::game()
 {
     selectRandomWord();
     ui->commitButton->setEnabled(true);
-    ui->beginButton->setEnabled(false);
+    ui->beginButton->setEnabled(false); // <--- 恢复这行代码，防止在游戏中重复开始
     ui->checkButton->setEnabled(true);
 
     // 成就
-    emit sendId(3);
+    emit sendId(4);
 }
 
 void Wordle::getText()
@@ -162,36 +168,52 @@ void Wordle::setColor()
         }
         ui->winLabel->setFont(*font);
         ui->getWord->setEnabled(false);
+        // --- 新增代码 ---
+        // 游戏结束后，也应禁用“查看答案”按钮
+        ui->checkButton->setEnabled(false);
     }
 }
 
 void Wordle::restart()
 {
-    for (int i=0;i<6;++i)
+    // 1. 重置游戏面板的视觉效果
+    for (int i=0; i<6; ++i)
     {
-        for (int j=0;j<5;++j)
+        for (int j=0; j<5; ++j)
         {
-            letterGrid[i][j]->setStyleSheet("background-color: white; color: black;");
+            letterGrid[i][j]->setStyleSheet("background-color: #222222;");
             letterGrid[i][j]->setText("");
         }
     }
+
+    // 2. 重置所有游戏状态变量
     currentCol=0;
     text="";
     letters.clear();
     game_over=false;
     attempts=0;
-    ui->commitButton->setEnabled(false);
-    ui->beginButton->setEnabled(true);
-    ui->checkButton->setEnabled(false);
-    ui->getWord->setEnabled(true);
+
+    // 3. 重置UI元素（简化版）
     ui->winLabel->setText("");
+    ui->getWord->setEnabled(true); // 确保输入框可用
     update();
+
+    // 4. 立即开始一局新游戏
+    // game() 函数会自动处理好所有按钮的状态
+    game(); 
 }
 
 void Wordle::displayWord()
 {
     ui->winLabel->setText(target_word);
     ui->winLabel->setFont(*font);
+
+    // 禁用输入框和提交按钮，以阻止用户在查看答案后继续游戏
+    ui->getWord->setEnabled(false);
+    ui->commitButton->setEnabled(false);
+    // --- 新增代码 ---
+    // 查看答案后，也应禁用“查看答案”按钮自身
+    ui->checkButton->setEnabled(false);
 }
 
 

@@ -35,8 +35,7 @@ private slots:
 
 signals:
     void exitRequested();
-    // 如果 sendId 信号不再需要，可以删除
-    // void sendId(int id); 
+    void sendId(int id); 
 
 private:
     Ui::guess_word_widget *ui;

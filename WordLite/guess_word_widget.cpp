@@ -55,6 +55,9 @@ void guess_word_widget::onBeginButtonClicked()
     ui->startButton->setEnabled(false);
     ui->displayTextEdit->setText("正在向AI请求题目，请稍候..."); // 给用户一个提示
 
+    // --- 新增代码 ---
+    emit sendId(4); 
+
     // 使用 QtConcurrent::run 在后台线程执行耗时的 processingPython 函数
     // 这行代码会立即返回，不会阻塞UI
     QFuture<std::map<QString, QString>> future = QtConcurrent::run([this]() -> std::map<QString, QString> {

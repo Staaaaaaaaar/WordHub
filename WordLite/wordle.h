@@ -2,15 +2,12 @@
 #define WORDLE_H
 
 #include <QWidget>
-#include <QVector>
-#include <QSet>
-#include <QString>
-#include <QLabel>
-#include <QPushButton>
-#include <QGridLayout>
 #include <vector>
-#include <QFont>
-using namespace std;
+#include <set>
+
+// Forward declarations
+class QLabel;
+class QFont;
 
 namespace Ui {
 class Wordle;
@@ -26,33 +23,34 @@ public:
     static const int MAX_ATTEMPTS=6;
     static const int WORD_LENGTH=5;
 
-    QString target_word;
-    QString text;
-    int currentCol;
-    int attempts;
-    bool game_over;
-    vector<vector<QLabel*> > letterGrid;
-
-    vector<QString> wordbase;
-    QSet<QString> letters;
-
-    void selectRandomWord();
-    void loadWord();
-    void game();
-    void onExitButtonClicked();
-    void getText();
-    void setColor();
-    void restart();
-    void displayWord();
-    QFont *font;
-
 signals:
     void exitSignals();
     void sendId(int id);
+
 private slots:
+    // 恢复为独立的槽函数
+    void game();
+    void restart();
+    void getText();
+    void displayWord();
+    void onExitButtonClicked();
 
 private:
+    // 内部辅助函数
+    void setColor();
+    void loadWord();
+    void selectRandomWord();
+
     Ui::Wordle *ui;
+    std::vector<QString> wordbase;
+    std::vector<std::vector<QLabel*>> letterGrid;
+    QString target_word;
+    QString text;
+    std::set<QChar> letters;
+    int currentCol;
+    int attempts;
+    bool game_over;
+    QFont *font;
 };
 
 #endif // WORDLE_H

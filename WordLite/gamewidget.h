@@ -25,6 +25,8 @@ private slots:
     void onGuessWordWidgetExit();
     void onBeginSignalCome();
     void onAnswerSignalCome();
+    void returnToGameMenu();
+    void onWordleButtonClicked(); // <--- 在这里添加新的槽函数声明
 signals:
     void sendId(int id);
 private:
