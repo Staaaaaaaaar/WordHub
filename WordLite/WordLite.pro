@@ -78,3 +78,4 @@ RESOURCES += \
 # 新增：为Windows平台链接dwmapi库
 win32: LIBS += -ldwmapi
 
+RC_FILE = appicon.rc
