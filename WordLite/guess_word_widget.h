@@ -25,6 +25,8 @@ private slots:
     // 当后台任务完成时，由监视器调用
     void handleProcessingFinished();
 
+    void on_exitButton_clicked();
+
 signals:
     void exitRequested();
     void sendId(int id);
