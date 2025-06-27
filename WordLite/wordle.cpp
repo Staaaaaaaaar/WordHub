@@ -31,7 +31,7 @@ Wordle::Wordle(QWidget *parent)
     {
         for (int j=0;j<5;++j)
         {
-            letterGrid[i][j]->setStyleSheet("background-color: white; color: black;");
+            letterGrid[i][j]->setStyleSheet("background-color: #222222;");
         }
     }
     currentCol=0;

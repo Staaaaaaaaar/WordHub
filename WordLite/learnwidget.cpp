@@ -208,9 +208,9 @@ void LearnWidget::initDictWidget()
     QVector<int> dailyCounts = DBptr->getDailyLearningCountInDays(14);
     QBarSet* set = new QBarSet("学习数");
     for (int v : dailyCounts) *set << v;
-    set->setLabelColor(Qt::black);
-    set->setColor(QColor("#f5f5f5"));
-    set->setBorderColor(QColor("#cccccc"));
+    set->setLabelColor(QColor("#a9b7c6")); // AMOLED字体色
+    set->setColor(QColor("#222222"));      // AMOLED深灰色柱体
+    set->setBorderColor(QColor("#444444")); // AMOLED边框
 
     QBarSeries* barSeries = new QBarSeries();
     barSeries->append(set);
@@ -233,6 +233,7 @@ void LearnWidget::initDictWidget()
     }
     QBarCategoryAxis* axisX = new QBarCategoryAxis();
     axisX->append(categories);
+    axisX->setLabelsColor(QColor("#a9b7c6")); // AMOLED字体色
     barChart->addAxis(axisX, Qt::AlignBottom);
     barSeries->attachAxis(axisX);
 
@@ -257,9 +258,9 @@ void LearnWidget::initDictWidget()
     progressBar->setMinimumHeight(28);
     progressBar->setStyleSheet(
         "QProgressBar {"
-        " border: 1px solid #bbb; border-radius: 8px; background: #f5f5f5; text-align: center; color:rgb(77, 77, 77); }"
+        " border: 1px solid #222222; border-radius: 8px; background: #000000; text-align: center; color:#a9b7c6; }"
         "QProgressBar::chunk {"
-        " background-color:rgb(95, 211, 99); border-radius: 8px; }"
+        " background-color: #e67e22; border-radius: 8px; }"
     );
     progressBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
