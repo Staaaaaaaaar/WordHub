@@ -66,6 +66,8 @@ WordHub_Project_Root/
 
 ### 2.2 主要类设计
 
+点击类名即可查看每个类的详细介绍文档
+
 | 类名 (Class) | 主要职责 (Responsibilities) |
 | :--- | :--- |
 | [`Learner`](WordHub/docs/learner说明.md) | 核心业务逻辑类（单例），负责管理当前用户状态、学习进度、成就解锁等，是UI与数据之间的桥梁。 |
