@@ -119,7 +119,7 @@ WordHub_Project_Root/
 | :--- | :--- | :--- | :--- |
 | **刘继轩** | [stibiums](https://github.com/stibiums) | **后端核心** | 负责整体项目架构设计；数据库模块（SQLite）、用户系统、学习记录、成就系统的实现；`Learner` 核心业务逻辑的编写。 |
 | **郑星浩** | [Staaaaaaaaar](https://github.com/Staaaaaaaaar) | **前端界面** | 负责全部 UI 界面的设计与实现，包括主窗口、学习、查询、用户中心、数据可视化图表、游戏等界面的开发与美化。 |
-| **郑嘉祺** | [missswiftie](https://github.com/missswiftie) | **游戏模块** | 负责 Wordle 和“看描述猜单词”两个游戏的核心逻辑实现，包括 Python 端的 AI 接口调用和 C++ 端的整合。 |
+| **郑嘉祺** | [missswiftie](https://github.com/missswiftie) | **游戏模块以及其他** | 负责字典源文件解析（.mdx通过python脚本转化为.json）；负责 Wordle 和“看描述猜单词”两个游戏的核心逻辑实现，包括 Python 端的 AI 接口调用和 C++ 端的整合；负责用户注册登录界面以及用户界面（包括用户信息、用户登录热力图等）。 |
 
 ## 💡 4. 项目总结与反思
 
