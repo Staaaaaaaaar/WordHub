@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/icons">
-        <file>favicon_logosc/logo.png</file>
-        <file>favicon_logosc/logo_a.png</file>
-        <file>favicon_logosc/t_logo.png</file>
-    </qresource>
-</RCC>
