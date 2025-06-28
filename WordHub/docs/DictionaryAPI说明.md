@@ -3,7 +3,7 @@
 **负责人**: [刘继轩](https://github.com/stibiums)
 
 #### 功能与用途
-`DictionaryAPI` 类封装了对第三方免费词典 API ([dictionaryapi.dev](https://github.com/meetDeveloper/freeDictionaryAPI)) 的网络请求。它能够根据一个单词字符串，获取其完整的结构化信息，并将其解析为程序内部的 `Word` 对象。
+`DictionaryAPI` 类封装了对第三方开源 [API](https://github.com/meetDeveloper/freeDictionaryAPI) 的网络请求。它能够根据一个单词字符串，获取其完整的结构化信息，并将其解析为程序内部的 `Word` 对象。
 
 #### 属性
 - `QNetworkAccessManager* manager`: **[私有]** 网络访问管理器，用于发送网络请求。
