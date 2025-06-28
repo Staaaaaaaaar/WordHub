@@ -71,7 +71,6 @@ WordHub_Project_Root/
 | [`MainWindow`](#) | 主窗口，作为程序UI的容器，管理各个子界面（学习、查询、用户、成就等）的切换和通信。 |
 | [`Learner`](docs/learner说明.md) | 核心业务逻辑类（单例），负责管理当前用户状态、学习进度、成就解锁等，是UI与数据之间的桥梁。 |
 | [`WordDatabase`](docs/WordDatabase说明.md) | 数据库操作类，封装所有与 SQLite 相关的操作，包括单词、词库、用户、学习记录的增删改查。 |
-
 | [`utils`](docs/utils说明.md) |定义的数据实体，如 `Word`, `Category` 等。 |
 | [`Wordloader`](docs/Wordloader说明.md) 类 | 负责从文件导入单词。|
 | [`DictionaryAPI`](docs/DictionaryAPI说明.md) 类| 负责调用在线词典API。|
