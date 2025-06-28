@@ -84,6 +84,7 @@ WordHub_Project_Root/
 | [`Wordloader`](WordHub/docs/Wordloader说明.md)  | 负责从文件导入单词。|
 | [`DictionaryAPI`](WordHub/docs/DictionaryAPI说明.md) | 负责调用在线词典API。|
 | [`guess_word`](WordHub/docs/guess_word说明.md) |包括后端`python_reasoner.py`、后端交互`guess_word`类以及前端界面`guess_word_widget`类。|
+| [`wordle`](WordHub/docs/wordle说明.md) |通过`wordle`类进行wordle游戏。|
 
 ## 👥 3. 小组成员分工情况
 
