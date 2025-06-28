@@ -2,10 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "WordHub"
-#define MyAppVersion "1.0"
-#define MyAppPublisher "北京大学2025程序设计暂定组"
-#define MyAppURL "https://github.com/stibiums/vocabulary_learning"
-#define MyAppExeName "WordLite.exe"
+#define MyAppVersion "1.1"
+#define MyAppPublisher "北京大学2025程序设计120组"
+#define MyAppURL "https://github.com/stibiums/WordHub"
+#define MyAppExeName "WordHub.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -31,9 +31,9 @@ ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
-OutputDir=D:\PKU\25_spring\chengshe\vocabulary_learning\vocabulary_learning
-OutputBaseFilename=WordHub安装程序
-SetupIconFile=D:\PKU\25_spring\chengshe\vocabulary_learning\vocabulary_learning\WordLite\appicon.ico
+OutputDir=D:\PKU\25_spring\chengshe\vocabulary_learning
+OutputBaseFilename=WordHub_v1.1
+SetupIconFile=D:\PKU\25_spring\chengshe\vocabulary_learning\vocabulary_learning\WordHub\UI\appicon.ico
 SolidCompression=yes
 WizardStyle=modern
 
@@ -44,8 +44,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\PKU\25_spring\chengshe\vocabulary_learning\打包\v1\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\PKU\25_spring\chengshe\vocabulary_learning\打包\v1\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\PKU\25_spring\chengshe\vocabulary_learning\打包\v1.1\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\PKU\25_spring\chengshe\vocabulary_learning\打包\v1.1\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

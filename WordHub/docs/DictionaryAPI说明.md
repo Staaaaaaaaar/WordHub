@@ -1,6 +1,8 @@
 
 ### `DictionaryAPI` 类
 
+**负责人**: [刘继轩](https://github.com/stibiums)
+
 #### 功能与用途
 `DictionaryAPI` 类用于与网络词典 API 进行交互，获取单词的详细信息。它提供了同步和异步两种方式来获取单词信息。
 

@@ -1,5 +1,7 @@
 ### `Wordloader` 类
 
+**负责人**: [刘继轩](https://github.com/stibiums)
+
 #### 功能与用途
 `Wordloader` 类用于从不同格式的文件中导入单词到数据库。它支持从 JSON 词典文件和 TXT 文件导入单词，并且可以选择是否使用网络词典 API 来获取单词信息。
 
