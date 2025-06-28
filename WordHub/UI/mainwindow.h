@@ -3,11 +3,12 @@
 
 #include <QMainWindow>
 
+#include "userwidget.h"
+#include "achievementwidget.h"
+
 // Forward-declare classes to improve compile times and avoid circular includes
-class UserWidget;
 class QueryWidget;
 class LearnWidget;
-class AchievementWidget;
 class GameWidget;
 struct Achievement;
 
@@ -47,6 +48,9 @@ public slots:
 private:
     // The UI pointer, which was missing
     Ui::MainWindow *ui;
+    // --- 新增：成员变量指针 ---
+    UserWidget *m_userWidget;
+    AchievementWidget *m_achievementWidget;
 };
 
 #endif // MAINWINDOW_H

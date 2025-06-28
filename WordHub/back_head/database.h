@@ -62,8 +62,8 @@ public:
 
     // 静态方法：获取所有词库中总共学习的单词数量
     static int getAllTotalWordCount();
-
-    // 静态方法：获取所有词库中指定天数内每天学习单词的数量
+    // --- 新增：声明新的静态函数 ---
+    static int getAllWordsWithDifficultyOneCount();
     static QVector<int> getAllDailyLearningCountInDays(int days = 30, int userId = 1);
 
     // 静态方法：获取所有词库中指定天数内每天学习的正确率

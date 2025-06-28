@@ -210,3 +210,85 @@ void UserWidget::refresh()
     //setPic();
     update();
 }
+
+// --- 修改：当用户点击“更新学习记录”按钮时 ---
+void UserWidget::on_refreshButton_clicked()
+{
+    // 您可以在这里先刷新界面上的其他数据，例如调用您已有的 refresh() 函数
+    refresh(); 
+
+    // 然后检查成就
+    checkLearningAchievements();
+}
+
+// --- 修改：当用户界面每次显示时，也会自动调用 ---
+void UserWidget::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    // 自动触发一次更新和检查
+    on_refreshButton_clicked();
+}
+
+// --- 完整替换这个函数 ---
+void UserWidget::checkLearningAchievements()
+{
+    Learner* learner = Learner::getInstance();
+    if (!learner) return; 
+
+    // --- 1. 计算所需指标 ---
+
+    // 获取自用户开始学习以来的所有每日学习记录
+    int daysSinceStart = learner->getStartTime().daysTo(QDateTime::currentDateTime()) + 1;
+    if (daysSinceStart <= 0) daysSinceStart = 1; // 至少查询1天
+    QVector<int> dailyCounts = WordDatabase::getAllDailyLearningCountInDays(daysSinceStart, 1);
+
+    // a) 计算连续学习天数
+    int continuousDays = 0;
+    for (int i = dailyCounts.size() - 1; i >= 0; --i) {
+        if (dailyCounts[i] > 0) {
+            continuousDays++;
+        } else {
+            break;
+        }
+    }
+
+    // b) 计算累计学习天数
+    int totalDays = 0;
+    for (int count : dailyCounts) {
+        if (count > 0) {
+            totalDays++;
+        }
+    }
+
+    // --- 修改：注释掉未使用的变量以消除警告 ---
+    // int totalLearnedWords = WordDatabase::getAllTotalWordCount();
+
+    // d) 获取已掌握单词数 (用于成就 #10, #11, #12)
+    int masteredWords = WordDatabase::getAllWordsWithDifficultyOneCount();
+
+    // e) 获取已解锁成就总数
+    int unlockedCount = learner->getUnlockedAchievements().size();
+
+
+    // --- 2. 检查各项成就 (ID 5-13) ---
+
+    // 连续学习天数成就
+    if (continuousDays >= 7)   emit requestUnlockAchievement(5);
+    if (continuousDays >= 30)  emit requestUnlockAchievement(6);
+    if (continuousDays >= 100) emit requestUnlockAchievement(7);
+
+    // 累计学习天数成就
+    if (totalDays >= 100) emit requestUnlockAchievement(8);
+    if (totalDays >= 365) emit requestUnlockAchievement(9);
+
+    // 掌握单词数系列成就
+    if (masteredWords >= 500)  emit requestUnlockAchievement(10); // 词汇大师
+    if (masteredWords >= 1000) emit requestUnlockAchievement(11); // 词海遨游
+    if (masteredWords >= 2000) emit requestUnlockAchievement(12); // 词霸精英
+
+
+    // 解锁所有成就 (假设总共有13个非隐藏成就)
+    if (unlockedCount >= 12 && !learner->getUnlockedAchievements().contains(13)) {
+        emit requestUnlockAchievement(13);
+    }
+}

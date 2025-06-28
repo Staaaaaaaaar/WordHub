@@ -112,6 +112,10 @@ void MainWindow::connectSignals(){
     connect(gameWidget, &GameWidget::sendId, achievementWidget, &AchievementWidget::unlockAchievement);
 
     connect(achievementWidget, &AchievementWidget::achievementUnlocked, this, &MainWindow::showAchievementToast);
+
+    // --- 修改：使用正确的成员变量指针进行连接 ---
+    connect(userWidget, &UserWidget::requestUnlockAchievement,
+            achievementWidget, &AchievementWidget::unlockAchievement);
 }
 
 void MainWindow::showMes(QString message, int timeout)

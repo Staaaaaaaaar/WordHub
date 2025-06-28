@@ -1231,7 +1231,6 @@ bool WordDatabase::closeCurrentDatabase()
     return true;
 }
 
-
 // 静态方法：获取所有词库中总共学习的单词数量
 int WordDatabase::getAllTotalWordCount() {
     int totalCount = 0;
@@ -1245,6 +1244,23 @@ int WordDatabase::getAllTotalWordCount() {
     }
     return totalCount;
 }
+
+// --- 新增：实现新的静态函数 ---
+// 静态方法：获取所有词库中已掌握（difficulty == 1）的单词总数
+int WordDatabase::getAllWordsWithDifficultyOneCount() {
+    int totalMasteredCount = 0;
+    QVector<QString> dbNames = getlist();
+    for (const QString& dbName : dbNames) {
+        WordDatabase db;
+        if (db.initDatabase(dbName)) {
+            // 调用非静态成员函数并累加其结果的大小
+            totalMasteredCount += db.getWordsWithDifficultyOne().size();
+            db.closeCurrentDatabase();
+        }
+    }
+    return totalMasteredCount;
+}
+
 
 // 静态方法：获取所有词库中指定天数内每天学习单词的数量
 QVector<int> WordDatabase::getAllDailyLearningCountInDays(int days, int userId) {
