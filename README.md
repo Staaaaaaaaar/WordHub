@@ -75,6 +75,7 @@ WordHub_Project_Root/
 | [`utils`](WordHub/docs/utils说明.md) |定义的数据实体，如 `Word`, `Category` 等。 |
 | [`Wordloader`](WordHub/docs/Wordloader说明.md)  | 负责从文件导入单词。|
 | [`DictionaryAPI`](WordHub/docs/DictionaryAPI说明.md) | 负责调用在线词典API。|
+| [`guess_word`](WordHub/docs/guess_word说明.md) |包括后端`python_reasoner.py`、后端交互`guess_word`类以及前端界面`guess_word_widget`类。|
 
 ## 👥 3. 小组成员分工情况
 
