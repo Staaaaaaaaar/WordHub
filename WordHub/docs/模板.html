@@ -1,0 +1,73 @@
+<!-- 这是一个标准的子文档模板，可以命名为 learner说明.html, QueryWidget说明.html 等 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 子文档标题，可以按需修改 -->
+    <title>文档详情 - WordHub</title> 
+    <!-- 引入与主页完全相同的 CSS，确保风格统一 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+    <style>
+        body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+        .markdown-body pre {
+            background-color: #f6f8fa;
+            padding: 16px;
+            border-radius: 6px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            font-size: 1.1em;
+            text-decoration: none;
+            color: #0969da;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="markdown-body">
+    <!-- 添加一个返回主页的链接，提升用户体验 -->
+    <a href="../index.html" class="back-link">← 返回项目主页</a>
+
+    <!--
+        在这里粘贴您原始 .md 文件的内容，并将其转换为 HTML 格式。
+        例如：
+        - `# 标题` 变为 `<h1>标题</h1>`
+        - `**加粗**` 变为 `<strong>加粗</strong>`
+        - `* 列表` 变为 `<ul><li>列表</li></ul>`
+        - ```cpp ... ``` 变为 `<pre><code class="language-cpp">...</code></pre>`
+    -->
+
+    <!-- ============== Learner 类文档内容示例 ============== -->
+    <h1>Learner 类说明</h1>
+    <p><code>Learner</code> 是 WordHub 的核心业务逻辑类，采用单例模式设计，确保全局只有一个用户实例在运行。</p>
+    
+    <h2>主要职责</h2>
+    <ul>
+        <li>管理当前登录用户的状态信息。</li>
+        <li>负责处理学习和复习的核心逻辑，是连接 UI 和数据库的桥梁。</li>
+        <li>跟踪用户学习进度，判断并触发成就解锁事件。</li>
+    </ul>
+
+    <h2>关键方法</h2>
+    <pre><code class="language-cpp">
+    // 获取 Learner 的全局唯一实例
+    static Learner* getInstance();
+
+    // 用户登录
+    bool login(const QString& username, const QString& password);
+
+    // 获取下一个需要学习的单词
+    Word getNextWordToLearn();
+    </code></pre>
+    
+</body>
+</html>
