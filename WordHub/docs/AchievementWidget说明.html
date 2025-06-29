@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AchievementWidget 说明 - WordHub</title> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+    <style>
+        body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+        .markdown-body pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; }
+        .back-link { display: inline-block; margin-bottom: 2rem; font-size: 1.1em; text-decoration: none; color: #0969da; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="markdown-body">
+    <a href="../../index.html" class="back-link">← 返回项目主页</a>
+    <h1>AchievementWidget 类文档</h1>
+    <p><strong>文件位置</strong>：UI/achievementwidget.h, UI/achievementwidget.cpp<br>
+    <strong>负责人</strong>: <a href="https://github.com/Staaaaaaaaar">郑星浩</a></p>
+    <h2>概述</h2>
+    <p>AchievementWidget 是 WordHub 应用程序的成就展示与管理界面，负责集中展示所有成就、显示解锁状态、处理成就解锁逻辑，并通过信号与主窗口协作弹出成就提示。该界面支持滚动浏览、动态刷新，用户可直观了解自己的学习成就与进度。</p>
+    <h2>设计理念</h2>
+    <ul>
+        <li><strong>可视化与激励</strong>：通过列表和美化样式直观展示成就，激励用户持续学习。</li>
+        <li><strong>解耦通信</strong>：采用 Qt 信号槽机制，成就解锁与弹窗提示解耦，便于维护和扩展。</li>
+        <li><strong>数据驱动</strong>：成就状态与数据库实时同步，保证成就展示的准确性和一致性。</li>
+        <li><strong>高可用性</strong>：支持动态刷新和外部事件触发，保证成就界面始终反映最新状态。</li>
+    </ul>
+    <h2>UI对象介绍</h2>
+    <ul>
+        <li><code>Ui::AchievementWidget *ui</code><br>Qt Designer 生成的 UI 指针，包含主界面所有控件。</li>
+        <li><code>QScrollArea *scrollArea</code><br>成就列表滚动区域，支持大量成就的浏览。</li>
+        <li><code>QWidget *scrollContent</code><br>滚动区域内容容器，承载成就项。</li>
+        <li><code>QVBoxLayout *scrollLayout</code><br>成就列表布局，垂直排列所有成就项。</li>
+    </ul>
+    <h2>主要成员变量</h2>
+    <ul>
+        <li><code>Ui::AchievementWidget *ui</code></li>
+        <li><code>QScrollArea *scrollArea</code></li>
+        <li><code>QWidget *scrollContent</code></li>
+        <li><code>QVBoxLayout *scrollLayout</code></li>
+    </ul>
+    <h2>普通成员函数</h2>
+    <ul>
+        <li><code>setupUI()</code><br>初始化滚动区域和主布局。</li>
+        <li><code>connectSignals()</code><br>连接外部信号（如登录成功等）。</li>
+        <li><code>refreshUI()</code><br>刷新成就列表显示。</li>
+        <li><code>QVector&lt;Achievement&gt; loadAchievements()</code><br>加载所有成就及其解锁状态。</li>
+    </ul>
+    <h2>信号</h2>
+    <ul>
+        <li><code>achievementUnlocked(const Achievement &amp;achievement)</code><br>成就解锁时发出，主窗口可弹窗提示。</li>
+    </ul>
+    <h2>槽函数</h2>
+    <ul>
+        <li><code>unlockAchievement(int achievementId)</code><br>解锁指定成就，并发出解锁信号。</li>
+    </ul>
+</body>
+</html>

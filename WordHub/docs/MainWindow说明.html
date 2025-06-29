@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MainWindow 说明 - WordHub</title> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+    <style>
+        body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+        .markdown-body pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; }
+        .back-link { display: inline-block; margin-bottom: 2rem; font-size: 1.1em; text-decoration: none; color: #0969da; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="markdown-body">
+    <a href="../../index.html" class="back-link">← 返回项目主页</a>
+    <h1>MainWindow 类文档</h1>
+    <p><strong>负责人</strong>: <a href="https://github.com/Staaaaaaaaar">郑星浩</a></p>
+    <h2>概述</h2>
+    <p>MainWindow 是 WordHub 应用程序的主窗口类，负责集成和管理所有核心功能模块，包括用户信息、单词查询、学习、成就展示和单词游戏等界面。它通过 QStackedWidget 实现各功能界面的切换，并协调各子窗口之间的数据流与信号传递。</p>
+    <h2>设计理念</h2>
+    <ul>
+        <li><strong>模块化</strong>：各功能界面均以独立的 QWidget 子类实现，便于维护和扩展。</li>
+        <li><strong>解耦与信号槽机制</strong>：通过 Qt 的信号槽机制，各子界面之间低耦合通信，主窗口统一协调成就解锁、消息提示等全局事件。</li>
+        <li><strong>资源管理</strong>：主窗口负责子界面的创建、切换和资源释放。</li>
+        <li><strong>用户体验</strong>：支持深色标题栏、状态栏消息提示、成就弹窗等细节优化。</li>
+    </ul>
+    <h2>UI对象介绍</h2>
+    <ul>
+        <li><code>QStackedWidget *stackedWidget</code>: 主界面的页面容器，用于切换不同功能模块。</li>
+    </ul>
+    <h2>信号</h2>
+    <ul>
+        <li><code>void gameWidgerInit();</code>: 游戏界面初始化信号。</li>
+    </ul>
+    <h2>槽函数</h2>
+    <ul>
+        <li><code>void showMes(QString message, int timeout);</code>: 在状态栏显示提示信息。</li>
+        <li><code>void clearMes();</code>: 清除状态栏信息。</li>
+        <li><code>void showAchievementToast(const Achievement &amp;achievement);</code>: 弹出成就解锁提示。</li>
+    </ul>
+</body>
+</html>

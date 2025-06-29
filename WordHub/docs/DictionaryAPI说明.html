@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DictionaryAPI 说明 - WordHub</title> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+    <style>
+        body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+        .markdown-body pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; }
+        .back-link { display: inline-block; margin-bottom: 2rem; font-size: 1.1em; text-decoration: none; color: #0969da; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="markdown-body">
+    <a href="../../index.html" class="back-link">← 返回项目主页</a>
+    <h1>DictionaryAPI 类文档</h1>
+    <p><strong>负责人</strong>: <a href="https://github.com/stibiums">刘继轩</a></p>
+    <h2>一、概述</h2>
+    <p><code>DictionaryAPI</code> 类封装了对第三方开源 <a href="https://github.com/meetDeveloper/freeDictionaryAPI">API</a> 的网络请求。它能够根据一个单词字符串，获取其完整的结构化信息，并将其解析为程序内部的 <code>Word</code> 对象。</p>
+    <h2>二、设计理念</h2>
+    <p><code>DictionaryAPI</code> 是“外部世界网关”。</p>
+    <ul>
+        <li><strong>设计理念</strong>: 它将所有与特定网络API相关的细节（如URL构造、HTTP请求、JSON解析）全部封装起来，对内仅暴露一个简单的、返回 <code>Word</code> 对象的接口。这种设计使得网络请求的发起方（如<code>Wordloader</code>）无需关心网络通信的复杂性。如果未来需要更换词典API，只需修改 <code>DictionaryAPI</code> 内部的实现，而所有调用它的代码都无需改动。</li>
+    </ul>
+    <h2>三、属性</h2>
+    <ul>
+        <li><code>QNetworkAccessManager* manager</code>: <strong>[私有]</strong> 网络访问管理器，用于发送网络请求。</li>
+    </ul>
+    <h2>四、方法</h2>
+    <ul>
+        <li><code>Word getWordInfo(const QString&amp; word)</code>: <strong>同步方法</strong>。发起网络请求并阻塞当前线程，直到请求完成或超时。
+            <ul>
+                <li><strong>参数</strong>: <code>word</code> 为要查询的单词。</li>
+                <li><strong>返回值</strong>: <code>Word</code>，一个包含完整信息的单词对象。如果失败则返回一个空 <code>Word</code> 对象。</li>
+            </ul>
+        </li>
+        <li><code>void getWordInfoAsync(const QString&amp; word)</code>: <strong>异步方法</strong>。立即返回，不阻塞线程，通过信号返回结果。
+            <ul>
+                <li><strong>参数</strong>: <code>word</code> 为要查询的单词。</li>
+            </ul>
+        </li>
+    </ul>
+    <h2>五、信号</h2>
+    <ul>
+        <li><code>void wordInfoReceived(const Word&amp; word)</code>: 当异步请求成功并解析完成后，发出此信号。
+            <ul>
+                <li><strong>参数</strong>: <code>word</code> 为填充好数据的 <code>Word</code> 对象。</li>
+            </ul>
+        </li>
+        <li><code>void errorOccurred(const QString&amp; errorMessage)</code>: 当网络请求或数据解析过程中发生错误时，发出此信号。
+            <ul>
+                <li><strong>参数</strong>: <code>errorMessage</code> 为描述错误的字符串。</li>
+            </ul>
+        </li>
+    </ul>
+    <h2>六、私有槽函数</h2>
+    <ul>
+        <li><code>void onReplyFinished(QNetworkReply* reply)</code>: 在网络请求完成后被自动调用，是所有处理逻辑的入口。</li>
+    </ul>
+</body>
+</html>

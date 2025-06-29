@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordDatabase 说明 - WordHub</title> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+    <style>
+        body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+        .markdown-body pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; }
+        .back-link { display: inline-block; margin-bottom: 2rem; font-size: 1.1em; text-decoration: none; color: #0969da; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="markdown-body">
+    <a href="../../index.html" class="back-link">← 返回项目主页</a>
+    <h1>WordDatabase 类文档</h1>
+    <p><strong>负责人</strong>: <a href="https://github.com/stibiums">刘继轩</a></p>
+    
+    <h2>一、概述</h2>
+    <p><code>WordDatabase</code> 类负责与 SQLite 数据库交互，管理单词、分类、用户和学习记录。它提供了一系列方法用于数据库的初始化、单词和分类的增删改查、用户认证以及学习记录的管理。同时，还支持获取随机单词、按复习次数筛选单词以及更新单词学习信息等功能。</p>
+    
+    <h2>二、设计理念</h2>
+    <p><code>WordDatabase</code> 是系统的“数据仓库管理员”。</p>
+    <ul>
+        <li><strong>设计理念</strong>: 这是一个典型的数据访问对象（DAO）。它将所有 <code>SQL</code> 语句和数据库连接细节封装在内部，对上层（<code>Learner</code>）提供语义清晰的接口（如 <code>getWordsToReview()</code>, <code>updateWordLearningInfo()</code>）。这种设计极大地降低了系统的耦合度，如果未来需要将 <code>SQLite</code> 更换为 <code>MySQL</code>，我们只需要修改这一个类，而上层代码无需任何变动。</li>
+    </ul>
+
+    <h2>三、属性</h2>
+    <ul>
+        <li><code>QSqlDatabase m_db</code>：数据库连接对象。</li>
+        <li><code>QString Path</code>：当前数据库的路径。</li>
+        <li><code>QString m_connectionName</code>：数据库连接的名称。</li>
+    </ul>
+
+    <h2>四、方法</h2>
+
+    <h3>数据库状态管理</h3>
+    <ul>
+        <li><code>bool isOpen() const</code>：检查数据库是否打开。
+            <p><strong>返回值</strong>：若数据库已打开，返回 <code>true</code>；否则返回 <code>false</code>。</p>
+        </li>
+        <li><code>void close()</code>：关闭数据库连接。</li>
+    </ul>
+
+    <h3>数据库操作</h3>
+    <ul>
+        <li><code>bool initDatabase(const QString &name)</code>：打开已有的数据库。
+            <p><strong>参数</strong>：<code>name</code> 为数据库名称。</p>
+            <p><strong>返回值</strong>：若成功打开数据库，返回 <code>true</code>；否则返回 <code>false</code>。</p>
+        </li>
+        <li><code>bool NewDatabase(const QString &name)</code>：创建新的数据库。
+            <p><strong>参数</strong>：<code>name</code> 为数据库名称。</p>
+            <p><strong>返回值</strong>：若成功创建并打开数据库，返回 <code>true</code>；否则返回 <code>false</code>。</p>
+        </li>
+        <li><code>int getTotalWordCount(int categoryId = -1)</code>：获取数据库中单词的总数。
+            <p><strong>参数</strong>：<code>categoryId</code> 为分类 ID，默认为 -1，表示不指定分类。</p>
+            <p><strong>返回值</strong>：返回数据库中符合条件的单词总数。</p>
+        </li>
+    </ul>
+
+    <h3>单词管理</h3>
+    <ul>
+        <li><code>bool addWord(const Word &word)</code>：向数据库中添加新单词。</li>
+        <li><code>bool deleteWord(int id)</code>：根据单词 ID 删除单词。</li>
+        <li><code>QVector&lt;Word&gt; getAllWords()</code>：获取数据库中所有的单词。</li>
+        <li><code>Word getWordById(int id)</code>：根据单词 ID 获取单词信息。</li>
+        <li><code>QVector&lt;Word&gt; getWordsByName(const QString &wordName)</code>：根据单词名称查找单词。</li>
+        <li><code>QVector&lt;Word&gt; getWordsByCategory(int categoryId)</code>：获取指定分类下的所有单词。</li>
+        <li><code>QVector&lt;Word&gt; getWordsToReview(int count = 20, int userId = 1)</code>：获取需要复习的单词。</li>
+        <li><code>QVector&lt;Word&gt; getRandomWords(int count, int categoryId = -1)</code>：从指定分类中随机获取指定数量的单词。</li>
+        <li><code>QVector&lt;Word&gt; getWordsByReviewCount(int maxReviewCount, int count = -1, int categoryId = -1)</code>：获取复习次数小于等于指定值的单词。</li>
+        <li><code>bool updateWordLearningInfo(int wordId, bool correct, int difficultyChange = 0, int userId = 1)</code>：更新单词学习信息并添加学习记录。</li>
+    </ul>
+
+    <h3>分类管理</h3>
+    <ul>
+        <li><code>bool addCategory(const Category &category)</code>：添加新的分类。</li>
+        <li><code>bool deleteCategory(int id)</code>：根据分类 ID 删除分类。</li>
+        <li><code>QVector&lt;Category&gt; getAllCategories()</code>：获取所有的分类。</li>
+        <li><code>Category getCategoryById(int id)</code>：根据分类 ID 获取分类信息。</li>
+        <li><code>QVector&lt;Category&gt; getCategoriesByName(const QString &categoryName)</code>：根据分类名称查找分类。</li>
+        <li><code>bool assignWordToCategory(int wordId, int categoryId)</code>：将单词添加到指定分类中。</li>
+        <li><code>bool removeWordFromCategory(int wordId, int categoryId)</code>：将单词从指定分类中移除。</li>
+    </ul>
+
+    <h3>用户管理</h3>
+    <ul>
+        <li><code>bool addUser(const QString &username, const QString &password)</code>：添加新用户。</li>
+        <li><code>bool authenticateUser(const QString &username, const QString &password)</code>：验证用户的用户名和密码。</li>
+        <li><code>int getUserId(const QString &username)</code>：根据用户名获取用户 ID。</li>
+    </ul>
+
+    <h3>学习记录管理</h3>
+    <ul>
+        <li><code>bool addLearningRecord(const LearningRecord &record)</code>：添加学习记录。</li>
+        <li><code>QVector&lt;LearningRecord&gt; getUserLearningRecords(int days = 30, int userId = 1)</code>：获取指定用户在指定天数内的学习记录。</li>
+        <li><code>double getLearningAccuracy(int days = 30, int userId = 1)</code>：计算指定用户在指定天数内的学习准确率。</li>
+        <li><code>int getTotalLearningRecordCount(int days = -1, int userId = 1)</code>：获取数据库中学习记录的总数。</li>
+        <li><code>bool resetLearningRecords()</code>：重置学习当前数据库的学习记录。</li>
+    </ul>
+
+    <h3>工具方法</h3>
+    <ul>
+        <li><code>bool createTables()</code>：创建数据库的表结构。</li>
+        <li><code>bool insertSampleData()</code>：插入示例数据。</li>
+        <li><code>static QMap&lt;QString, QString&gt; getpath()</code>：获取所有数据库文件的路径。</li>
+        <li><code>static QVector&lt;QString&gt; getlist()</code>：获取所有数据库的名称。</li>
+        <li><code>const QString& getPath()</code>：获取当前数据库的路径。</li>
+    </ul>
+
+    <h3>私有方法</h3>
+    <ul>
+        <li><code>bool openDatabase(const QString &dbPath, bool isNew)</code>：打开数据库。</li>
+        <li><code>bool execSql(const QString &sql)</code>：执行 SQL 语句。</li>
+        <li><code>int getOrCreatePartOfSpeech(const QString &posName)</code>：获取或创建词性。</li>
+        <li><code>bool savePhonetics(int wordId, const QVector&lt;Phonetic&gt; &phonetics)</code>：保存音标。</li>
+        <li><code>bool saveDefinitions(int wordId, const QMap&lt;QString, QVector&lt;Definition&gt;&gt; &meanings)</code>：保存释义。</li>
+        <li><code>bool loadPhonetics(int wordId, QVector&lt;Phonetic&gt; &phonetics)</code>：加载音标。</li>
+        <li><code>bool loadDefinitions(int wordId, QMap&lt;QString, QVector&lt;Definition&gt;&gt; &meanings)</code>：加载释义。</li>
+        <li><code>bool createWordTable()</code>：创建单词表。</li>
+        <li><code>bool createCategoryTable()</code>：创建分类表。</li>
+        <li><code>bool createUserTable()</code>：创建用户表。</li>
+        <li><code>bool createLearningRecordTable()</code>：创建学习记录表。</li>
+        <li><code>bool createWordCategoryTable()</code>：创建单词 - 分类关联表。</li>
+        <li><code>bool createPhoneticsTable()</code>：创建音标表。</li>
+        <li><code>bool createPartsOfSpeechTable()</code>：创建词性表。</li>
+        <li><code>bool createDefinitionsTable()</code>：创建释义表。</li>
+        <li><code>bool createSynonymsTable()</code>：创建同义词表。</li>
+        <li><code>bool createAntonymsTable()</code>：创建反义词表。</li>
+    </ul>

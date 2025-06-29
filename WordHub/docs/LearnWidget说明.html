@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnWidget 说明 - WordHub</title> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+    <style>
+        body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+        .markdown-body pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; }
+        .back-link { display: inline-block; margin-bottom: 2rem; font-size: 1.1em; text-decoration: none; color: #0969da; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="markdown-body">
+    <a href="../../index.html" class="back-link">← 返回项目主页</a>
+    <h1>LearnWidget 类文档</h1>
+    <p><strong>负责人</strong>: <a href="https://github.com/Staaaaaaaaar">郑星浩</a></p>
+    <h2>概述</h2>
+    <p>LearnWidget 是 WordHub 的核心学习界面，集成了词库管理、学习、复习、测试等功能。它通过多页面切换和数据可视化，为用户提供流畅、高效的单词学习体验。</p>
+    <h2>设计理念</h2>
+    <ul>
+        <li><strong>模块化与可扩展性</strong>：词库、学习、测试等功能分区明确，便于后续扩展和维护。</li>
+        <li><strong>交互友好</strong>：采用 QStackedWidget 管理多页面，按钮、进度条、图表等控件直观展示学习进度。</li>
+        <li><strong>自定义支持</strong>：支持用户导入自定义词库，满足个性化学习需求。</li>
+        <li><strong>数据驱动</strong>：所有学习、测试数据均与数据库实时同步，保证数据一致性。</li>
+    </ul>
+    <h2>UI对象介绍</h2>
+    <ul>
+        <li><code>QStackedWidget *stackedWidget</code>: 多页面容器，管理词库、学习、测试等界面。</li>
+        <li><code>QComboBox *categoryComboBox</code>: 词库选择下拉框。</li>
+        <li><code>QProgressBar *progressBar</code>: 学习/测试进度条。</li>
+        <li><code>WordWidget *wordDisplayWidget</code>: 展示单词详细信息的子控件。</li>
+    </ul>
+    <h2>主要成员变量</h2>
+    <ul>
+        <li><code>QVector&lt;Word&gt; m_testWords</code>: 当前测试的单词列表。</li>
+        <li><code>int m_currentIndex</code>: 当前测试单词的索引。</li>
+        <li><code>QString m_correctAnswer</code>: 当前题目的正确答案。</li>
+    </ul>
+</body>
+</html>

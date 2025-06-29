@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learner 说明 - WordHub</title> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
+    <style>
+        body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+        .markdown-body pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; }
+        .back-link { display: inline-block; margin-bottom: 2rem; font-size: 1.1em; text-decoration: none; color: #0969da; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body class="markdown-body">
+    <a href="../../index.html" class="back-link">← 返回项目主页</a>
+    <h1>Learner 类文档</h1>
+    <p><strong>负责人</strong>: <a href="https://github.com/stibiums">刘继轩</a></p>
+    <h2>一、概述</h2>
+    <p><code>Learner</code> 类是一个单例类，作为项目的核心业务逻辑层。它负责管理当前用户的全局状态，包括个人信息、学习进度、数据库连接以及成就系统。它隔离了UI层和数据层，所有上层UI的请求都通过 <code>Learner</code> 实例进行分发和处理。</p>
+    <h2>二、设计理念</h2>
+    <p><code>Learner</code> 扮演着“项目大脑”的角色。</p>
+    <ul>
+        <li><strong>设计理念</strong>: 采用单例模式，确保全局只有一个用户学习状态的管理者。它作为业务逻辑层，隔离了UI层和数据层。UI层不直接与数据库交互，而是向 <code>Learner</code> 发出请求（如“解锁成就”），<code>Learner</code> 处理完逻辑后再去调用 <code>WordDatabase</code>，这使得业务逻辑的修改和维护都集中在一个地方。</li>
+    </ul>
+    <h2>三、属性</h2>
+    <ul>
+        <li><code>User currentUser</code>: 当前登录的用户对象。</li>
+        <li><code>WordDatabase* db</code>: 指向数据库单例的指针。</li>
+        <li><code>QMap&lt;int, QDateTime&gt; unlockedAchievements</code>: 缓存已解锁的成就。</li>
+    </ul>
+    <h2>四、方法</h2>
+    <h3>静态方法</h3>
+    <ul>
+        <li><code>static Learner* getInstance()</code>: 获取 <code>Learner</code> 的全局唯一实例。</li>
+    </ul>
+    <h3>用户信息管理</h3>
+    <ul>
+        <li><code>bool login(const QString&amp; username, const QString&amp; password)</code>: 用户登录。</li>
+        <li><code>void logout()</code>: 用户登出。</li>
+        <li><code>bool registerUser(const QString&amp; username, const QString&amp; password)</code>: 注册新用户。</li>
+    </ul>
+    <h3>用户状态操作</h3>
+    <ul>
+        <li><code>Word getNextWordToLearn()</code>: 获取下一个要学习的新单词。</li>
+        <li><code>QVector&lt;Word&gt; getWordsToReview(int count)</code>: 获取一批需要复习的单词。</li>
+        <li><code>void recordAnswer(int wordId, bool isCorrect)</code>: 记录一次学习/复习的结果。</li>
+    </ul>
+    <h3>成就系统管理</h3>
+    <ul>
+        <li><code>bool unlockAchievement(int achievementId)</code>: 解锁一个指定的成就。</li>
+        <li><code>const QMap&lt;int, QDateTime&gt;&amp; getUnlockedAchievements() const</code>: 获取所有已解锁成就。</li>
+    </ul>
+    <h3>访问器 (Getters)</h3>
+    <ul>
+        <li><code>User getCurrentUser() const</code>: 获取当前用户对象。</li>
+        <li><code>bool isLoggedIn() const</code>: 检查用户是否已登录。</li>
+    </ul>
+</body>
+</html>
