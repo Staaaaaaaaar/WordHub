@@ -13,11 +13,6 @@
 
 ---
 
-<p align="center">
-  <a href="https://stibiums.github.io/WordHub/" target="_blank" title="点击查看项目主页">
-    <img src="assets/demo_install_thumb.png" alt="WordHub 项目演示" width="80%">
-  </a>
-</p>
 
 <h2 align="center">
   <a href="https://stibiums.github.io/WordHub/">🚀 点击这里，访问我们的项目主页 🚀</a>
