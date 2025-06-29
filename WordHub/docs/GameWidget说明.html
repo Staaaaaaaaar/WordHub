@@ -6,38 +6,46 @@
     <title>GameWidget 说明 - WordHub</title> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
     <style>
-        body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
         .markdown-body pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; }
         .back-link { display: inline-block; margin-bottom: 2rem; font-size: 1.1em; text-decoration: none; color: #0969da; }
         .back-link:hover { text-decoration: underline; }
     </style>
 </head>
-<body class="markdown-body">
-    <a href="../../index.html" class="back-link">← 返回项目主页</a>
-    <h1>GameWidget 类文档</h1>
-    <p><strong>文件位置</strong>：UI/gamewidget.h, UI/gamewidget.cpp<br>
-    <strong>负责人</strong>: <a href="https://github.com/Staaaaaaaaar">郑星浩</a></p>
-    <h2>作用</h2>
-    <p>负责单词游戏的主界面，支持多种游戏（如猜单词、Wordle），并动态管理游戏子界面。</p>
-    <h2>主要成员变量</h2>
-    <ul>
-        <li><code>Ui::GameWidget *ui</code><br>Qt Designer 生成的UI指针。</li>
-        <li><code>guess_word_widget *guessWordWidget</code><br>猜单词游戏界面。</li>
-        <li><code>Wordle *wordle</code><br>Wordle游戏界面指针（动态创建/销毁）。</li>
-    </ul>
-    <h2>主要成员函数</h2>
-    <ul>
-        <li><code>setupUI()</code><br>初始化游戏主界面。</li>
-        <li><code>connectSignals()</code><br>连接按钮与各游戏界面的信号槽。</li>
-        <li><code>onGuessWordWidgetExit()</code><br>处理猜单词游戏退出，返回主菜单。</li>
-        <li><code>onWordleButtonClicked()</code><br>动态创建/切换到Wordle游戏界面。</li>
-        <li><code>returnToGameMenu()</code><br>返回游戏主菜单。</li>
-        <li><code>onBeginSignalCome()</code><br>预留，处理游戏开始信号。</li>
-        <li><code>onAnswerSignalCome()</code><br>预留，处理答题信号。</li>
-    </ul>
-    <h2>主要信号</h2>
-    <ul>
-        <li><code>sendId(int id)</code><br>游戏内成就解锁信号。</li>
-    </ul>
+<body>
+    <main class="markdown-body">
+        <a href="../../index.html" class="back-link">← 返回项目主页</a>
+        <h1>GameWidget 类文档</h1>
+        <p><strong>文件位置</strong>：UI/gamewidget.h, UI/gamewidget.cpp<br>
+        <strong>负责人</strong>: <a href="https://github.com/Staaaaaaaaar">郑星浩</a></p>
+        <h2>作用</h2>
+        <p>负责单词游戏的主界面，支持多种游戏（如猜单词、Wordle），并动态管理游戏子界面。</p>
+        <h2>主要成员变量</h2>
+        <ul>
+            <li><code>Ui::GameWidget *ui</code><br>Qt Designer 生成的UI指针。</li>
+            <li><code>guess_word_widget *guessWordWidget</code><br>猜单词游戏界面。</li>
+            <li><code>Wordle *wordle</code><br>Wordle游戏界面指针（动态创建/销毁）。</li>
+        </ul>
+        <h2>主要成员函数</h2>
+        <ul>
+            <li><code>setupUI()</code><br>初始化游戏主界面。</li>
+            <li><code>connectSignals()</code><br>连接按钮与各游戏界面的信号槽。</li>
+            <li><code>onGuessWordWidgetExit()</code><br>处理猜单词游戏退出，返回主菜单。</li>
+            <li><code>onWordleButtonClicked()</code><br>动态创建/切换到Wordle游戏界面。</li>
+            <li><code>returnToGameMenu()</code><br>返回游戏主菜单。</li>
+            <li><code>onBeginSignalCome()</code><br>预留，处理游戏开始信号。</li>
+            <li><code>onAnswerSignalCome()</code><br>预留，处理答题信号。</li>
+        </ul>
+        <h2>主要信号</h2>
+        <ul>
+            <li><code>sendId(int id)</code><br>游戏内成就解锁信号。</li>
+        </ul>
+    </main>
 </body>
 </html>

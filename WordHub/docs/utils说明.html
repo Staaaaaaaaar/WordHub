@@ -6,48 +6,56 @@
     <title>核心数据结构(utils) 说明 - WordHub</title> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
     <style>
-        body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
         .markdown-body pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; }
         .back-link { display: inline-block; margin-bottom: 2rem; font-size: 1.1em; text-decoration: none; color: #0969da; }
         .back-link:hover { text-decoration: underline; }
     </style>
 </head>
-<body class="markdown-body">
-    <a href="../../index.html" class="back-link">← 返回项目主页</a>
-    <h1>核心数据结构文档 (utils.h)</h1>
-    <p><strong>负责人</strong>: <a href="https://github.com/stibiums">刘继轩</a></p>
-    <h2>一、概述</h2>
-    <p><code>utils.h</code> 文件定义了整个项目中使用到的核心数据实体结构。这些结构体和类作为数据传输对象（DTO），在程序的不同模块之间传递信息。</p>
-    <h2>二、Word 类</h2>
-    <p>单词类，存储一个单词的完整信息，是系统中最核心的数据实体。</p>
-    <h3>属性</h3>
-    <ul>
-        <li><code>int id</code>: 单词在数据库中的唯一标识。</li>
-        <li><code>QString word</code>: 单词文本。</li>
-        <li><code>QVector&lt;Phonetic&gt; phonetics</code>: 单词的音标列表。</li>
-        <li><code>QMap&lt;QString, QVector&lt;Definition&gt;&gt; meanings</code>: 按词性分类的释义。</li>
-        <li><code>QDateTime lastReviewed</code>: 最后复习时间。</li>
-        <li><code>int reviewCount</code>: 复习次数。</li>
-        <li><code>int difficulty</code>: 难度等级（1-5）。</li>
-    </ul>
-    <h2>三、Category 类</h2>
-    <p>单词分类（词库）类。</p>
-    <h3>属性</h3>
-    <ul>
-        <li><code>int id</code>: 分类在数据库中的唯一标识。</li>
-        <li><code>QString name</code>: 分类名称。</li>
-        <li><code>QString description</code>: 对该分类的详细描述。</li>
-    </ul>
-    <h2>四、LearningRecord 类</h2>
-    <p>学习记录类，记录用户的每一次学习行为。</p>
-    <h3>属性</h3>
-    <ul>
-        <li><code>int id</code>: 记录在数据库中的唯一标识。</li>
-        <li><code>int wordId</code>: 关联的单词 ID。</li>
-        <li><code>int userId</code>: 关联的用户 ID。</li>
-        <li><code>QDateTime timestamp</code>: 本次学习发生的时间戳。</li>
-        <li><code>bool correct</code>: 本次学习回答是否正确。</li>
-        <li><code>int difficulty</code>: 学习时单词的难度。</li>
-    </ul>
+<body>
+    <main class="markdown-body">
+        <a href="../../index.html" class="back-link">← 返回项目主页</a>
+        <h1>核心数据结构文档 (utils.h)</h1>
+        <p><strong>负责人</strong>: <a href="https://github.com/stibiums">刘继轩</a></p>
+        <h2>一、概述</h2>
+        <p><code>utils.h</code> 文件定义了整个项目中使用到的核心数据实体结构。这些结构体和类作为数据传输对象（DTO），在程序的不同模块之间传递信息。</p>
+        <h2>二、Word 类</h2>
+        <p>单词类，存储一个单词的完整信息，是系统中最核心的数据实体。</p>
+        <h3>属性</h3>
+        <ul>
+            <li><code>int id</code>: 单词在数据库中的唯一标识。</li>
+            <li><code>QString word</code>: 单词文本。</li>
+            <li><code>QVector&lt;Phonetic&gt; phonetics</code>: 单词的音标列表。</li>
+            <li><code>QMap&lt;QString, QVector&lt;Definition&gt;&gt; meanings</code>: 按词性分类的释义。</li>
+            <li><code>QDateTime lastReviewed</code>: 最后复习时间。</li>
+            <li><code>int reviewCount</code>: 复习次数。</li>
+            <li><code>int difficulty</code>: 难度等级（1-5）。</li>
+        </ul>
+        <h2>三、Category 类</h2>
+        <p>单词分类（词库）类。</p>
+        <h3>属性</h3>
+        <ul>
+            <li><code>int id</code>: 分类在数据库中的唯一标识。</li>
+            <li><code>QString name</code>: 分类名称。</li>
+            <li><code>QString description</code>: 对该分类的详细描述。</li>
+        </ul>
+        <h2>四、LearningRecord 类</h2>
+        <p>学习记录类，记录用户的每一次学习行为。</p>
+        <h3>属性</h3>
+        <ul>
+            <li><code>int id</code>: 记录在数据库中的唯一标识。</li>
+            <li><code>int wordId</code>: 关联的单词 ID。</li>
+            <li><code>int userId</code>: 关联的用户 ID。</li>
+            <li><code>QDateTime timestamp</code>: 本次学习发生的时间戳。</li>
+            <li><code>bool correct</code>: 本次学习回答是否正确。</li>
+            <li><code>int difficulty</code>: 学习时单词的难度。</li>
+        </ul>
+    </main>
 </body>
 </html>

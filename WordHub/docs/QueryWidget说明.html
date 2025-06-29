@@ -6,31 +6,39 @@
     <title>QueryWidget 说明 - WordHub</title> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
     <style>
-        body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
         .markdown-body pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; }
         .back-link { display: inline-block; margin-bottom: 2rem; font-size: 1.1em; text-decoration: none; color: #0969da; }
         .back-link:hover { text-decoration: underline; }
     </style>
 </head>
-<body class="markdown-body">
-    <a href="../../index.html" class="back-link">← 返回项目主页</a>
-    <h1>QueryWidget 类文档</h1>
-    <p><strong>负责人</strong>: <a href="https://github.com/Staaaaaaaaar">郑星浩</a></p>
-    <h2>概述</h2>
-    <p>QueryWidget 是 WordHub 的单词查询主界面，支持本地词库和在线 API 查询，允许用户切换不同词库，并以多标签页（Tab）形式展示查询结果。</p>
-    <h2>设计理念</h2>
-    <ul>
-        <li><strong>多源查询</strong>：支持本地数据库与在线 API 查询。</li>
-        <li><strong>多标签页管理</strong>：每次查询结果以 Tab 形式展示，便于多词对比和历史回溯。</li>
-        <li><strong>词库灵活切换</strong>：下拉框快速切换不同词库。</li>
-        <li><strong>解耦通信</strong>：通过信号槽机制与主窗口、成就系统等模块解耦协作。</li>
-    </ul>
-    <h2>UI对象介绍</h2>
-    <ul>
-        <li><code>QTabWidget* tabWidget</code>: 多标签页控件，展示每次查询的单词详情。</li>
-        <li><code>QLineEdit* searchEdit</code>: 单词输入框，支持回车快捷查询。</li>
-        <li><code>QComboBox* comboBox</code>: 词库选择下拉框。</li>
-        <li><code>QCheckBox* useAPICheckBox</code>: 是否启用 API 查询模式的勾选框。</li>
-    </ul>
+<body>
+    <main class="markdown-body">
+        <a href="../../index.html" class="back-link">← 返回项目主页</a>
+        <h1>QueryWidget 类文档</h1>
+        <p><strong>负责人</strong>: <a href="https://github.com/Staaaaaaaaar">郑星浩</a></p>
+        <h2>概述</h2>
+        <p>QueryWidget 是 WordHub 的单词查询主界面，支持本地词库和在线 API 查询，允许用户切换不同词库，并以多标签页（Tab）形式展示查询结果。</p>
+        <h2>设计理念</h2>
+        <ul>
+            <li><strong>多源查询</strong>：支持本地数据库与在线 API 查询。</li>
+            <li><strong>多标签页管理</strong>：每次查询结果以 Tab 形式展示，便于多词对比和历史回溯。</li>
+            <li><strong>词库灵活切换</strong>：下拉框快速切换不同词库。</li>
+            <li><strong>解耦通信</strong>：通过信号槽机制与主窗口、成就系统等模块解耦协作。</li>
+        </ul>
+        <h2>UI对象介绍</h2>
+        <ul>
+            <li><code>QTabWidget* tabWidget</code>: 多标签页控件，展示每次查询的单词详情。</li>
+            <li><code>QLineEdit* searchEdit</code>: 单词输入框，支持回车快捷查询。</li>
+            <li><code>QComboBox* comboBox</code>: 词库选择下拉框。</li>
+            <li><code>QCheckBox* useAPICheckBox</code>: 是否启用 API 查询模式的勾选框。</li>
+        </ul>
+    </main>
 </body>
 </html>

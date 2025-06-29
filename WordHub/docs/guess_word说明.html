@@ -6,84 +6,92 @@
     <title>guess_word 模块说明 - WordHub</title> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
     <style>
-        body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
         .markdown-body pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; }
         .back-link { display: inline-block; margin-bottom: 2rem; font-size: 1.1em; text-decoration: none; color: #0969da; }
         .back-link:hover { text-decoration: underline; }
     </style>
 </head>
-<body class="markdown-body">
-    <a href="../../index.html" class="back-link">← 返回项目主页</a>
-    <h3><code>guess_word</code>模块说明</h3>
-    <p><strong>负责人</strong>：<a href="https://github.com/missswiftie">郑嘉祺</a></p>
-    <h4>功能与用途</h4>
-    <ul>
-        <li><code>guess_word</code>类实现了猜词游戏模块，通过从数据库中随机抽取单词，调用deepseek的API生成这个单词的释义，并给出有关单词的提示，实现猜词功能。</li>
-    </ul>
-    <h4>游戏python部分<code>python_reasoner</code></h4>
-    <ul>
-        <li><code>get_database</code>函数获取数据库路径。
-            <ul>
-                <li><strong>参数</strong>：<code>database</code>为数据库代号</li>
-                <li><strong>返回值</strong>：返回指定数据库文件路径。</li>
-            </ul>
-        </li>
-        <li><code>get_word</code>函数实现在指定数据库中随机选择单词。
-            <ul>
-                <li><strong>参数</strong>：<code>database</code>为数据库编号。</li>
-                <li><strong>返回值</strong>：返回随机抽取的单词，如果文件打开出现错误，返回word本身</li>
-            </ul>
-        </li>
-        <li><code>unicode_unescape</code>函数通过正则表达式解决AI生成中文内容的编码问题。</li>
-        <li><code>get_word_and_description</code>函数通过deepseek获取<code>get_word</code>中指定单词的英文描述。
-            <ul>
-                <li><strong>参数</strong>：无</li>
-                <li><strong>返回值</strong>：返回deepseek生成的描述。</li>
-            </ul>
-        </li>
-        <li><code>get_translation</code>函数获取上述生成描述的汉语翻译，并对描述中的一些重点词汇进行解析。
-            <ul>
-                <li><strong>参数</strong>：<code>description</code>为<code>get_word_and_description</code>函数生成的英文描述。</li>
-                <li><strong>返回值</strong>：返回英文描述的中文翻译。</li>
-            </ul>
-        </li>
-        <li><code>main</code>函数执行翻译程序，返回数据格式如下所示
-            <pre><code class="language-json">{
+<body>
+    <main class="markdown-body">
+        <a href="../../index.html" class="back-link">← 返回项目主页</a>
+        <h3><code>guess_word</code>模块说明</h3>
+        <p><strong>负责人</strong>：<a href="https://github.com/missswiftie">郑嘉祺</a></p>
+        <h4>功能与用途</h4>
+        <ul>
+            <li><code>guess_word</code>类实现了猜词游戏模块，通过从数据库中随机抽取单词，调用deepseek的API生成这个单词的释义，并给出有关单词的提示，实现猜词功能。</li>
+        </ul>
+        <h4>游戏python部分<code>python_reasoner</code></h4>
+        <ul>
+            <li><code>get_database</code>函数获取数据库路径。
+                <ul>
+                    <li><strong>参数</strong>：<code>database</code>为数据库代号</li>
+                    <li><strong>返回值</strong>：返回指定数据库文件路径。</li>
+                </ul>
+            </li>
+            <li><code>get_word</code>函数实现在指定数据库中随机选择单词。
+                <ul>
+                    <li><strong>参数</strong>：<code>database</code>为数据库编号。</li>
+                    <li><strong>返回值</strong>：返回随机抽取的单词，如果文件打开出现错误，返回word本身</li>
+                </ul>
+            </li>
+            <li><code>unicode_unescape</code>函数通过正则表达式解决AI生成中文内容的编码问题。</li>
+            <li><code>get_word_and_description</code>函数通过deepseek获取<code>get_word</code>中指定单词的英文描述。
+                <ul>
+                    <li><strong>参数</strong>：无</li>
+                    <li><strong>返回值</strong>：返回deepseek生成的描述。</li>
+                </ul>
+            </li>
+            <li><code>get_translation</code>函数获取上述生成描述的汉语翻译，并对描述中的一些重点词汇进行解析。
+                <ul>
+                    <li><strong>参数</strong>：<code>description</code>为<code>get_word_and_description</code>函数生成的英文描述。</li>
+                    <li><strong>返回值</strong>：返回英文描述的中文翻译。</li>
+                </ul>
+            </li>
+            <li><code>main</code>函数执行翻译程序，返回数据格式如下所示
+                <pre><code class="language-json">{
     "status":"success",
     "word":,
     "description":,
     "translation":
 }
 </code></pre>
-        </li>
-    </ul>
-    <h4>游戏后端<code>guess_word</code>部分</h4>
-    <ul>
-        <li><code>processingPython</code>函数启用python解释器以及<code>python_reasoner.py</code>脚本，执行脚本并获取单词，描述以及翻译信息。
-            <ul>
-                <li><strong>参数</strong>：无。</li>
-                <li><strong>返回值</strong>：返回一个map，键为"word"，"description"，"translation"，值分别对应单词，英文描述，中文翻译。</li>
-            </ul>
-        </li>
-    </ul>
-    <h4>游戏前端<code>guess_word_widget</code>部分</h4>
-    <h5>属性</h5>
-    <ul>
-        <li><code>m_word</code>存储待猜测的单词，是<code>QString</code>类型。</li>
-        <li><code>m_description</code>存储待猜测的单词的英文描述，是<code>QString</code>类型。</li>
-        <li><code>m_translation</code>存储待猜测单词描述的翻译，是<code>QString</code>类型。</li>
-        <li><code>m_guesser</code>是后端类对象，负责执行后端类。</li>
-        <li><code>m_watcher</code>是<code>QFutureWatcher&lt;std::map&lt;QString, QString&gt;&gt;</code>类型，负责监测python进程。</li>
-    </ul>
-    <h5>槽函数及信号</h5>
-    <ul>
-        <li><code>onBeginButtonClicked</code>表示按下“开始游戏”按钮后执行的操作，启动python进程。</li>
-        <li><code>handleProcessingFinished</code>信号在python进程结束之后被触发，在框中显示单词的英文描述，并将单词、描述和翻译分别存在<code>m_word</code>,<code>m_description</code>,<code>m_translation</code>变量中。</li>
-        <li><code>on_exitButton_clicked</code>信号在按下“结束游戏”时触发，退出猜词游戏界面。</li>
-        <li><code>onRuleButtonClicked</code>信号在按下“游戏规则”时触发，在框中显示游戏规则。</li>
-        <li><code>onAnswerButtonClicked</code>信号在按下“查看答案”时触发，在框中显示单词的答案和单词英文描述的详细翻译。</li>
-        <li><code>onCommitButtonClicked</code>信号在按下“确定答案”时触发，判断玩家猜测的答案的正误。</li>
-        <li>同时，通过在合适的时间禁用某些按钮（例如在没开始游戏之前不能查看答案）来使得游玩体验更好更合理。</li>
-    </ul>
+            </li>
+        </ul>
+        <h4>游戏后端<code>guess_word</code>部分</h4>
+        <ul>
+            <li><code>processingPython</code>函数启用python解释器以及<code>python_reasoner.py</code>脚本，执行脚本并获取单词，描述以及翻译信息。
+                <ul>
+                    <li><strong>参数</strong>：无。</li>
+                    <li><strong>返回值</strong>：返回一个map，键为"word"，"description"，"translation"，值分别对应单词，英文描述，中文翻译。</li>
+                </ul>
+            </li>
+        </ul>
+        <h4>游戏前端<code>guess_word_widget</code>部分</h4>
+        <h5>属性</h5>
+        <ul>
+            <li><code>m_word</code>存储待猜测的单词，是<code>QString</code>类型。</li>
+            <li><code>m_description</code>存储待猜测的单词的英文描述，是<code>QString</code>类型。</li>
+            <li><code>m_translation</code>存储待猜测单词描述的翻译，是<code>QString</code>类型。</li>
+            <li><code>m_guesser</code>是后端类对象，负责执行后端类。</li>
+            <li><code>m_watcher</code>是<code>QFutureWatcher&lt;std::map&lt;QString, QString&gt;&gt;</code>类型，负责监测python进程。</li>
+        </ul>
+        <h5>槽函数及信号</h5>
+        <ul>
+            <li><code>onBeginButtonClicked</code>表示按下“开始游戏”按钮后执行的操作，启动python进程。</li>
+            <li><code>handleProcessingFinished</code>信号在python进程结束之后被触发，在框中显示单词的英文描述，并将单词、描述和翻译分别存在<code>m_word</code>,<code>m_description</code>,<code>m_translation</code>变量中。</li>
+            <li><code>on_exitButton_clicked</code>信号在按下“结束游戏”时触发，退出猜词游戏界面。</li>
+            <li><code>onRuleButtonClicked</code>信号在按下“游戏规则”时触发，在框中显示游戏规则。</li>
+            <li><code>onAnswerButtonClicked</code>信号在按下“查看答案”时触发，在框中显示单词的答案和单词英文描述的详细翻译。</li>
+            <li><code>onCommitButtonClicked</code>信号在按下“确定答案”时触发，判断玩家猜测的答案的正误。</li>
+            <li>同时，通过在合适的时间禁用某些按钮（例如在没开始游戏之前不能查看答案）来使得游玩体验更好更合理。</li>
+        </ul>
+    </main>
 </body>
 </html>

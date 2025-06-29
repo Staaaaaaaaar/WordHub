@@ -6,32 +6,39 @@
     <title>mdx_to_json 脚本说明 - WordHub</title> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-light.min.css">
     <style>
-        body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 45px; }
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
         .markdown-body pre { background-color: #f6f8fa; padding: 16px; border-radius: 6px; }
         .back-link { display: inline-block; margin-bottom: 2rem; font-size: 1.1em; text-decoration: none; color: #0969da; }
         .back-link:hover { text-decoration: underline; }
     </style>
 </head>
-<body class="markdown-body">
-    <a href="../../index.html" class="back-link">← 返回项目主页</a>
-    <h3>杂项：mdx_to_json.py文件说明</h3>
-    <p><strong>负责人</strong>：<a href="https://github.com/missswiftie">郑嘉祺</a></p>
-    <h4>主要功能</h4>
-    <ul>
-        <li>互联网上的开源字典很多情况下以<code>.mdx</code>文件形式存在，为了获取其中的所有数据，需要将<code>.mdx</code>文件转化成格式清晰的文件，如<code>.json</code>文件。</li>
-        <li><code>mdx_to_json.py</code>文件实现了这一功能。</li>
-    </ul>
-    <h4>实现步骤</h4>
-    <ul>
-        <li>应用<code>pyglossary</code>库，在虚拟环境中将<code>.mdx</code>文件转化成html形式的<code>.json</code>文件，以windows系统为例。
-            <pre><code class="language-bash">cd Your Project
+<body>
+    <main class="markdown-body">
+        <a href="../../index.html" class="back-link">← 返回项目主页</a>
+        <h3>杂项：mdx_to_json.py文件说明</h3>
+        <p><strong>负责人</strong>：<a href="https://github.com/missswiftie">郑嘉祺</a></p>
+        <h4>主要功能</h4>
+        <ul>
+            <li>互联网上的开源字典很多情况下以<code>.mdx</code>文件形式存在，为了获取其中的所有数据，需要将<code>.mdx</code>文件转化成格式清晰的文件，如<code>.json</code>文件。</li>
+            <li><code>mdx_to_json.py</code>文件实现了这一功能。</li>
+        </ul>
+        <h4>实现步骤</h4>
+        <ul>
+            <li>应用<code>pyglossary</code>库，在虚拟环境中将<code>.mdx</code>文件转化成html形式的<code>.json</code>文件，以windows系统为例。
+                <pre><code class="language-bash">cd Your Project
 python -m venv glossary-env
 glossary-env\Scripts\activate
 pip install pyglossary
 pyglossary --write-format=JSON oxford_9.mdx oxford_9.json</code></pre>
-        </li>
-        <li>通过<code>mdx_to_json.py</code>文件将<code>oxford_9.json</code>文件转化成结构清晰的<code>structed_oxford_9.json</code>文件，其中每个单词以如下形式存在：
-            <pre><code class="language-json">{
+            </li>
+            <li>通过<code>mdx_to_json.py</code>文件将<code>oxford_9.json</code>文件转化成结构清晰的<code>structed_oxford_9.json</code>文件，其中每个单词以如下形式存在：
+                <pre><code class="language-json">{
     "energize": {
         "word": "energize",
         "phonetics": {
@@ -61,20 +68,21 @@ pyglossary --write-format=JSON oxford_9.mdx oxford_9.json</code></pre>
         ]
     }
 }</code></pre>
-        </li>
-    </ul>
-    <h4>代码解析</h4>
-    <ul>
-        <li><code>parse_word_entry</code>函数将一个单词的html文件内容转化成结构化的数据类型。其中参数<code>html_content</code>为字符串，返回值<code>result</code>为字典，数据结构如下所示。其中html内容用<code>beautifulSoup</code>解析。
-            <pre><code class="language-python">result = {
+            </li>
+        </ul>
+        <h4>代码解析</h4>
+        <ul>
+            <li><code>parse_word_entry</code>函数将一个单词的html文件内容转化成结构化的数据类型。其中参数<code>html_content</code>为字符串，返回值<code>result</code>为字典，数据结构如下所示。其中html内容用<code>beautifulSoup</code>解析。
+                <pre><code class="language-python">result = {
     "word": "",
     "phonetics": {"uk": {}, "us": {}},
     "pos": "",
     "definition": "",
     "examples": []
 }</code></pre>
-        </li>
-        <li><code>convert_to_structured_json</code>函数的输入参数为<code>input_file</code>以及<code>output_file</code>，将<code>input_file</code>中的html内容转化成结构化的数据结构，并以<code>.json</code>的格式写入<code>output_file</code>。</li>
-    </ul>
+            </li>
+            <li><code>convert_to_structured_json</code>函数的输入参数为<code>input_file</code>以及<code>output_file</code>，将<code>input_file</code>中的html内容转化成结构化的数据结构，并以<code>.json</code>的格式写入<code>output_file</code>。</li>
+        </ul>
+    </main>
 </body>
 </html>

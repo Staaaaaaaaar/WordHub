@@ -190,23 +190,23 @@
         <table>
             <thead><tr><th>类名 (Class)</th><th>主要职责 (Responsibilities)</th></tr></thead>
             <tbody>
-                <tr><td><a href="docs/learner说明.html"><code>Learner</code></a></td><td>核心业务逻辑类（单例），负责管理当前用户状态、学习进度、成就解锁等，是UI与数据之间的桥梁。</td></tr>
-                <tr><td><a href="docs/WordDatabase说明.html"><code>WordDatabase</code></a></td><td>数据库操作类，封装所有与 SQLite 相关的操作，包括单词、词库、用户、学习记录的增删改查。</td></tr>
-                <tr><td><a href="docs/utils说明.html"><code>utils</code></a></td><td>定义的数据实体，如 <code>Word</code>, <code>Category</code> 等。</td></tr>
-                <tr><td><a href="docs/Wordloader说明.html"><code>Wordloader</code></a></td><td>负责从文件导入单词。</td></tr>
-                <tr><td><a href="docs/DictionaryAPI说明.html"><code>DictionaryAPI</code></a></td><td>负责调用在线词典API。</td></tr>
-                <tr><td><a href="docs/guess_word说明.html"><code>guess_word</code></a></td><td>包括后端<code>python_reasoner.py</code>、后端交互<code>guess_word</code>类以及前端界面<code>guess_word_widget</code>类。</td></tr>
-                <tr><td><a href="docs/wordle说明.html"><code>wordle</code></a></td><td>通过<code>wordle</code>类进行wordle游戏。</td></tr>
+                <tr><td><a href="WordHub/docs/learner说明.html"><code>Learner</code></a></td><td>核心业务逻辑类（单例），负责管理当前用户状态、学习进度、成就解锁等，是UI与数据之间的桥梁。</td></tr>
+                <tr><td><a href="WordHub/docs/WordDatabase说明.html"><code>WordDatabase</code></a></td><td>数据库操作类，封装所有与 SQLite 相关的操作，包括单词、词库、用户、学习记录的增删改查。</td></tr>
+                <tr><td><a href="WordHub/docs/utils说明.html"><code>utils</code></a></td><td>定义的数据实体，如 <code>Word</code>, <code>Category</code> 等。</td></tr>
+                <tr><td><a href="WordHub/docs/Wordloader说明.html"><code>Wordloader</code></a></td><td>负责从文件导入单词。</td></tr>
+                <tr><td><a href="WordHub/docs/DictionaryAPI说明.html"><code>DictionaryAPI</code></a></td><td>负责调用在线词典API。</td></tr>
+                <tr><td><a href="WordHub/docs/guess_word说明.html"><code>guess_word</code></a></td><td>包括后端<code>python_reasoner.py</code>、后端交互<code>guess_word</code>类以及前端界面<code>guess_word_widget</code>类。</td></tr>
+                <tr><td><a href="WordHub/docs/wordle说明.html"><code>wordle</code></a></td><td>通过<code>wordle</code>类进行wordle游戏。</td></tr>
             </tbody>
         </table>
         <h4>前端核心</h4>
         <table>
             <thead><tr><th>类名 (Class)</th><th>主要职责与设计理念</th></tr></thead>
             <tbody>
-                <tr><td><a href="docs/QueryWidget说明.html"><code>QueryWidget</code></a></td><td><strong>单词查询的“多面手”</strong>。该类负责为用户提供灵活的单词查询体验。它支持本地数据库和在线API两种查询方式，采用多标签页（Tab）管理查询历史，便于用户多词对比和快速切换。通过信号槽机制与主窗口和成就系统解耦，查询成功时自动触发成就解锁。分类收藏功能采用弹出菜单和多选设计，提升用户管理单词的效率和体验。</td></tr>
-                <tr><td><a href="docs/LearnWidget说明.html"><code>LearnWidget</code></a></td><td><strong>学习流程的“调度中心”</strong>。该类聚合了词库管理、学习、复习、测试等核心学习流程。采用多页面（QStackedWidget）切换，保证流程清晰。通过数据可视化（如柱状图、进度条）直观展示学习进度。词库管理支持本地导入和多词库切换，学习/复习/测试流程高度模块化，便于扩展和维护。</td></tr>
-                <tr><td><a href="docs/AchievementWidget说明.html"><code>AchievementWidget</code></a></td><td><strong>成就系统的“展示橱窗”</strong>。该类负责加载、展示所有成就，并根据用户学习行为动态刷新解锁状态。采用滚动区域和分组布局，保证成就展示的美观和可扩展性。通过信号槽与主窗口和UserWidget解耦，成就解锁时自动弹出Toast提示，增强用户激励。</td></tr>
-                <tr><td><a href="docs/GameWidget说明.html"><code>GameWidget</code></a></td><td><strong>趣味学习的“游戏大厅”</strong>。该类作为游戏模块的入口，集成Wordle和“看描述猜单词”两大游戏。采用QStackedWidget管理不同游戏界面，保证切换流畅。每次进入游戏时动态创建游戏实例，确保每局游戏状态独立。通过信号槽与成就系统联动，游戏达成条件时自动解锁相关成就。</td></tr>
+                <tr><td><a href="WordHub/docs/QueryWidget说明.html"><code>QueryWidget</code></a></td><td><strong>单词查询的“多面手”</strong>。该类负责为用户提供灵活的单词查询体验。它支持本地数据库和在线API两种查询方式，采用多标签页（Tab）管理查询历史，便于用户多词对比和快速切换。通过信号槽机制与主窗口和成就系统解耦，查询成功时自动触发成就解锁。分类收藏功能采用弹出菜单和多选设计，提升用户管理单词的效率和体验。</td></tr>
+                <tr><td><a href="WordHub/docs/LearnWidget说明.html"><code>LearnWidget</code></a></td><td><strong>学习流程的“调度中心”</strong>。该类聚合了词库管理、学习、复习、测试等核心学习流程。采用多页面（QStackedWidget）切换，保证流程清晰。通过数据可视化（如柱状图、进度条）直观展示学习进度。词库管理支持本地导入和多词库切换，学习/复习/测试流程高度模块化，便于扩展和维护。</td></tr>
+                <tr><td><a href="WordHub/docs/AchievementWidget说明.html"><code>AchievementWidget</code></a></td><td><strong>成就系统的“展示橱窗”</strong>。该类负责加载、展示所有成就，并根据用户学习行为动态刷新解锁状态。采用滚动区域和分组布局，保证成就展示的美观和可扩展性。通过信号槽与主窗口和UserWidget解耦，成就解锁时自动弹出Toast提示，增强用户激励。</td></tr>
+                <tr><td><a href="WordHub/docs/GameWidget说明.html"><code>GameWidget</code></a></td><td><strong>趣味学习的“游戏大厅”</strong>。该类作为游戏模块的入口，集成Wordle和“看描述猜单词”两大游戏。采用QStackedWidget管理不同游戏界面，保证切换流畅。每次进入游戏时动态创建游戏实例，确保每局游戏状态独立。通过信号槽与成就系统联动，游戏达成条件时自动解锁相关成就。</td></tr>
             </tbody>
         </table>
 
