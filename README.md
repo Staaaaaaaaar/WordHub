@@ -9,10 +9,14 @@ WordHub 旨在通过现代化的交互界面、科学的记忆方法和趣味性
 ## 🎬 功能演示
 
 <details>
-<summary><strong>▶️ 点击查看：程序安装演示</strong></summary>
+<summary><strong>▶️ 点击查看：程序安装演示 (带声音，不跳转)</strong></summary>
 <br>
 
-![程序安装演示](https://github.com/user-attachments/assets/2296a1a7-c3cb-4546-8508-1c930ad522b3)
+<!-- 链接到 GitHub Pages 上的视频播放页面 -->
+<a href="https://stibiums.github.io/WordHub/play_install_demo.html">
+  <!-- 引用仓库内的缩略图 -->
+  <img src="assets/demo_install_thumb.png" alt="点击播放程序安装演示" style="max-width:100%;">
+</a>
 
 </details>
 
