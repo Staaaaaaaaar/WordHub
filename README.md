@@ -9,7 +9,7 @@ WordHub 旨在通过现代化的交互界面、科学的记忆方法和趣味性
 ## 🎬 功能演示
 
 <details>
-<summary><strong>▶️ 点击查看：程序安装演示 (带声音，不跳转)</strong></summary>
+<summary><strong>▶️ 点击查看：程序安装演示</strong></summary>
 <br>
 
 <!-- 链接到 GitHub Pages 上的视频播放页面 -->

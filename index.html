@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordHub - 简洁高效的英语词汇学习软件</title>
+    <!-- 引入能模拟 GitHub Markdown 样式的 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.1/github-markdown-dark.min.css">
+    <style>
+        /* 基本布局和样式调整 */
+        body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+        /* 确保视频和图片宽度自适应 */
+        video, img {
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        video {
+            border-radius: 6px;
+            margin-top: 1em;
+        }
+        /* 修复 details/summary 标签的默认样式 */
+        details > summary {
+            cursor: pointer;
+            font-size: 1.25em;
+            font-weight: 600;
+            margin: 1em 0;
+        }
+        /* 为代码块添加一些样式 */
+        .markdown-body pre {
+            background-color: #161b22;
+            padding: 16px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body class="markdown-body">
+    <h1>WordHub - 简洁高效的英语词汇学习软件</h1>
+    <p><strong>北京大学2025程序设计实习第120组大作业</strong></p>
+    <p>WordHub 旨在通过现代化的交互界面、科学的记忆方法和趣味性的游戏模块，为用户提供一个高效、沉浸式的单词学习环境。本项目不仅实现了完整的单词学习闭环，还包含了用户系统、成就激励、数据可视化和 AI 互动游戏等多种功能。</p>
+    <hr>
+
+    <h2>🎬 功能演示</h2>
+    <details>
+        <summary>▶️ 点击查看：程序安装演示</summary>
+        <video controls preload="metadata" src="videos/demo_install.mp4">您的浏览器不支持 Video 标签。</video>
+    </details>
+    <details>
+        <summary>▶️ 点击查看：注册与用户登录</summary>
+        <video controls preload="metadata" src="videos/demo_login.mp4">您的浏览器不支持 Video 标签。</video>
+    </details>
+    <details>
+        <summary>▶️ 点击查看：查询单词展示</summary>
+        <video controls preload="metadata" src="videos/demo_query.mp4">您的浏览器不支持 Video 标签。</video>
+    </details>
+    <details>
+        <summary>▶️ 点击查看：学习模式展示</summary>
+        <video controls preload="metadata" src="videos/demo_learn.mp4">您的浏览器不支持 Video 标签。</video>
+    </details>
+    <details>
+        <summary>▶️ 点击查看：导入词库展示</summary>
+        <video controls preload="metadata" src="videos/demo_import.mp4">您的浏览器不支持 Video 标签。</video>
+    </details>
+    <details>
+        <summary>▶️ 点击查看：游戏学习展示</summary>
+        <video controls preload="metadata" src="videos/demo_game.mp4">您的浏览器不支持 Video 标签。</video>
+    </details>
+
+    <h2>✨ 1. 程序功能介绍 (核心功能)</h2>
+    <ul>
+        <li><strong>科学学习系统</strong>:
+            <ul>
+                <li><strong>学习模式</strong>: 智能推荐新单词进行学习。</li>
+                <li><strong>复习模式</strong>: 基于自定义算法，自动筛选需要复习的单词。</li>
+            </ul>
+        </li>
+        <li><strong>强大的词库管理</strong>:
+            <ul>
+                <li>支持从本地 <code>TXT</code> 文件导入自定义词库，格式兼容性强，并可通过在线词典 API 自动补全详细释义。（可见<a href="杂项/词库导入样例.txt"><code>词库导入样例.txt</code></a>）</li>
+                <li>内置常见的英语词库（如 CET4、CET6、GRE 等）。</li>
+                <li>支持创建多个词库，并可在不同词库间自由切换。</li>
+            </ul>
+        </li>
+        <li><strong>快速信息索引</strong>: 提供强大的单词查询功能，可快速检索本地词库或通过在线 API 获取更详细的实时词汇信息。</li>
+        <li><strong>数据可视化</strong>:
+            <ul>
+                <li>通过多种图表，直观展示用户的学习总览、每日学习量、正确率变化等。</li>
+                <li>清晰追踪每一个单词的复习次数、掌握程度和最后复习时间。</li>
+            </ul>
+        </li>
+        <li><strong>游戏化学习</strong>:
+            <ul>
+                <li>内置经典的 <strong>Wordle</strong> 猜词游戏，寓教于乐。</li>
+                <li>集成基于 <strong>DeepSeek</strong> 的“看描述猜单词”游戏，提供全新的 AI 互动学习体验。</li>
+            </ul>
+        </li>
+        <li><strong>完善的用户与成就系统</strong>:
+            <ul>
+                <li>支持用户注册与登录，所有学习数据云端同步（模拟）。</li>
+                <li>独特的<strong>成就系统</strong>，当用户达成学习里程碑时，会弹出精美的 Toast 提示以示鼓励。</li>
+            </ul>
+        </li>
+        <li><strong>现代化桌面体验</strong>:
+            <ul>
+                <li>采用 Qt Widgets 构建，性能卓越，响应迅速。</li>
+                <li>采用深色主题（AMOLED），并适配 Windows 系统的暗色标题栏，提供统一、沉浸的视觉体验。</li>
+                <li>提供专业的 <a href="https://github.com/stibiums/WordHub/releases"><code>WordHub.exe</code></a> 安装包，方便在任何 Windows 电脑上部署。</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>👥 2. 小组成员分工情况</h2>
+    <h3>2.1 小组成员</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>成员</th>
+                <th>GitHub</th>
+                <th>主要负责模块</th>
+                <th>具体分工</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>刘继轩</strong></td>
+                <td><a href="https://github.com/stibiums">stibiums</a></td>
+                <td><strong>后端核心和杂项</strong></td>
+                <td>负责整体项目架构设计；数据库模块（SQLite）、数据导入处理、用户系统、学习记录、网络词典调用、成就系统的实现、用户类核心逻辑的编写。用嵌入式python解决游戏模块调用问题。打包发布应用程序完成应用文档。解决杂项问题。</td>
+            </tr>
+            <tr>
+                <td><strong>郑星浩</strong></td>
+                <td><a href="https://github.com/Staaaaaaaaar">Staaaaaaaaar</a></td>
+                <td><strong>前端界面</strong></td>
+                <td>负责全部 UI 界面的设计与实现，包括主窗口、学习、查询、用户中心、数据可视化图表、游戏等界面的开发与美化。 主要提交记录见<a href="https://github.com/Staaaaaaaaar/WordHub">fork仓库</a></td>
+            </tr>
+            <tr>
+                <td><strong>郑嘉祺</strong></td>
+                <td><a href="https://github.com/missswiftie">missswiftie</a></td>
+                <td><strong>游戏模块以及其他</strong></td>
+                <td>负责字典源文件解析（<a href="WordHub/docs/mdx_to_json说明.md">.mdx转.json脚本</a>）；负责 Wordle 和“看描述猜单词”两个游戏的核心逻辑实现，包括 Python 端的 AI 接口调用和 C++ 端的整合；负责用户注册登录界面以及用户界面（包括用户信息、用户登录热力图等）。</td>
+            </tr>
+        </tbody>
+    </table>
+    <h3>2.2 项目贡献</h3>
+    <h4>贡献者</h4>
+    <p align="center">
+        <a href="https://github.com/stibiums/WordHub/graphs/contributors"><img src="https://contrib.rocks/image?repo=stibiums/WordHub" alt="本项目的贡献者"></a>
+    </p>
+    <h4>团队提交活动图</h4>
+    <p align="center">
+        <a href="https://github.com/stibiums/WordHub/commits?author=stibiums"><img src="https://github-readme-activity-graph.vercel.app/graph?username=stibiums&repo=WordHub&theme=github-dark&hide_border=true&title_color=ffc107&icon_color=ffc107" alt="stibiums's Commit Activity Graph"></a>
+        <a href="https://github.com/stibiums/WordHub/commits?author=Staaaaaaaaar"><img src="https://github-readme-activity-graph.vercel.app/graph?username=Staaaaaaaaar&repo=WordHub&theme=github-dark&hide_border=true&title_color=87ceeb&icon_color=87ceeb" alt="Staaaaaaaaar's Commit Activity Graph"></a>
+        <a href="https://github.com/stibiums/WordHub/commits?author=missswiftie"><img src="https://github-readme-activity-graph.vercel.app/graph?username=missswiftie&repo=WordHub&theme=github-dark&hide_border=true&title_color=90ee90&icon_color=90ee90" alt="missswiftie's Commit Activity Graph"></a>
+    </p>
+
+    <h2>🏛️ 3. 项目模块与类设计</h2>
+    <h3>3.1 模块结构</h3>
+    <pre><code>WordHub_Project_Root/
+├── WordHub/                       # Qt C++ 项目源码目录
+│   ├── UI/                        # UI 相关文件 (.ui, .cpp, .h, .qrc)
+│   ├── back_head/                 # 后端模块头文件
+│   ├── back_src/                  # 后端模块源文件
+│   ├── API/                       # 外部 API 接口封装
+│   ├── guess_according_to_description/ # “看描述猜单词”游戏的 C++ 接口
+│   ├── WordHub.pro                # Qt 项目配置文件
+│   └── main.cpp                   # 程序入口
+├── python_reasoner/               # Python 脚本模块 (供游戏调用)
+├── 配置文件/                      # 运行所需的配置文件 (e.g., config.zip)
+├── docs/                          # 项目相关文档 (设计、规范等)
+└── WordHub_Setup.iss              # Inno Setup 打包脚本</code></pre>
+    <h3>3.2 主要类设计</h3>
+    <p><strong>点击类名即可查看每个类的详细介绍文档</strong></p>
+    <h4>后端核心</h4>
+    <table>
+        <thead><tr><th>类名 (Class)</th><th>主要职责 (Responsibilities)</th></tr></thead>
+        <tbody>
+            <tr><td><a href="WordHub/docs/learner说明.md"><code>Learner</code></a></td><td>核心业务逻辑类（单例），负责管理当前用户状态、学习进度、成就解锁等，是UI与数据之间的桥梁。</td></tr>
+            <tr><td><a href="WordHub/docs/WordDatabase说明.md"><code>WordDatabase</code></a></td><td>数据库操作类，封装所有与 SQLite 相关的操作，包括单词、词库、用户、学习记录的增删改查。</td></tr>
+            <tr><td><a href="WordHub/docs/utils说明.md"><code>utils</code></a></td><td>定义的数据实体，如 <code>Word</code>, <code>Category</code> 等。</td></tr>
+            <tr><td><a href="WordHub/docs/Wordloader说明.md"><code>Wordloader</code></a></td><td>负责从文件导入单词。</td></tr>
+            <tr><td><a href="WordHub/docs/DictionaryAPI说明.md"><code>DictionaryAPI</code></a></td><td>负责调用在线词典API。</td></tr>
+            <tr><td><a href="WordHub/docs/guess_word说明.md"><code>guess_word</code></a></td><td>包括后端<code>python_reasoner.py</code>、后端交互<code>guess_word</code>类以及前端界面<code>guess_word_widget</code>类。</td></tr>
+            <tr><td><a href="WordHub/docs/wordle说明.md"><code>wordle</code></a></td><td>通过<code>wordle</code>类进行wordle游戏。</td></tr>
+        </tbody>
+    </table>
+    <h4>前端核心</h4>
+    <table>
+        <thead><tr><th>类名 (Class)</th><th>主要职责与设计理念</th></tr></thead>
+        <tbody>
+            <tr><td><a href="WordHub/docs/QueryWidget说明.md"><code>QueryWidget</code></a></td><td><strong>单词查询的“多面手”</strong>。该类负责为用户提供灵活的单词查询体验...</td></tr>
+            <tr><td><a href="WordHub/docs/LearnWidget说明.md"><code>LearnWidget</code></a></td><td><strong>学习流程的“调度中心”</strong>。该类聚合了词库管理、学习、复习、测试等核心学习流程...</td></tr>
+            <tr><td><a href="WordHub/docs/AchievementWidget说明.md"><code>AchievementWidget</code></a></td><td><strong>成就系统的“展示橱窗”</strong>。该类负责加载、展示所有成就，并根据用户学习行为动态刷新解锁状态...</td></tr>
+            <tr><td><a href="WordHub/docs/GameWidget说明.md"><code>GameWidget</code></a></td><td><strong>趣味学习的“游戏大厅”</strong>。该类作为游戏模块的入口，集成Wordle和“看描述猜单词”两大游戏...</td></tr>
+        </tbody>
+    </table>
+
+    <h2>💡 4. 项目总结与反思</h2>
+    <h3>4.1 项目总结</h3>
+    <p>本项目成功实现了 WordHub 单词学习软件的预定目标...</p>
+    <h3>4.2 项目反思</h3>
+    <ul>
+        <li><strong>技术收获</strong>: 通过本次项目，我们深入实践了 C++/Qt 的大型项目开发流程...</li>
+        <li><strong>遇到的挑战</strong>: 在开发初期，模块间的接口定义不够清晰...</li>
+        <li><strong>团队协作</strong>: 团队成员间的分工明确...</li>
+        <li><strong>使用git</strong>: 在项目开发过程中，我们使用 Git 进行版本控制...</li>
+        <li><strong>可改进之处</strong>:
+            <ol>
+                <li><strong>多线程优化</strong>: 目前单词导入和网络请求在主线程执行...</li>
+                <li><strong>代码复用</strong>: 部分UI控件的代码可以进一步封装...</li>
+                <li><strong>更多功能</strong>: 未来可以考虑增加更多的学习模式和游戏模块...</li>
+            </ol>
+        </li>
+    </ul>
+
+    <h2>🚀 附：快速上手指南</h2>
+    <h3>普通用户</h3>
+    <p>如果您是普通用户，想要快速体验 WordHub 的功能，请按照以下步骤操作：</p>
+    <ol>
+        <li><strong>下载可执行文件</strong>:
+            <ul>
+                <li>前往 <a href="https://github.com/stibiums/WordHub/releases">Releases</a> 页面，下载最新版本的 <code>WordHub.exe</code> 安装包。</li>
+                <li>解压缩后，双击 <code>WordHub.exe</code> 运行程序。</li>
+            </ul>
+        </li>
+    </ol>
+    <h3>开发者</h3>
+    <p>如果您是开发者，想要参与项目开发或修改，请按照以下步骤操作：</p>
+    <ol>
+        <li><strong>获取源码</strong>:
+            <pre><code># 本项目的源代码公开地址即为本仓库地址
+git clone https://github.com/stibiums/WordHub.git</code></pre>
+        </li>
+        <li><strong>环境配置</strong>: 使用 <strong>Qt Creator</strong> 打开项目根目录下的 <code>WordHub/WordHub.pro</code> 文件。请确保使用 <strong>Qt 6.x</strong> 版本和 <strong>MinGW 64-bit</strong> 编译器。</li>
+        <li><strong>构建运行</strong>:
+            <ul>
+                <li>直接在 Qt Creator 中构建并运行项目。</li>
+                <li><strong>重要</strong>: 首次运行前，请将<code>配置文件/config.zip</code>解压到编译生成的可执行文件（<code>.exe</code>）所在的目录下。</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2>📄 开源许可</h2>
+    <p>本项目采用 <a href="LICENSE">MIT License</a></p>
+</body>
+</html>
