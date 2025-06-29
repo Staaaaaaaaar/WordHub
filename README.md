@@ -8,23 +8,54 @@ WordHub 旨在通过现代化的交互界面、科学的记忆方法和趣味性
 
 ## 🎬 功能演示
 
-### 程序安装演示
+<details>
+<summary><strong>▶️ 点击查看：程序安装演示</strong></summary>
+<br>
+
 ![程序安装演示](https://github.com/user-attachments/assets/2296a1a7-c3cb-4546-8508-1c930ad522b3)
 
-### 注册与用户登录
-<!-- 在这里插入“注册与用户登录”的视频或GIF -->
+</details>
 
-### 查询单词展示
-<!-- 在这里插入“查询单词展示”的视频或GIF -->
+<details>
+<summary><strong>▶️ 点击查看：注册与用户登录</strong></summary>
+<br>
 
-### 学习模式展示
-<!-- 在这里插入“学习模式展示”的视频或GIF -->
+<!-- 在这里插入“注册与用户登录”的视频 -->
+<!-- 示例: ![注册与用户登录](https://github.com/user-attachments/assets/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) -->
 
-### 导入词库展示
-<!-- 在这里插入“导入词库展示”的视频或GIF -->
+</details>
 
-### 游戏学习展示
-<!-- 在这里插入“游戏学习展示”的视频或GIF -->
+<details>
+<summary><strong>▶️ 点击查看：查询单词展示</strong></summary>
+<br>
+
+<!-- 在这里插入“查询单词展示”的视频 -->
+
+</details>
+
+<details>
+<summary><strong>▶️ 点击查看：学习模式展示</strong></summary>
+<br>
+
+<!-- 在这里插入“学习模式展示”的视频 -->
+
+</details>
+
+<details>
+<summary><strong>▶️ 点击查看：导入词库展示</strong></summary>
+<br>
+
+<!-- 在这里插入“导入词库展示”的视频 -->
+
+</details>
+
+<details>
+<summary><strong>▶️ 点击查看：游戏学习展示</strong></summary>
+<br>
+
+<!-- 在这里插入“游戏学习展示”的视频 -->
+
+</details>
 
 ## ✨ 1. 程序功能介绍 (核心功能)
 
