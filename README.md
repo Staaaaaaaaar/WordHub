@@ -211,3 +211,26 @@ WordHub_Project_Root/
 ## 📄 开源许可
 
 本项目采用 [MIT License](LICENSE)
+
+
+<!-- # WordHub - 简洁高效的英语词汇学习软件
+
+**北京大学2025程序设计实习第120组大作业**
+
+---
+
+<p align="center">
+  <a href="https://stibiums.github.io/WordHub/" target="_blank" title="点击查看项目主页">
+    <img src="assets/demo_install_thumb.png" alt="WordHub 项目演示" width="80%">
+  </a>
+</p>
+
+<h2 align="center">
+  <a href="https://stibiums.github.io/WordHub/">🚀 点击这里，访问我们的项目主页 🚀</a>
+</h2>
+
+<p align="center">
+  为了获得最佳的浏览体验，包括<strong>带声音的视频演示</strong>和完整的项目介绍，我们强烈建议您访问我们的项目主页。
+</p>
+
+--- -->
