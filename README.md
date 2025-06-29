@@ -51,9 +51,43 @@ WordHub 旨在通过现代化的交互界面、科学的记忆方法和趣味性
     *   采用深色主题（AMOLED），并适配 Windows 系统的暗色标题栏，提供统一、沉浸的视觉体验。
     *   提供专业的 [`WordHub.exe`](https://github.com/stibiums/WordHub/releases) 安装包，方便在任何 Windows 电脑上部署。
 
-## 🏛️ 2. 项目模块与类设计
+## 👥 2. 小组成员分工情况
 
-### 2.1 模块结构
+### 2.1 小组成员
+
+| 成员 | GitHub | 主要负责模块 | 具体分工 |
+| :--- | :--- | :--- | :--- |
+| **刘继轩** | [stibiums](https://github.com/stibiums) | **后端核心和杂项** | 负责整体项目架构设计；数据库模块（SQLite）、数据导入处理、用户系统、学习记录、网络词典调用、成就系统的实现、用户类核心逻辑的编写。用嵌入式python解决游戏模块调用问题。打包发布应用程序完成应用文档。解决杂项问题。 |
+| **郑星浩** | [Staaaaaaaaar](https://github.com/Staaaaaaaaar) | **前端界面** | 负责全部 UI 界面的设计与实现，包括主窗口、学习、查询、用户中心、数据可视化图表、游戏等界面的开发与美化。 |
+| **郑嘉祺** | [missswiftie](https://github.com/missswiftie) | **游戏模块以及其他** | 负责字典源文件解析（[.mdx转.json脚本](WordHub/docs/mdx_to_json说明.md)）；负责 Wordle 和“看描述猜单词”两个游戏的核心逻辑实现，包括 Python 端的 AI 接口调用和 C++ 端的整合；负责用户注册登录界面以及用户界面（包括用户信息、用户登录热力图等）。 |
+
+### 2.2 项目贡献
+
+#### 贡献者
+<p align="center">
+  <a href="https://github.com/stibiums/WordHub/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=stibiums/WordHub" alt="本项目的贡献者" />
+  </a>
+</p>
+
+#### 团队提交活动图
+
+<p align="center">
+  <!-- 为每个团队成员生成一个针对本仓库的提交活动图 -->
+  <a href="https://github.com/stibiums/WordHub/commits?author=stibiums">
+    <img src="https://github-readme-activity-graph.vercel.app/graph?username=stibiums&repo=WordHub&theme=github-dark&hide_border=true&title_color=ffc107&icon_color=ffc107" alt="stibiums's Commit Activity Graph" />
+  </a>
+  <a href="https://github.com/stibiums/WordHub/commits?author=Staaaaaaaaar">
+    <img src="https://github-readme-activity-graph.vercel.app/graph?username=Staaaaaaaaar&repo=WordHub&theme=github-dark&hide_border=true&title_color=87ceeb&icon_color=87ceeb" alt="Staaaaaaaaar's Commit Activity Graph" />
+  </a>
+  <a href="https://github.com/stibiums/WordHub/commits?author=missswiftie">
+    <img src="https://github-readme-activity-graph.vercel.app/graph?username=missswiftie&repo=WordHub&theme=github-dark&hide_border=true&title_color=90ee90&icon_color=90ee90" alt="missswiftie's Commit Activity Graph" />
+  </a>
+</p>
+
+## 🏛️ 3. 项目模块与类设计
+
+### 3.1 模块结构
 
 ```
 WordHub_Project_Root/
@@ -71,7 +105,7 @@ WordHub_Project_Root/
 └── WordHub_Setup.iss              # Inno Setup 打包脚本
 ```
 
-### 2.2 主要类设计
+### 3.2 主要类设计
 
 **点击类名即可查看每个类的详细介绍文档**
 
@@ -95,14 +129,6 @@ WordHub_Project_Root/
 | [`LearnWidget`](WordHub/docs/LearnWidget说明.md) | **学习流程的“调度中心”**。该类聚合了词库管理、学习、复习、测试等核心学习流程。采用多页面（QStackedWidget）切换，保证流程清晰。通过数据可视化（如柱状图、进度条）直观展示学习进度。词库管理支持本地导入和多词库切换，学习/复习/测试流程高度模块化，便于扩展和维护。 |
 | [`AchievementWidget`](WordHub/docs/AchievementWidget说明.md) | **成就系统的“展示橱窗”**。该类负责加载、展示所有成就，并根据用户学习行为动态刷新解锁状态。采用滚动区域和分组布局，保证成就展示的美观和可扩展性。通过信号槽与主窗口和UserWidget解耦，成就解锁时自动弹出Toast提示，增强用户激励。 |
 | [`GameWidget`](WordHub/docs/GameWidget说明.md) | **趣味学习的“游戏大厅”**。该类作为游戏模块的入口，集成Wordle和“看描述猜单词”两大游戏。采用QStackedWidget管理不同游戏界面，保证切换流畅。每次进入游戏时动态创建游戏实例，确保每局游戏状态独立。通过信号槽与成就系统联动，游戏达成条件时自动解锁相关成就。 |
-
-## 👥 3. 小组成员分工情况
-
-| 成员 | GitHub | 主要负责模块 | 具体分工 |
-| :--- | :--- | :--- | :--- |
-| **刘继轩** | [stibiums](https://github.com/stibiums) | **后端核心和杂项** | 负责整体项目架构设计；数据库模块（SQLite）、数据导入处理、用户系统、学习记录、网络词典调用、成就系统的实现、用户类核心逻辑的编写。用嵌入式python解决游戏模块调用问题。打包发布应用程序完成应用文档。解决杂项问题。 |
-| **郑星浩** | [Staaaaaaaaar](https://github.com/Staaaaaaaaar) | **前端界面** | 负责全部 UI 界面的设计与实现，包括主窗口、学习、查询、用户中心、数据可视化图表、游戏等界面的开发与美化。 |
-| **郑嘉祺** | [missswiftie](https://github.com/missswiftie) | **游戏模块以及其他** | 负责字典源文件解析（[.mdx转.json脚本](WordHub/docs/mdx_to_json说明.md)）；负责 Wordle 和“看描述猜单词”两个游戏的核心逻辑实现，包括 Python 端的 AI 接口调用和 C++ 端的整合；负责用户注册登录界面以及用户界面（包括用户信息、用户登录热力图等）。 |
 
 ## 💡 4. 项目总结与反思
 
