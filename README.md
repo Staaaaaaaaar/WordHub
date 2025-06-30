@@ -25,8 +25,8 @@
 
 <p align="center">
   如果必须要单独提交pdf报告和展示视频，请点击下面的链接下载：
-  <a href="https://github.com/stibiums/WordHub/releases">pdf报告文档</a>
-  <a href="https://github.com/stibiums/WordHub/releases">展示视频下载</a>
+  <a href="[https://github.com/stibiums/WordHub/releases](https://github.com/stibiums/WordHub/blob/main/%E6%9D%82%E9%A1%B9/pdf%E7%89%88%E6%96%87%E6%A1%A3.pdf)">pdf报告文档</a>
+  <a href="[https://github.com/stibiums/WordHub/releases](https://disk.pku.edu.cn/link/AAE051D42E961B41C9974D7869E5DD8008">展示视频下载</a>
 </p>
 
 ---
