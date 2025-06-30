@@ -14,12 +14,19 @@
 ---
 
 
+
 <h2 align="center">
   <a href="https://stibiums.github.io/WordHub/">🚀 点击这里，访问我们的项目主页 🚀</a>
 </h2>
 
 <p align="center">
-  为了获得最佳的浏览体验，包括<strong>带声音的视频演示</strong>和完整的项目介绍，我们强烈建议您访问我们的项目主页。
+  助教老师您好，为了获得最佳的浏览体验，包括<strong>带声音的视频演示</strong>和完整的项目介绍，我们强烈建议您访问我们的项目主页。
+</p>
+
+<p align="center">
+  如果必须要单独提交pdf报告和展示视频，请点击下面的链接下载：
+  <a href="https://github.com/stibiums/WordHub/releases">pdf报告文档</a>
+  <a href="https://github.com/stibiums/WordHub/releases">展示视频下载</a>
 </p>
 
 ---
